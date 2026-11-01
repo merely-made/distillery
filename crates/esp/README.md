@@ -205,4 +205,4 @@ rebuild. Generic `VectorIndex` and `SemanticSearch` remain available independent
 Loaded BERT buffers and the deterministic lexical algorithm supply identities;
 unknown/manual component assemblies refuse guarded persistence. The core
 contract and resident acceptance are linked from
-`design_docs/2026-10-20_embedding_compatibility_plan.md`.
+`design_docs/archive_docs/2026-10-31/2026-10-20_embedding_compatibility_plan.md`.

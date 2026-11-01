@@ -2,9 +2,9 @@
 
 Preserve host-owned authority, existing formats and independent crate feature boundaries. Read [documentation policy](DOC_POLICY.md) before editing.
 
-Canonical migration and current receipts: `mere/design_docs/mere_docs/implementation_strategy/2026-10-19_family_promotion_plan.md`.
+Canonical migration and receipts: `mere/design_docs/archive_docs/2026-10-28/2026-10-19_family_promotion_plan.md` (archived 2026-10-28). Its open items continue in `mere/design_docs/mere_docs/implementation_strategy/2026-10-28_family_promotion_plan.md`.
 
-Execution/shutdown receiving (2026-10-19): Armillary now exposes fallible actor completion; ESP keeps model execution and validates clean actor shutdown in its existing provider tests. Canonical source and consumer receipts remain in `mere/design_docs/mere_docs/implementation_strategy/2026-10-19_family_promotion_plan.md`.
+Execution/shutdown receiving (2026-10-19): Armillary now exposes fallible actor completion; ESP keeps model execution and validates clean actor shutdown in its existing provider tests. Canonical source and consumer receipts remain in `mere/design_docs/archive_docs/2026-10-28/2026-10-19_family_promotion_plan.md`.
 
 Pool lifetime receiving (2026-10-21): the workspace and generated lock now pin
 Armillary `92d5b15cf39aaac40a3f2d863ffee69c9be11bfc` for Q112 admission and
@@ -19,5 +19,7 @@ consumer qualification; model, GPU, native and product acceptance remain their
 existing gates. Coordinated ESP → Knot → Mere/product receipt:
 `mere/support/family-promotion/pool-lifetime-20261021.json`.
 
-- [Embedding compatibility](2026-10-20_embedding_compatibility_plan.md) — landed and resident-qualified; provider identities and guarded dense/sparse persistence, with Eidetic P4 and resident I10 as the acceptance owners.
-- [Burn 0.22.1 qualification](2026-10-24_burn_0221_plan.md) — in progress: released dependency cohort, numerical/native/durable-generation checks and receiving composition; Mere owns vendor patches and browser/remote acceptance.
+No plan is active. Archived under `archive_docs/2026-10-31/`:
+
+- [Embedding compatibility](archive_docs/2026-10-31/2026-10-20_embedding_compatibility_plan.md) — landed and resident-qualified; provider identities and guarded dense/sparse persistence, with Eidetic P4 and resident I10 as the acceptance owners.
+- [Burn 0.22.1 qualification](archive_docs/2026-10-31/2026-10-24_burn_0221_plan.md) — landed 2026-10-25: released dependency cohort, numerical/native/durable-generation checks and receiving composition. Mere owns vendor patches and browser/remote acceptance; deferred items are carried by Mere's `2026-10-28_distillery_models_plan.md`, CU1.
