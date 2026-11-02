@@ -1,7 +1,7 @@
 # Provider-bound embedding persistence
 
 **Status (2026-10-20):** landed; resident receiving gate qualified; archived 2026-10-31. Retained contract:
-`eidetic/design_docs/eidetic_docs/implementation_strategy/2026-10-11_eidetic_development_plan.md`,
+`eidetic/design_docs/archive_docs/2026-11-01/2026-10-11_eidetic_development_plan.md`,
 P4 and the October 20 envelope continuation. Resident gate: Mere's
 `mere/design_docs/archive_docs/2026-10-28/2026-10-15_resident_inference_and_recall_plan.md`, I10. These own policy and the
 cross-family acceptance; this document records ESP's API and implementation.
