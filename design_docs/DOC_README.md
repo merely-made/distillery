@@ -51,3 +51,10 @@ runtime and frozen receipts retain their Git blobs. Mesh provenance explicitly
 names this repository and resolves exact direct or delegated Cargo selections,
 with rejection controls for missing, disconnected and ambiguous dependencies.
 The separate browser reproducer manifests also compile for wasm32.
+
+The lexical cross-target probe also moves from Mere into `crates/mesh/probe`.
+It compiles the owning codec by path and consumes ESP through this workspace;
+its original source and donor revision are recorded in the lane receipts.
+The wasm32 module runs under Node and agrees with the native mesh fixture:
+801 canonical bytes, with the fixture's pinned BLAKE3 digest. This does not
+extend inference-model or physical-device acceptance.

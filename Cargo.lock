@@ -6107,6 +6107,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mesh-lexical-wasm"
+version = "0.0.1"
+dependencies = [
+ "blake3",
+ "esp",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "mien"
 version = "0.0.1"
 source = "git+https://github.com/merely-made/gemot.git?rev=998133bc17b8636152e9c4f7605eb475498213c8#998133bc17b8636152e9c4f7605eb475498213c8"

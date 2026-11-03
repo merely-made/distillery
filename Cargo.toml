@@ -5,6 +5,7 @@ members = [
     "crates/esp-test-support",
     "crates/distillery",
     "crates/mesh",
+    "crates/mesh/probe",
 ]
 exclude = [
     "crates/distillery/probe",
