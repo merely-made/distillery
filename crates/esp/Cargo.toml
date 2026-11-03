@@ -4,7 +4,7 @@ name = "esp"
 version = "0.1.0"
 edition = "2024"
 description = "Portable inference and embedding seams for local, browser, and remote model execution."
-repository = "https://github.com/merely-made/esp"
+repository = "https://github.com/merely-made/distillery"
 readme = "README.md"
 keywords = [
     "inference",

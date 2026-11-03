@@ -28,3 +28,20 @@ Registry storage receiving (2026-11-03): the Eidetic and Muniment dependency
 requirements follow the published storage API, qualified with the default and
 actor suites. Canonical coordination and receipts are in
 `mere/design_docs/mere_docs/implementation_strategy/2026-10-28_workspace_hygiene_plan.md`.
+
+Distillery receiving resumes 2026-11-03 under Mere's
+`design_docs/mere_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md`,
+D1-D18 and the current instruction to move the developed inference, mesh and
+port subsystems out of Mere. The existing `distillery-receive` history is merged
+into main in a collision worktree; the primary ESP checkout stays untouched.
+Required receipts are donor/source equivalence, manifest exceptions, standalone
+build/test gates, package-source identities, consumer checks and final commits.
+Keep all run evidence at `Code/testing/esp/distillery-extraction-20261103`,
+with a total retained-byte cap of 100 MB, using the stable ESP Cargo target.
+
+Receiving qualification: 276 default tests pass with one existing ignored
+benchmark; ESP's actor suite passes 88 tests. The complete workspace checks
+all features and targets. Native, session and remote probes compile in their
+own workspaces; the model probe compiles for wasm32 with locked sources.
+These are software build/test receipts, not new model, headed-browser or
+physical-network acceptance. Current run records live at the lane path above.

@@ -1,0 +1,36 @@
+# Copyright 2026 Mark Alan Boykin
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+
+param(
+    [string]$ModelDir = (Join-Path $PSScriptRoot '..\..\..\models\smollm2-135m-instruct-contradiction-lora'),
+    [string]$TargetDir = 'C:\t\cargo-targets\esp'
+)
+
+$ErrorActionPreference = 'Stop'
+$probeRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$distilleryRoot = (Resolve-Path (Join-Path $probeRoot '..\..\..')).Path
+$fixture = Join-Path $probeRoot 'session-fixture\Cargo.toml'
+$resolvedModel = (Resolve-Path -LiteralPath $ModelDir).Path
+$env:CARGO_TARGET_DIR = $TargetDir
+$env:CARGO_BUILD_BUILD_DIR = $TargetDir
+$env:ESP_MODEL_SESSION_COMMIT = (git -C $distilleryRoot rev-parse HEAD).Trim()
+$ownedStatus = git -C $distilleryRoot status --porcelain -- `
+    crates/esp `
+    crates/distillery/probe/session-fixture `
+    crates/distillery/probe/run-model-session.ps1
+$env:ESP_MODEL_SESSION_DIRTY = if ($ownedStatus) { 'true' } else { 'false' }
+
+# Cargo discovers config from its current directory rather than the manifest
+# path. Run outside the checkout so the gitignored local patch redirects cannot
+# contaminate the committed standalone lockfile or its receipt.
+Push-Location ([System.IO.Path]::GetTempPath())
+try {
+    cargo run --release --locked --manifest-path $fixture -- $resolvedModel
+    $cargoExit = $LASTEXITCODE
+} finally {
+    Pop-Location
+}
+if ($cargoExit -ne 0) { exit $cargoExit }

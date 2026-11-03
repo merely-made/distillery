@@ -1,0 +1,55 @@
+[package]
+rust-version = "1.97.1"
+name = "distillery-native-fixture"
+version = "0.0.1"
+edition = "2024"
+license = "MPL-2.0"
+publish = false
+description = "Native numerical control for Distillery's browser model matrix."
+
+[workspace]
+
+[dependencies]
+burn = { version = "=0.22.1", default-features = false, features = ["ndarray", "std"] }
+esp = { features = ["bert", "decoder"], path = "../../../esp" }
+serde_json = "1"
+
+[[bin]]
+name = "distillery-decoder-native-fixture"
+path = "src/bin/decoder.rs"
+
+[workspace.package]
+rust-version = "1.97.1"
+
+
+[patch.crates-io]
+armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", rev = "08ebbc44f5d391bd263fcc26b6053edf72741954" }
+chartulary = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+eidetic = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+luggage = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+mere-proofs = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+stickleback = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+muniment = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+esp = { path = "../../../esp" }
+
+
+[patch."https://github.com/merely-made/retinue.git"]
+
+
+[patch."https://github.com/merely-made/eidetic.git"]
+chartulary = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+eidetic = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+luggage = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+mere-proofs = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+muniment = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+stickleback = { git = "https://www.github.com/merely-made/eidetic.git", rev = "9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5" }
+
+
+[patch."https://github.com/merely-made/esp.git"]
+esp = { path = "../../../esp" }
+esp-testkit = { path = "../../../esp-test-support" }
+
+
+[patch."https://github.com/merely-made/armillary.git"]
+armillary = { version = "0.1.1", git = "https://www.github.com/merely-made/armillary.git", rev = "08ebbc44f5d391bd263fcc26b6053edf72741954" }
+apparatus-core = { git = "https://www.github.com/merely-made/armillary.git", rev = "08ebbc44f5d391bd263fcc26b6053edf72741954" }
