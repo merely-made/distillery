@@ -1,4 +1,9 @@
-# Esp documentation
+# Distillery documentation
+
+Network-session receiving (2026-11-03): mesh and durable inference use
+`murm-sync` for live sessions and Stickleback 0.2 for storage and admission.
+The shared extraction scope and evidence live in
+`murm/design_docs/2026-10-28_transport_consolidation_plan.md`, T7.
 
 Preserve host-owned authority, existing formats and independent crate feature boundaries. Read [documentation policy](DOC_POLICY.md) before editing.
 

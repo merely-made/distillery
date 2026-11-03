@@ -21,8 +21,9 @@ use rand_core::{OsRng, RngCore};
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use stickleback::{
-    Admission, JoinedSpace, MunimentStore, OperationPolicy, OperationProcessor, Reject, StoreTarget,
+    Admission, MunimentStore, OperationPolicy, OperationProcessor, Reject, StoreTarget,
 };
+use murm_sync::JoinedSpace;
 use zeroize::{Zeroize, Zeroizing};
 
 /// Signed address of one device's per-ask log; prompt text stays encrypted.
@@ -327,7 +328,7 @@ pub struct PersonaRunJournal<B: Backend + Clone + Send + Sync + 'static> {
     sync_wake: Arc<tokio::sync::Notify>,
     sync_stop: AtomicBool,
     sync_retry: AtomicBool,
-    prior_sync: Mutex<stickleback::SyncStatus>,
+    prior_sync: Mutex<murm_sync::SyncStatus>,
     /// Serializes local append and explicit refresh, including log frontier reads.
     writer: Mutex<()>,
     authority: Vec<u8>,
@@ -373,7 +374,7 @@ impl<B: Backend + Clone + Send + Sync + 'static> PersonaRunJournal<B> {
             sync_wake: Arc::new(tokio::sync::Notify::new()),
             sync_stop: AtomicBool::new(false),
             sync_retry: AtomicBool::new(false),
-            prior_sync: Mutex::new(stickleback::SyncStatus::default()),
+            prior_sync: Mutex::new(murm_sync::SyncStatus::default()),
             writer: Mutex::new(()),
             authority: Vec::new(),
             import: Mutex::new(None),
@@ -455,8 +456,8 @@ impl<B: Backend + Clone + Send + Sync + 'static> PersonaRunJournal<B> {
     /// Join the ask lane on the resident-owned endpoint and gossip overlay.
     pub async fn join(
         self: &Arc<Self>,
-        endpoint: stickleback::Endpoint,
-        gossip: stickleback::Gossip,
+        endpoint: murm_sync::Endpoint,
+        gossip: murm_sync::Gossip,
     ) -> Result<(), String> {
         self.open_sync(endpoint.clone(), gossip.clone()).await?;
         let weak = Arc::downgrade(self);
@@ -516,8 +517,8 @@ impl<B: Backend + Clone + Send + Sync + 'static> PersonaRunJournal<B> {
 
     async fn open_sync(
         self: &Arc<Self>,
-        endpoint: stickleback::Endpoint,
-        gossip: stickleback::Gossip,
+        endpoint: murm_sync::Endpoint,
+        gossip: murm_sync::Gossip,
     ) -> Result<(), String> {
         let journal = Arc::downgrade(self);
         let joined = JoinedSpace::join::<_, ([u8; 32], [u8; 32]), _, _>(
@@ -580,7 +581,7 @@ impl<B: Backend + Clone + Send + Sync + 'static> PersonaRunJournal<B> {
         self.sync_wake.notify_one();
     }
     /// Read actual LogSync activity for this lane.
-    pub fn sync_status(&self) -> Option<stickleback::SyncStatus> {
+    pub fn sync_status(&self) -> Option<murm_sync::SyncStatus> {
         let mut status = self.prior_sync.lock().unwrap().clone();
         if let Some(joined) = self.joined.lock().unwrap().as_ref() {
             let live = joined.sync_status();

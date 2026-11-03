@@ -18,7 +18,7 @@
 //!
 //! The join ceremony and drain (session + live lane + loop, the
 //! [`SyncStatus`] counters, `resync`, the task lifetimes) are
-//! [`stickleback::JoinedSpace`], shared with murm's cabal sync. This
+//! [`murm_sync::JoinedSpace`], shared with murm's cabal sync. This
 //! module keeps only the mesh-specific parts: the domain admission policy and
 //! addressed-mesh guard, the authoring path, and the [`JobBoard`] fold.
 //!
@@ -31,8 +31,8 @@
 use identity::Ed25519Keypair;
 use muniment::Backend;
 use p2panda_core::{Operation, SigningKey};
-use stickleback::JoinedSpace;
-use stickleback::{Endpoint, Gossip};
+use murm_sync::JoinedSpace;
+use murm_sync::{Endpoint, Gossip};
 
 use crate::board::JobBoard;
 use crate::retention::RetentionCheckpoint;
@@ -41,7 +41,7 @@ use crate::wire::{MeshEvent, MeshExt, MeshLogId, to_operation, to_prune_operatio
 
 // The shared drain's status + checkpoint types are re-exported so the mesh
 // public surface (`mesh::SyncStatus` / `mesh::SyncRound`) stays stable.
-pub use stickleback::{SyncRound, SyncStatus};
+pub use murm_sync::{SyncRound, SyncStatus};
 
 /// A mesh sync failure (LogSync session setup, publish, or the store).
 #[derive(Debug, thiserror::Error)]
