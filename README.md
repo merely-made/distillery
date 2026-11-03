@@ -27,3 +27,10 @@ are refused. The async decoder and stub provider refuse constrained requests.
 The grammar travels with durable requests and is replayed over recorded token
 IDs; private literal buffers are cleared with the request. Grammar validity alone
 does not establish factual correctness, relevance, or agreement between sources.
+
+## Local checks
+
+Enable the commit checks with `prek install --allow-missing-config`; run
+`prek run --all-files` alongside the existing local gates. Check definitions
+live in `.pre-commit-config.yaml`, with source-size exclusions and exceptions
+in `line-ceiling.toml`. Shared house style and rollout: `mere/design_docs/mere_docs/implementation_strategy/2026-10-30_house_style_plan.md`.

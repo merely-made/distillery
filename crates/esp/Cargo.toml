@@ -205,3 +205,6 @@ required-features = [
     "decoder",
     "model-session",
 ]
+
+[lints]
+workspace = true
