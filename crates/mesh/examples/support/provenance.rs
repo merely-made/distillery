@@ -245,3 +245,33 @@ source = "git+https://example.test/murm?branch=main#1123456789abcdef0123456789ab
         assert_eq!(selected.len(), 4);
     }
 }
+
+#[cfg(test)]
+mod version_selection {
+    #[test]
+    fn binds_the_direct_version_when_a_parent_uses_an_older_version() {
+        let lock = r#"
+version = 4
+[[package]]
+name = "mere-mesh"
+version = "0.0.1"
+dependencies = ["muniment 0.2.1", "parent"]
+[[package]]
+name = "parent"
+version = "0.0.1"
+dependencies = ["muniment 0.1.2"]
+[[package]]
+name = "muniment"
+version = "0.1.2"
+source = "registry+https://example.test/index"
+[[package]]
+name = "muniment"
+version = "0.2.1"
+source = "git+https://example.test/eidetic#0123456789abcdef0123456789abcdef01234567"
+"#;
+        let selected = super::selected_git_packages(lock.as_bytes(), &["muniment"]).unwrap();
+        assert_eq!(selected[0]["version"], "0.2.1");
+        let ambiguous = lock.replace("muniment 0.2.1", "muniment");
+        assert!(super::selected_git_packages(ambiguous.as_bytes(), &["muniment"]).is_err());
+    }
+}

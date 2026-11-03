@@ -97,6 +97,7 @@ pub fn mere_identity() -> Result<Value> {
     }
     Ok(json!({
         "identity_schema":"mere.mesh.retained_receive_identity/v2",
+        "source_repository":"https://github.com/merely-made/distillery",
         "scope":"locally_owned_sources_and_selected_external_lock_packages",
         "source_manifest_blake3":digest.finalize().to_hex().as_str(),
         "sources":sources,

@@ -85,6 +85,7 @@ async fn main() -> Result<()> {
     )?;
     report["peer_executable_blake3"] = serde_json::json!(before.to_hex().to_string());
     let lock = include_bytes!("../../../../Cargo.lock");
+    report["source_repository"] = serde_json::json!("https://github.com/merely-made/distillery");
     report["mere_source_identity_schema"] =
         serde_json::json!("mere.mesh.inventory_ingress_identity/v2");
     report["mere_source_blake3"] = serde_json::json!(source_hash());

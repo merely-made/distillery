@@ -1568,7 +1568,7 @@ dependencies = [
 [[package]]
 name = "chartulary"
 version = "0.3.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "muniment 0.2.1",
  "petgraph",
@@ -3193,7 +3193,7 @@ dependencies = [
 [[package]]
 name = "eidetic"
 version = "0.0.3"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "async-trait",
  "blake3",
@@ -3208,7 +3208,7 @@ dependencies = [
 [[package]]
 name = "eidetic-search"
 version = "0.0.1"
-source = "git+https://github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "eidetic",
  "genet-text 0.1.0 (git+https://github.com/merely-made/genet.git?branch=main)",
@@ -6058,7 +6058,7 @@ dependencies = [
 [[package]]
 name = "mere-proofs"
 version = "0.1.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "blake3",
  "serde",
@@ -6269,7 +6269,7 @@ dependencies = [
 [[package]]
 name = "muniment"
 version = "0.2.1"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "async-trait",
  "blake3",
@@ -9060,7 +9060,7 @@ dependencies = [
 [[package]]
 name = "servitor"
 version = "0.0.3"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "chartulary 0.3.0",
  "insigne",
@@ -9377,7 +9377,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "stickleback"
 version = "0.1.1"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 dependencies = [
  "blake3",
  "futures-util",
@@ -11772,7 +11772,7 @@ dependencies = [
 [[patch.unused]]
 name = "luggage"
 version = "0.1.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 
 [[patch.unused]]
 name = "armillary"
@@ -11817,7 +11817,7 @@ source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab
 [[patch.unused]]
 name = "luggage"
 version = "0.1.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5#9fe08ee2c793064fc65a2275c7e3ebe7eb9997c5"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=1014cf48e1882ff926b55f3509ac3dbf5a5aec8e#1014cf48e1882ff926b55f3509ac3dbf5a5aec8e"
 
 [[patch.unused]]
 name = "misfin"
