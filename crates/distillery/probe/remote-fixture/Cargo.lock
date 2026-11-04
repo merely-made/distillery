@@ -3049,7 +3049,6 @@ dependencies = [
  "mere-surface-api",
  "mere-transport",
  "muniment 0.2.1",
- "murm-sync",
  "p2panda-core",
  "personae",
  "sceno",
