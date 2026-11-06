@@ -1587,7 +1587,7 @@ dependencies = [
 [[package]]
 name = "chartulary"
 version = "0.3.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "muniment 0.2.1",
  "petgraph",
@@ -3202,7 +3202,7 @@ dependencies = [
 [[package]]
 name = "eidetic"
 version = "0.0.3"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "async-trait",
  "blake3",
@@ -3217,7 +3217,7 @@ dependencies = [
 [[package]]
 name = "eidetic-search"
 version = "0.0.1"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "eidetic",
  "genet-text 0.1.0 (git+https://github.com/merely-made/genet.git?branch=main)",
@@ -3962,7 +3962,7 @@ dependencies = [
 [[package]]
 name = "gemot"
 version = "0.1.1"
-source = "git+https://www.github.com/merely-made/gemot.git?rev=120bac79877be97ac9a7b1c79e7eb1b78238003a#120bac79877be97ac9a7b1c79e7eb1b78238003a"
+source = "git+https://www.github.com/merely-made/gemot.git?rev=f4c1b60139c3315e921393ef72fda35b152b15b3#f4c1b60139c3315e921393ef72fda35b152b15b3"
 dependencies = [
  "insigne",
  "mere-proofs",
@@ -6072,7 +6072,7 @@ dependencies = [
 [[package]]
 name = "mere-proofs"
 version = "0.1.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "blake3",
  "serde",
@@ -6091,7 +6091,7 @@ dependencies = [
 [[package]]
 name = "mere-transport"
 version = "0.0.2"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
+source = "git+https://www.github.com/merely-made/murm.git?rev=98f79b4ef56168239eb93ceaae1dcdde465ee34d#98f79b4ef56168239eb93ceaae1dcdde465ee34d"
 dependencies = [
  "bytes",
  "iroh",
@@ -6132,7 +6132,7 @@ dependencies = [
 [[package]]
 name = "mien"
 version = "0.0.1"
-source = "git+https://www.github.com/merely-made/gemot.git?rev=120bac79877be97ac9a7b1c79e7eb1b78238003a#120bac79877be97ac9a7b1c79e7eb1b78238003a"
+source = "git+https://www.github.com/merely-made/gemot.git?rev=f4c1b60139c3315e921393ef72fda35b152b15b3#f4c1b60139c3315e921393ef72fda35b152b15b3"
 dependencies = [
  "insigne",
  "muniment 0.2.1",
@@ -6235,7 +6235,7 @@ dependencies = [
 [[package]]
 name = "mooting"
 version = "0.1.0"
-source = "git+https://www.github.com/merely-made/gemot.git?rev=120bac79877be97ac9a7b1c79e7eb1b78238003a#120bac79877be97ac9a7b1c79e7eb1b78238003a"
+source = "git+https://www.github.com/merely-made/gemot.git?rev=f4c1b60139c3315e921393ef72fda35b152b15b3#f4c1b60139c3315e921393ef72fda35b152b15b3"
 dependencies = [
  "p2mere-core",
  "serde",
@@ -6293,7 +6293,7 @@ dependencies = [
 [[package]]
 name = "muniment"
 version = "0.2.1"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "async-trait",
  "blake3",
@@ -6305,7 +6305,7 @@ dependencies = [
 [[package]]
 name = "murm-sync"
 version = "0.0.1"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
+source = "git+https://www.github.com/merely-made/murm.git?rev=98f79b4ef56168239eb93ceaae1dcdde465ee34d#98f79b4ef56168239eb93ceaae1dcdde465ee34d"
 dependencies = [
  "bytes",
  "futures-util",
@@ -9172,7 +9172,7 @@ dependencies = [
 [[package]]
 name = "servitor"
 version = "0.0.3"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "chartulary 0.3.0",
  "insigne",
@@ -9489,7 +9489,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "stickleback"
 version = "0.2.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
+source = "git+https://www.github.com/merely-made/eidetic.git?rev=86e78dd37914fd61f8ca336bf0ab2da716356fca#86e78dd37914fd61f8ca336bf0ab2da716356fca"
 dependencies = [
  "blake3",
  "cbor-core",
@@ -11879,143 +11879,3 @@ checksum = "27bc9d5b815bc103f142aa054f561d9187d191692ec7c2d1e2b4737f8dbd7296"
 dependencies = [
  "zune-core",
 ]
-
-[[patch.unused]]
-name = "luggage"
-version = "0.1.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
-
-[[patch.unused]]
-name = "armillary"
-version = "0.1.1"
-source = "git+https://github.com/merely-made/armillary.git?rev=08ebbc44f5d391bd263fcc26b6053edf72741954#08ebbc44f5d391bd263fcc26b6053edf72741954"
-
-[[patch.unused]]
-name = "commons-spine"
-version = "0.0.1"
-source = "git+https://www.github.com/merely-made/gemot.git?rev=120bac79877be97ac9a7b1c79e7eb1b78238003a#120bac79877be97ac9a7b1c79e7eb1b78238003a"
-
-[[patch.unused]]
-name = "document-session-api"
-version = "0.1.1"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c047451d654f7cd62104d18f0448a70b3500d18c"
-
-[[patch.unused]]
-name = "errand"
-version = "0.4.0"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "finger-protocol"
-version = "0.1.1"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "gemini-protocol"
-version = "0.1.7"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "gopher-protocol"
-version = "0.2.0"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "guppy-protocol"
-version = "0.1.1"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "luggage"
-version = "0.1.0"
-source = "git+https://www.github.com/merely-made/eidetic.git?rev=5182e4e244c85b1008182a1be6b822f65a8efe50#5182e4e244c85b1008182a1be6b822f65a8efe50"
-
-[[patch.unused]]
-name = "misfin"
-version = "0.0.4"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "netrender_device"
-version = "0.1.2"
-source = "git+https://github.com/merely-made/netrender.git?branch=main#58d80d8aee042d014d7c935803f8fdd4f81efaa9"
-
-[[patch.unused]]
-name = "nex-protocol"
-version = "0.1.1"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "scroll-protocol"
-version = "0.1.0"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "spartan-protocol"
-version = "0.1.1"
-source = "git+https://github.com/merely-made/errand.git?rev=897fb963d184f0e379ab9041d68e17e726cb7763#897fb963d184f0e379ab9041d68e17e726cb7763"
-
-[[patch.unused]]
-name = "vello_shaders"
-version = "0.11.0"
-source = "git+https://github.com/mark-ik/vello?rev=276b46648c08f3d2062e70559afa999842e1873c#276b46648c08f3d2062e70559afa999842e1873c"
-
-[[patch.unused]]
-name = "embedded-graphics"
-version = "0.8.2"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "embedded-graphics-core"
-version = "0.4.1"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "murm"
-version = "0.0.1"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "murm-webrtc"
-version = "0.0.1"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "outrider"
-version = "0.3.0"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "postilion"
-version = "0.3.0"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "radio-face"
-version = "0.0.1"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "radio-hand"
-version = "0.0.1"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "retinue"
-version = "0.3.0"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "selvage"
-version = "0.1.0"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "seneschal"
-version = "0.2.0"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
-
-[[patch.unused]]
-name = "tulle"
-version = "0.2.0"
-source = "git+https://www.github.com/merely-made/murm.git?rev=0aaf4b16d3d265a7d0af09f083d622284f5846d7#0aaf4b16d3d265a7d0af09f083d622284f5846d7"
