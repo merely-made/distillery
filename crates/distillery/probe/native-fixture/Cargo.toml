@@ -22,13 +22,6 @@ path = "src/bin/decoder.rs"
 rust-version = "1.97.1"
 
 [patch.crates-io]
-armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", branch = "main" }
-chartulary = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-eidetic = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-luggage = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-mere-proofs = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-stickleback = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-muniment = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 esp = { path = "../../../esp" }
 
 [patch."https://github.com/merely-made/distillery.git"]
