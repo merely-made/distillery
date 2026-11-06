@@ -23,7 +23,7 @@ serde_json = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
 # A probe binary with throwaway identities, so it uses the test-only
 # keypair builder (vault lock plan, ruling 96).
-transport = { package = "mere-transport", git = "https://www.github.com/merely-made/murm.git", rev = "98f79b4ef56168239eb93ceaae1dcdde465ee34d", features = ["test-identity"] }
+transport = { package = "mere-transport", git = "https://github.com/merely-made/murm.git", branch = "main", features = ["test-identity"] }
 
 [features]
 default = []
@@ -49,7 +49,7 @@ genet-scripted-dom = { git = "https://github.com/merely-made/genet.git", branch 
 esp = { path = "../../../esp" }
 
 [patch."https://github.com/merely-made/retinue.git"]
-mere-transport = { git = "https://www.github.com/merely-made/murm.git", rev = "98f79b4ef56168239eb93ceaae1dcdde465ee34d" }
+mere-transport = { git = "https://github.com/merely-made/murm.git", branch = "main" }
 
 [patch."https://github.com/merely-made/eidetic.git"]
 mere-proofs = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }

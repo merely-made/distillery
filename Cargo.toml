@@ -23,7 +23,7 @@ authors = [
 ]
 
 [workspace.dependencies]
-murm-sync = { version = "0.0.1", git = "https://www.github.com/merely-made/murm.git", rev = "98f79b4ef56168239eb93ceaae1dcdde465ee34d" }
+murm-sync = { version = "0.0.1", git = "https://github.com/merely-made/murm.git", branch = "main" }
 wgpu = "30.0.1"
 sha2 = "0.11"
 # Members of this repository.
@@ -45,20 +45,20 @@ apparatus-core = { version = "0.1.0", git = "https://github.com/merely-made/armi
 armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", rev = "08ebbc44f5d391bd263fcc26b6053edf72741954" }
 eidetic = { version = "0.0.3", default-features = false, git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 eidetic-search = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
-gemot = { version = "0.1.1", git = "https://www.github.com/merely-made/gemot.git", rev = "f4c1b60139c3315e921393ef72fda35b152b15b3" }
+gemot = { version = "0.1.1", git = "https://www.github.com/merely-made/gemot.git", rev = "9bfea63e49667c7a1399644a09f875dba9a223a0" }
 genet-scripted-dom = { version = "=0.1.2", git = "https://github.com/merely-made/genet.git", branch = "main" }
 identity = { package = "personae", version = "0.3.0", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
 insigne = { version = "0.0.2", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
 layout-dom-api = { version = "=0.1.1", git = "https://github.com/merely-made/genet.git", branch = "main" }
-mien = { version = "0.0.1", git = "https://www.github.com/merely-made/gemot.git", rev = "f4c1b60139c3315e921393ef72fda35b152b15b3" }
-mooting = { version = "0.1.0", git = "https://www.github.com/merely-made/gemot.git", rev = "f4c1b60139c3315e921393ef72fda35b152b15b3" }
+mien = { version = "0.0.1", git = "https://www.github.com/merely-made/gemot.git", rev = "9bfea63e49667c7a1399644a09f875dba9a223a0" }
+mooting = { version = "0.1.0", git = "https://www.github.com/merely-made/gemot.git", rev = "9bfea63e49667c7a1399644a09f875dba9a223a0" }
 muniment = { version = "0.2.1", git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 notochord = { version = "0.1.1", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
 personae = { version = "0.3.0", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
 proofs = { package = "mere-proofs", version = "0.1.0", git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 stickleback = { version = "0.2.0", git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 tracing = "0.1"
-transport = { package = "mere-transport", version = "0.0.2", git = "https://www.github.com/merely-made/murm.git", rev = "98f79b4ef56168239eb93ceaae1dcdde465ee34d" }
+transport = { package = "mere-transport", version = "0.0.2", git = "https://github.com/merely-made/murm.git", branch = "main" }
 
 [workspace.lints.rust]
 unsafe_code = "warn"
@@ -74,10 +74,10 @@ too_many_lines = "warn"
 [patch.crates-io]
 chartulary = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 eidetic = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
-gemot = { git = "https://www.github.com/merely-made/gemot.git", rev = "f4c1b60139c3315e921393ef72fda35b152b15b3" }
+gemot = { git = "https://www.github.com/merely-made/gemot.git", rev = "9bfea63e49667c7a1399644a09f875dba9a223a0" }
 mere-proofs = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
-mien = { git = "https://www.github.com/merely-made/gemot.git", rev = "f4c1b60139c3315e921393ef72fda35b152b15b3" }
-mooting = { git = "https://www.github.com/merely-made/gemot.git", rev = "f4c1b60139c3315e921393ef72fda35b152b15b3" }
+mien = { git = "https://www.github.com/merely-made/gemot.git", rev = "9bfea63e49667c7a1399644a09f875dba9a223a0" }
+mooting = { git = "https://www.github.com/merely-made/gemot.git", rev = "9bfea63e49667c7a1399644a09f875dba9a223a0" }
 servitor = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 stickleback = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
 muniment = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
@@ -89,7 +89,7 @@ genet-scripted-dom = { git = "https://github.com/merely-made/genet.git", branch 
 esp = { path = "crates/esp" }
 
 [patch."https://github.com/merely-made/retinue.git"]
-mere-transport = { git = "https://www.github.com/merely-made/murm.git", rev = "98f79b4ef56168239eb93ceaae1dcdde465ee34d" }
+mere-transport = { git = "https://github.com/merely-made/murm.git", branch = "main" }
 
 [patch."https://github.com/merely-made/eidetic.git"]
 chartulary = { git = "https://www.github.com/merely-made/eidetic.git", rev = "86e78dd37914fd61f8ca336bf0ab2da716356fca" }
