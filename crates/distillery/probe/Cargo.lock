@@ -1177,7 +1177,7 @@ dependencies = [
 [[package]]
 name = "chartulary"
 version = "0.3.0"
-source = "git+https://github.com/merely-made/eidetic.git?branch=main#2df00e08ee5a6b94abc8ea9ef5bb2f67e40f154c"
+source = "git+https://github.com/merely-made/eidetic.git?branch=main#71188bb66d15bdd3618db12f148bc42e5cbef284"
 dependencies = [
  "muniment",
  "petgraph",
@@ -2443,7 +2443,7 @@ checksum = "e1d926b4d407d372f141f93bb444696142c29d32962ccbd3531117cf3aa0bfa9"
 [[package]]
 name = "eidetic"
 version = "0.0.3"
-source = "git+https://github.com/merely-made/eidetic.git?branch=main#2df00e08ee5a6b94abc8ea9ef5bb2f67e40f154c"
+source = "git+https://github.com/merely-made/eidetic.git?branch=main#71188bb66d15bdd3618db12f148bc42e5cbef284"
 dependencies = [
  "async-trait",
  "blake3",
@@ -4072,7 +4072,7 @@ dependencies = [
 [[package]]
 name = "muniment"
 version = "0.2.1"
-source = "git+https://github.com/merely-made/eidetic.git?branch=main#2df00e08ee5a6b94abc8ea9ef5bb2f67e40f154c"
+source = "git+https://github.com/merely-made/eidetic.git?branch=main#71188bb66d15bdd3618db12f148bc42e5cbef284"
 dependencies = [
  "async-trait",
  "blake3",
