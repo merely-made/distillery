@@ -63,3 +63,15 @@ its original source and donor revision are recorded in the lane receipts.
 The wasm32 module runs under Node and agrees with the native mesh fixture:
 801 canonical bytes, with the fixture's pinned BLAKE3 digest. This does not
 extend inference-model or physical-device acceptance.
+
+ESP receives the goal-model adapter (2026-11-06, Mere
+`design_docs/mere_docs/implementation_strategy/2026-11-06_cycle_breaks_plan.md`
+P4, decision D2): `esp::embed::goal_model` (`EspGoalEmbedder` and
+`recommended_match_similarity_milli`, behind the `goal-model` feature) implements
+Eidetic's `GoalEmbedder` trait, which `eidetic-search` keeps. The MiniLM
+calibration test (`tests/goal_model_minilm.rs`, with its corpus under
+`tests/fixtures/goal_calibration/`), the lexical n-gram recall receipt
+(`tests/lexical_ngram_recall.rs`) and the `eidetic-recall` example (feature
+`recall-example`) moved with it; Eidetic no longer depends on ESP. Calibration
+rationale and the 220-thousandths threshold stay recorded in Eidetic's
+`design_docs/eidetic_docs/implementation_strategy/2026-11-01_memory_gates_plan.md`.

@@ -33,6 +33,13 @@ tiny decoder fixtures and templates without repinning the ESP runtime package.
 | --- | --- | --- | --- |
 | `infer` | `decoder`, `decoder-flex` | `decoder-wgpu` | `actor`, `model-session` |
 | `embed` | `index-burn`, `bert` | `index-burn-wgpu`, `bert-wgpu` | `bert-validation` |
+| `embed` goal model | `goal-model` | `recall-example` (with `bert-wgpu`) | |
+
+`goal-model` adds `embed::goal_model`: `EspGoalEmbedder`, the adapter that makes an
+ESP provider an `eidetic_search::GoalEmbedder`, and `recommended_match_similarity_milli`
+(220 thousandths for the pinned all-MiniLM-L6-v2). The MiniLM calibration test
+(`tests/goal_model_minilm.rs`, ignored; needs `ESP_MINILM_DIR`) and the
+`eidetic-recall` example (`recall-example`) live here.
 
 Native tokenizer builds use Oniguruma. `wasm32-unknown-unknown` uses
 tokenizers' pure-Rust `unstable_wasm` path, and every Burn feature activates

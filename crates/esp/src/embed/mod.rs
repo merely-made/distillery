@@ -40,6 +40,8 @@ pub mod affinity;
 pub mod compatible;
 #[cfg(feature = "bert")]
 pub mod bert;
+#[cfg(feature = "goal-model")]
+pub mod goal_model;
 pub mod index;
 #[cfg(feature = "index-burn")]
 pub mod index_burn;

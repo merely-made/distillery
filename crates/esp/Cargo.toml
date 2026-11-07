@@ -39,6 +39,10 @@ optional = true
 workspace = true
 optional = true
 
+[dependencies.eidetic-search]
+workspace = true
+optional = true
+
 [dependencies.burn]
 version = "=0.22.1"
 default-features = false
@@ -105,10 +109,14 @@ tempfile = "3"
 [dev-dependencies.eidetic]
 workspace = true
 
+[dev-dependencies.eidetic-search]
+workspace = true
+
 [dev-dependencies.muniment]
 workspace = true
 features = [
     "redb",
+    "fjall",
 ]
 
 [dev-dependencies.sha2]
@@ -150,6 +158,17 @@ decoder-autodiff = [
 persistence = [
     "dep:eidetic",
 ]
+# The `GoalEmbedder` adapter over an ESP provider (D2 of Mere's cycle breaks plan):
+# `eidetic-search` keeps only the trait, ESP implements it.
+goal-model = [
+    "persistence",
+    "dep:eidetic-search",
+]
+recall-example = [
+    "goal-model",
+    "bert",
+    "bert-wgpu",
+]
 model-session = [
     "persistence",
     "dep:serde_json",
@@ -175,6 +194,20 @@ bert-wgpu = [
     "burn/wgpu",
 ]
 bert-validation = [
+    "bert",
+]
+
+[[example]]
+name = "eidetic-recall"
+test = true
+required-features = [
+    "recall-example",
+]
+
+[[test]]
+name = "goal_model_minilm"
+required-features = [
+    "goal-model",
     "bert",
 ]
 
