@@ -43,7 +43,7 @@ scenotime = "0.0.5"
 # Suppliers at Mere's pins, so a Mere graph resolves one copy of each.
 apparatus-core = { version = "0.1.0", git = "https://github.com/merely-made/armillary.git", branch = "main", default-features = false }
 armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", branch = "main" }
-eidetic = { version = "0.0.3", default-features = false, git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+eidetic = { version = "0.0.3", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 eidetic-search = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 gemot = { version = "0.1.1", git = "https://github.com/merely-made/gemot.git", branch = "main" }
 genet-scripted-dom = { version = "0.1.2", git = "https://github.com/merely-made/genet.git", branch = "main" }
