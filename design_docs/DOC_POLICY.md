@@ -176,3 +176,12 @@ yet keeps rules 1 to 4 until its first statement is written.
    its fields line: its latest outcome, in the words given. Earlier notes
    leave; git keeps them. What is built, owed or unverified is said
    before the fields line.
+
+## Local addendum — Distillery
+
+Facts only; no local rules yet.
+
+- Ten design documents moved here from `merely-made/mere` on 2026-11-11, with their history from the last rename onward, and as written then: the Distillery models plan, the Distillery extraction plan, lease-bound remote sessions, the local models harness brief, the Burn utilization brief, Alembic memory and engrams, the geist models brief, the local intelligence integration research, the communal compute tiers brief and the agent harness brief. They sit under `implementation_strategy/`, `research/` and `technical_architecture/`, the subfolder names they had under `mere_docs/`; this repository has no area root.
+- Earlier history of these documents, and the archived Distillery documents (including the extraction plan's receipts), are in `mere/design_docs/archive_docs/`.
+- Decisions are indexed by responsa in `design_docs/decisions.toml` and cited from other repositories as `distillery:<key>`; keys that stay in Mere are cited here as `mere:<key>`.
+- A relevance review of the moved documents is pending. Until it is done they are verbatim, and paths in them into crates or ports that have not yet moved are as they were in Mere.
