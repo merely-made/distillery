@@ -32,8 +32,8 @@ esp-testkit = { version = "0.1.0", path = "crates/esp-test-support" }
 mesh = { package = "mere-mesh", version = "0.0.1", path = "crates/mesh" }
 # The published contract crates Distillery produces through (Mere distillery-extraction D7).
 cambium = "0.6.1"
-chirograph = "0.0.4"
-graphshell-endpoint = "0.0.3"
+chirograph = "0.0.5"
+graphshell-endpoint = "0.0.4"
 incipit = "0.2.1"
 mere-surface-api = "0.1.1"
 sceno = "0.0.7"

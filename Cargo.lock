@@ -1606,9 +1606,9 @@ dependencies = [
 
 [[package]]
 name = "chirograph"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc9aaf08f8396ce257e950c2a44f9daf9b2e4006ea7121a204bd26eb3f536588"
+checksum = "bf8b6fcf72bf5c1d5fc2844d5d64dddc588f2a12306148000e1ae9e48aaa9033"
 dependencies = [
  "base64 0.22.1",
  "blake3",
@@ -3367,7 +3367,7 @@ dependencies = [
 [[package]]
 name = "engine-observables-api"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "genet-paint-types",
  "serde",
@@ -4093,7 +4093,7 @@ dependencies = [
 [[package]]
 name = "genet-paint-types"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "app_units",
  "euclid",
@@ -4103,7 +4103,7 @@ dependencies = [
 [[package]]
 name = "genet-scripted-dom"
 version = "0.1.2"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "encoding_rs",
  "engine-observables-api",
@@ -4120,7 +4120,7 @@ dependencies = [
 [[package]]
 name = "genet-static-dom"
 version = "0.1.1"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "html5ever",
  "layout-dom-api",
@@ -4139,7 +4139,7 @@ dependencies = [
 [[package]]
 name = "genet-text"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "unicode-segmentation",
 ]
@@ -4298,9 +4298,9 @@ dependencies = [
 
 [[package]]
 name = "graphshell-endpoint"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7925c01072192c64938b9497e78e96a90f9333265cda63d130fc5a33c572f14b"
+checksum = "9c7650717d732cce9bb45d200b0d333478b3c7f86a40466df0ab74dced6e5946"
 dependencies = [
  "chirograph",
 ]
@@ -5726,7 +5726,7 @@ dependencies = [
 [[package]]
 name = "layout-dom-api"
 version = "0.1.1"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "markup5ever",
  "serde",
@@ -8774,7 +8774,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 [[package]]
 name = "regress"
 version = "0.11.1"
-source = "git+https://github.com/merely-made/genet.git?branch=main#c1d25be4a793e6130b61c6b584908118c13ed113"
+source = "git+https://github.com/merely-made/genet.git?branch=main#7c6ffc87b9a82b224a7ca52c63ee41b09ac71c36"
 dependencies = [
  "hashbrown 0.16.1",
  "memchr",
