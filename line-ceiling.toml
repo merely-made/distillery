@@ -141,3 +141,22 @@ reason = "The trainer resource receipt: one real mesh job runs a LoRA trainer en
 path = "crates/distillery/tests/walk_fixtures.rs"
 reason = "W0 receipt: the projection walk's two second datasets, plus the bare headless scenario that drives the installed surface end to end. Existing source-size debt; a responsibility split must preserve TickRecord, ChronicleFixture, Device and existing module visibility."
 
+[[exception]]
+path = "crates/athanor/src/workshop.rs"
+reason = "Persistent, owner-scoped evidence briefs. Existing source-size debt; a responsibility split must preserve Error, Lifecycle, Binding and existing module visibility."
+
+[[exception]]
+path = "crates/athanor/src/workshop/tests.rs"
+reason = "Workshop tests. Existing source-size debt; a responsibility split must preserve Fallible and existing module visibility."
+
+[[exception]]
+path = "crates/athanor/src/workshop_destination.rs"
+reason = "Owner-gated evidence brief admission into the existing GraphSession writer. Existing source-size debt; a responsibility split must preserve GraphPreparation, GraphOperation and existing module visibility."
+
+[[exception]]
+path = "crates/athanor/src/workshop_driver.rs"
+reason = "Native worker pump shared by application owners. Existing source-size debt; a responsibility split must preserve Driver and existing module visibility."
+
+[[exception]]
+path = "crates/athanor/src/workshop_sealed_destination.rs"
+reason = "Private evidence briefs in the graph owner's existing snapshot transaction. Existing source-size debt; a responsibility split must preserve Routing, Envelope, Preparation and existing module visibility."
