@@ -30,7 +30,7 @@ waits for a planned second host, not an arrived one.
 - **D1. The move (Mark, 2026-10-31):** "commit and extract distillery from mere into ESP,
   as planned. Remove old directories. Rename the esp repo distillery."
 
-  Links: draws on house-style D12 · summary Distillery leaves Mere for the ESP repository, which becomes `distillery`; donor directories are removed.
+  Links: draws on mere:house-style D12 · summary Distillery leaves Mere for the ESP repository, which becomes `distillery`; donor directories are removed.
 
 - **D2. The back edge (Mark, 2026-10-31):** "Cut first", over Knot-style lockstep.
   Distillery imported eleven Mere crates; the repository it joins stays free of
@@ -76,13 +76,13 @@ waits for a planned second host, not an arrived one.
   else is a leaf that produces surfaces, with or without a standalone frame. Refines
   stack.3.
 
-  Links: amends stack.3 · summary An app is a branch only if it owns a graph and hosts others; otherwise it is a producer leaf.
+  Links: amends mere:stack.3 · summary An app is a branch only if it owns a graph and hosts others; otherwise it is a producer leaf.
 
 - **D9. Any branch hosts (Mark, 2026-10-31):** "Any branch hosts", over Graphshell as the
   only host. Graphshell is the reference host that loads whatever is installed; Turnstone
   stays the flagship. Refines the 2026-08-22 suite census without reversing it.
 
-  Links: amends stack.3 · summary Every branch can host producers; Graphshell is the reference host, Turnstone the flagship.
+  Links: amends mere:stack.3 · summary Every branch can host producers; Graphshell is the reference host, Turnstone the flagship.
 
 - **D10. Order (Mark, 2026-10-31):** "Extract, then survey". The other ports are classified
   against D8 in a dated brief after this extraction.
@@ -100,13 +100,13 @@ waits for a planned second host, not an arrived one.
   (pandect already depends on it); Athanor's `furnace` becomes a `pandect` module behind a
   feature, which Turnstone's recycle bin takes.
 
-  Links: draws on house-style D2 · summary Graph halves become pandect modules; mere-alembic and mere-athanor leave Mere whole.
+  Links: draws on mere:house-style D2 · summary Graph halves become pandect modules; mere-alembic and mere-athanor leave Mere whole.
 
 - **D13. Atomic file replacement (Mark, 2026-10-31):** "Move to muniment", over copying
   it into Distillery. `pandect::atomic_file` goes down into `muniment` (Eidetic), which
   pandect and Distillery both depend on.
 
-  Links: draws on house-style D2 · summary Atomic file replacement lives in muniment; pandect and Distillery share it.
+  Links: draws on mere:house-style D2 · summary Atomic file replacement lives in muniment; pandect and Distillery share it.
 
 - **D14. Gate G1 (Mark, 2026-10-31):** "Publish both", over gating Distillery's surface.
   cambium 0.6.0 and sprigging 0.3.0 go to crates.io after a dry run, with the dependency
@@ -124,7 +124,7 @@ waits for a planned second host, not an arrived one.
   with its producers fixed at build; an endpoint is what a producer exposes; Djinn, Murm,
   Luggage and Armillary are runners. Refines stack.3.
 
-  Links: amends stack.3, distillery-extraction D8 · summary Producers, hosts and runners; frames are not hosts; endpoints are producer-side; the graph core is contract tier.
+  Links: amends mere:stack.3, distillery-extraction D8 · summary Producers, hosts and runners; frames are not hosts; endpoints are producer-side; the graph core is contract tier.
 
 - **D16. Athanor and Alembic wait for their lane (Mark, 2026-10-31):** "Communicate with the
   active lane?", then "Plan note + prompt". Put to Mark on finding, after merging 201
