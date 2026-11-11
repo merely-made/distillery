@@ -27,15 +27,15 @@ existing gates. Coordinated ESP → Knot → Mere/product receipt:
 No plan is active. Archived under `archive_docs/2026-10-31/`:
 
 - [Embedding compatibility](archive_docs/2026-10-31/2026-10-20_embedding_compatibility_plan.md) — landed and resident-qualified; provider identities and guarded dense/sparse persistence, with Eidetic P4 and resident I10 as the acceptance owners.
-- [Burn 0.22.1 qualification](archive_docs/2026-10-31/2026-10-24_burn_0221_plan.md) — landed 2026-10-25: released dependency cohort, numerical/native/durable-generation checks and receiving composition. Mere owns vendor patches and browser/remote acceptance; deferred items are carried by Mere's `2026-10-28_distillery_models_plan.md`, CU1.
+- [Burn 0.22.1 qualification](archive_docs/2026-10-31/2026-10-24_burn_0221_plan.md) — landed 2026-10-25: released dependency cohort, numerical/native/durable-generation checks and receiving composition. Mere owns vendor patches and browser/remote acceptance; deferred items are carried by the [models plan](implementation_strategy/2026-10-28_distillery_models_plan.md), CU1.
 
 Registry storage receiving (2026-11-03): the Eidetic and Muniment dependency
 requirements follow the published storage API, qualified with the default and
 actor suites. Canonical coordination and receipts are in
 `mere/design_docs/mere_docs/implementation_strategy/2026-10-28_workspace_hygiene_plan.md`.
 
-Distillery receiving resumes 2026-11-03 under Mere's
-`design_docs/mere_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md`,
+Distillery receiving resumes 2026-11-03 under the
+[extraction plan](implementation_strategy/2026-10-31_distillery_extraction_plan.md) (then in Mere),
 D1-D18 and the current instruction to move the developed inference, mesh and
 port subsystems out of Mere. The existing `distillery-receive` history is merged
 into main in a collision worktree; the primary ESP checkout stays untouched.

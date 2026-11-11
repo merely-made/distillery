@@ -2,8 +2,8 @@
 
 **Date:** 2026-07-03
 **Status (2026-10-28):** model-guided design rationale reconciled with the
-[Alembic workshop plan](../implementation_strategy/2026-10-28_alembic_implementation_plan.md).
-Alembic/Athanor own workshop composition. The [Servitor redesign](../../archive_docs/2026-10-28/2026-08-13_graph_behaviors_plan.md#8-servitor-resident-and-run-redesign-2026-09-20)
+Alembic workshop plan (`mere/design_docs/mere_docs/implementation_strategy/2026-10-28_alembic_implementation_plan.md`).
+Alembic/Athanor own workshop composition. The Servitor redesign (`mere/design_docs/archive_docs/2026-10-28/2026-08-13_graph_behaviors_plan.md#8-servitor-resident-and-run-redesign-2026-09-20`)
 owns reusable admission/run semantics; Servitor remains in Eidetic.
 R1a/R1b and the Turnstone adapter have executable receipts. Athanor now consumes the same reducer in the deterministic evidence-brief
 core (the Alembic plan's W0 finding). The product adapters are under implementation;
@@ -53,7 +53,7 @@ authorize redispatch.
 ## 3. Owner-defined semantic operations
 
 The original brief assumed a shared ActionRegistry/Command::ALL. That
-substrate was retired, as the [MCP plan](../implementation_strategy/2026-06-26_mcp_native_graph_plan.md)
+substrate was retired, as the MCP plan (`mere/design_docs/mere_docs/implementation_strategy/2026-06-26_mcp_native_graph_plan.md`)
 records. The retained invariant is that human controls, scripts and protocol
 adapters invoke the same domain validation and commit paths.
 
@@ -243,18 +243,18 @@ row earns its complexity through measured benefit over deterministic assembly.
 
 ## Related owners and research
 
-- [Alembic implementation plan](../implementation_strategy/2026-10-28_alembic_implementation_plan.md)
+- Alembic implementation plan (`mere/design_docs/mere_docs/implementation_strategy/2026-10-28_alembic_implementation_plan.md`)
   — workshop composition, first workflow and current acceptance gates.
-- [Graph behaviors plan](../../archive_docs/2026-10-28/2026-08-13_graph_behaviors_plan.md)
+- Graph behaviors plan (`mere/design_docs/archive_docs/2026-10-28/2026-08-13_graph_behaviors_plan.md`)
   — watches, admission, run contracts and proposed R2/R3.
 - [Local models harness brief](2026-06-24_local_models_harness_brief.md)
   — model-execution and adapter rationale; current resident qualification is
-  in the [inference plan](../../archive_docs/2026-10-28/2026-10-15_resident_inference_and_recall_plan.md).
-- [Diagnostics plan](../../archive_docs/2026-10-28/2026-06-08_system_diagnostics_and_accessibility_plan.md)
+  in the inference plan (`mere/design_docs/archive_docs/2026-10-28/2026-10-15_resident_inference_and_recall_plan.md`).
+- Diagnostics plan (`mere/design_docs/archive_docs/2026-10-28/2026-06-08_system_diagnostics_and_accessibility_plan.md`)
   — current owner observations and semantic action evidence. The retired
   Meerkat D7 harness is historical prior art, not today's action catalog.
-- [Persona model](2026-05-14_persona_model_brief.md), [geist models](2026-05-10_geist_models_brief.md)
-  and [MCP plan](../implementation_strategy/2026-06-26_mcp_native_graph_plan.md)
+- Persona model (`mere/design_docs/mere_docs/research/2026-05-14_persona_model_brief.md`), [geist models](2026-05-10_geist_models_brief.md)
+  and MCP plan (`mere/design_docs/mere_docs/implementation_strategy/2026-06-26_mcp_native_graph_plan.md`)
   — identity/context, model research and planned protocol adapters.
 
 ## Progress

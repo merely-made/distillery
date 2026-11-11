@@ -19,14 +19,14 @@ Mere, across the wasm and native targets.
   embeddings shipped (`intel/embed`); tier-3+ LLM serving + LoRA training deferred. This is that tier.
 - [communal compute tiers](2026-06-10_communal_compute_tiers_brief.md) + the resource-coordination
   brief — the compute *marketplace* (offer/ask/receipt, tessera credit, verification). Not re-solved here.
-- [persona model brief](2026-05-14_persona_model_brief.md) — persona-scoped adapters (which corpus an
+- persona model brief (`mere/design_docs/mere_docs/research/2026-05-14_persona_model_brief.md`) — persona-scoped adapters (which corpus an
   adapter trains on). The scope axis the harness reads, does not define.
 - eidetic [`models`](https://github.com/merely-made/eidetic/tree/main/crates/eidetic-core/src/models) (`ModelManifest` /
   `ModelComponents` / `ModelLibrary`) — content-addressed model + adapter storage. The harness loads
   from here.
-- [browser model ceiling probe](../../archive_docs/2026-10-06_completed_plans/2026-08-09_browser_model_ceiling_probe_plan.md)
+- browser model ceiling probe (`mere/design_docs/archive_docs/2026-10-06_completed_plans/2026-08-09_browser_model_ceiling_probe_plan.md`)
   — the headed-browser storage, worker, execution, and measurement half of this brief's wasm claim.
-- [ESP consolidation plan](../../archive_docs/2026-10-06_completed_plans/2026-08-08_esp_consolidation_plan.md) — the
+- ESP consolidation plan (`mere/design_docs/archive_docs/2026-10-06_completed_plans/2026-08-08_esp_consolidation_plan.md`) — the
   settled seam home: `esp::infer` and `esp::embed` in one published crate.
 
 ---

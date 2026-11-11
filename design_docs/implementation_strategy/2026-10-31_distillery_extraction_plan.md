@@ -245,7 +245,7 @@ pass; changes are committed in each repository.
 
 ## Prompt for the Alembic lane
 
-> Read `design_docs/mere_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md`
+> Read `design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md`
 > (D7, D12, D15, D16) and the last item under Open questions in
 > `2026-10-28_alembic_implementation_plan.md`. Answer its two questions in that plan: whether
 > `workshop_destination` and `workshop_sealed_destination` can become a `pandect` feature, and

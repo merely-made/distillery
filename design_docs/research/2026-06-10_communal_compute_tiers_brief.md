@@ -3,7 +3,7 @@
 **Date**: 2026-06-10
 **Status**: Research brief. As of the 2026-06-30 resource-coordination split,
 this is the authority for the communal-compute and model-hosting lane. It sits
-over the [resource coordination map](2026-06-04_resource_coordination_brief.md)
+over the resource coordination map (`mere/design_docs/mere_docs/research/2026-06-04_resource_coordination_brief.md`)
 and its child plans, which own the mechanics (mesh substrate, leases,
 capability grants, bounty verification, storage durability, namespace
 isolation, and inference rungs). This
@@ -11,10 +11,10 @@ brief answers the question the mechanics left implicit: how do moots actually
 harness people's personal devices, share that power outward through kith and
 community, and scale to mootholds and coalitions with big ideas and big
 computation budgets?
-**Related**: [moot tiers + voluntary hosting](../implementation_strategy/2026-05-07_moot_tiers_and_voluntary_hosting_brief.md)
+**Related**: moot tiers + voluntary hosting (`mere/design_docs/mere_docs/implementation_strategy/2026-05-07_moot_tiers_and_voluntary_hosting_brief.md`)
 (the tier framework this maps onto),
 [geist models](2026-05-10_geist_models_brief.md) (the communal artifact),
-[moot constitution](../implementation_strategy/2026-06-06_moot_constitution_brief.md)
+moot constitution (`mere/design_docs/mere_docs/implementation_strategy/2026-06-06_moot_constitution_brief.md`)
 (where the policy presets below live).
 
 ---

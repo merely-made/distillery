@@ -4,7 +4,7 @@
 
 **Status**: Implemented 2026-08-23 in mere `7fb07225`; the required exact-ALPN
 endpoint seam is in p2panda `9f2c2a01`. This is the completed remote gate of the
-[mesh host lanes plan](../../archive_docs/2026-10-06_completed_plans/2026-08-09_mesh_host_lanes_plan.md).
+mesh host lanes plan (`mere/design_docs/archive_docs/2026-10-06_completed_plans/2026-08-09_mesh_host_lanes_plan.md`).
 Stable Burn 0.22 repinning remains release-gated.
 
 `support/patches/burn-remote` vendors `burn-remote 0.22.0-pre.2` from upstream
@@ -16,8 +16,8 @@ and reserves it before application authorization, so reclaim cannot miss a
 session between authorization and worker binding.
 
 **Related**:
-[`../testing/2026-08-10_burn_0_21_baseline.md`](../../../../../testing/mere/receipts/relocated-summaries/README.md#2026-08-10_burn_0_21_baseline),
-[`2026-06-30_mesh_lease_scheduler_plan.md`](../../archive_docs/2026-08-09_completed_plans/2026-06-30_mesh_lease_scheduler_plan.md)
+[`../testing/2026-08-10_burn_0_21_baseline.md`](../../../../testing/mere/receipts/relocated-summaries/README.md#2026-08-10_burn_0_21_baseline),
+`mere/design_docs/archive_docs/2026-08-09_completed_plans/2026-06-30_mesh_lease_scheduler_plan.md`
 
 M3 gave the mesh one non-negotiable rule: a device's owner can take their
 hardware back, and the work stops. Burn Remote authorizes a compute session
