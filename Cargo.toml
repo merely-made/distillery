@@ -10,6 +10,9 @@ members = [
 exclude = [
     "crates/distillery/probe",
     "support/patches/burn-remote",
+    # Athanor is its own workspace root (engine split F1): it names the host toolkit
+    # from graphshell.git, and this root names no host crate.
+    "crates/athanor",
 ]
 
 [workspace.package]

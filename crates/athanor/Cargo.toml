@@ -54,3 +54,44 @@ taproot.workspace = true
 
 [lints]
 workspace = true
+
+# Athanor's own workspace root (engine split P3 slice 4, F1): it names the host
+# toolkit from graphshell.git, so it sits outside Distillery's main root, which
+# names no host crate (the device Graphshell uses for host/ beside its contract
+# root). Family rows are branch = "main" (engine split D66).
+[workspace]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+repository = "https://github.com/merely-made/distillery"
+
+[workspace.dependencies]
+cambium = { version = "0.6.1", git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+cambium-desktop = { version = "0.1.0", git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+kernel = { package = "mere-kernel", version = "0.0.3", git = "https://github.com/merely-made/mere.git", branch = "main" }
+pandect = { version = "0.2.0", git = "https://github.com/merely-made/mere.git", branch = "main" }
+eidetic = { version = "0.0.3", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+servitor = { version = "0.0.3", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+muniment = { version = "0.2.1", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+chartulary = { version = "0.3.0", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", branch = "main" }
+taproot = { version = "0.1.0", git = "https://github.com/merely-made/genet.git", branch = "main", default-features = false, features = ["accesskit"] }
+
+[workspace.lints.rust]
+unsafe_code = "warn"
+
+[workspace.lints.clippy]
+all = "warn"
+missing_errors_doc = "warn"
+missing_panics_doc = "warn"
+missing_safety_doc = "warn"
+undocumented_unsafe_blocks = "warn"
+too_many_lines = "warn"
+
+[patch.crates-io]
+# Dramatis (sporran, gaz) takes eidetic and muniment from crates.io so it never pins
+# the family; these rows swap in the git source this root names, so the graph holds
+# one copy of each and their types agree (as in Mere's and Graphshell's host roots).
+eidetic = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+muniment = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
