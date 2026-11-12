@@ -28,7 +28,7 @@ record)
         cat "$lock"
     done >"$note"
     if [ -s "$note" ]; then
-        git notes --ref="$ref" add -q -f -F "$note" HEAD
+        git notes --ref="$ref" add -f -F "$note" HEAD >/dev/null 2>&1 || echo "record-resolved: could not attach the note" >&2
     fi
     rm -f "$note"
     ;;
