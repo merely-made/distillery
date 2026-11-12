@@ -34,6 +34,8 @@ record)
     ;;
 push)
     [ -n "${RESOLVED_NOTES_PUSH:-}" ] && exit 0
+    # A rebase gives a commit a new id and leaves its note behind.
+    git notes --ref="$ref" show HEAD >/dev/null 2>&1 || bash "$0" record
     git rev-parse -q --verify "refs/notes/$ref" >/dev/null || exit 0
     remote=${PRE_COMMIT_REMOTE_NAME:-origin}
     if git fetch -q "$remote" "+refs/notes/$ref:refs/notes/$ref-remote" 2>/dev/null; then
