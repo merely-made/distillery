@@ -17,7 +17,6 @@ use muniment::Backend;
 use p2panda_core::{Body, Hash, Header, Operation, SigningKey, Topic, VerifyingKey};
 use p2panda_store::topics::TopicStore;
 use personae::Ed25519Keypair;
-use rand_core::{OsRng, RngCore};
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicBool, Ordering};
 use stickleback::{
@@ -1153,7 +1152,7 @@ impl<B: Backend + Clone + Send + Sync + 'static> eidetic::PayloadSealer for Pers
             authority: Vec::new(),
         };
         let mut nonce = [0; 24];
-        OsRng.fill_bytes(&mut nonce);
+        getrandom::fill(&mut nonce).expect("OS randomness available");
         let bytes = self
             .crypt(clear, nonce, &address, true)
             .map_err(eidetic::Error::new)?;
@@ -1319,7 +1318,7 @@ impl<B: Backend + Clone + Send + Sync + 'static> RunJournal for PersonaRunJourna
             group.seal(&address, &clear)?
         } else {
             let mut nonce = [0; 24];
-            OsRng.fill_bytes(&mut nonce);
+            getrandom::fill(&mut nonce).expect("OS randomness available");
             let sealed = Sealed {
                 nonce,
                 bytes: self.crypt(&clear, nonce, &address, true)?,

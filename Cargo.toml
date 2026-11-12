@@ -87,6 +87,7 @@ muniment = { git = "https://github.com/merely-made/eidetic.git", branch = "main"
 burn-remote = { path = "support/patches/burn-remote" }
 layout-dom-api = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.1" }
 genet-scripted-dom = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.2" }
+genet-text = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.0" }
 esp = { path = "crates/esp" }
 
 [patch."https://github.com/merely-made/retinue.git"]

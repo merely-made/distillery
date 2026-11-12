@@ -16,7 +16,7 @@ tracing = { workspace = true, optional = true }
 stickleback = { workspace = true, optional = true }
 p2panda-store = { package = "p2mere-store", version = "0.10", default-features = false, optional = true }
 chacha20poly1305 = { version = "0.11", optional = true }
-rand_core = { version = "0.6", features = ["getrandom"], optional = true }
+getrandom = { version = "0.4", optional = true }
 zeroize = { version = "1", optional = true }
 insigne.workspace = true
 mesh = { workspace = true, features = ["admitted-ingress"] }
@@ -43,7 +43,7 @@ notochord = { workspace = true, features = ["tokio"], optional = true }
 mere-surface-api = { workspace = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-thiserror = "1"
+thiserror = "2"
 tokio = { version = "1", features = ["macros", "rt", "sync", "time"] }
 p2panda-core = { package = "p2mere-core", version = "0.10" }
 transport.workspace = true
@@ -76,7 +76,7 @@ inference-embedding = ["inference-model", "esp/persistence", "esp/bert"]
 inference-gpu = ["inference-model", "esp/decoder-wgpu", "dep:tracing"]
 inference-stages = ["inference-model", "dep:notochord", "tokio/io-util"]
 inference-wire = ["dep:eidetic"]
-inference-model = ["inference-wire","dep:eidetic-search", "inference", "esp/decoder-flex", "esp/model-session", "dep:eidetic", "dep:pollster", "dep:stickleback", "dep:murm-sync", "dep:p2panda-store", "dep:chacha20poly1305", "dep:rand_core", "dep:zeroize"]
+inference-model = ["inference-wire","dep:eidetic-search", "inference", "esp/decoder-flex", "esp/model-session", "dep:eidetic", "dep:pollster", "dep:stickleback", "dep:murm-sync", "dep:p2panda-store", "dep:chacha20poly1305", "dep:getrandom", "dep:zeroize"]
 
 [dev-dependencies]
 # Supplier-owned tiny models and templates; enabled only for test targets.

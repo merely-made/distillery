@@ -77,7 +77,7 @@ version = "0.4"
 optional = true
 
 [target."cfg(not(all(target_family = \"wasm\", target_os = \"unknown\")))".dependencies.tokenizers]
-version = "0.20"
+version = "0.23"
 default-features = false
 features = [
     "onig",
@@ -85,7 +85,7 @@ features = [
 optional = true
 
 [target."cfg(all(target_family = \"wasm\", target_os = \"unknown\"))".dependencies.tokenizers]
-version = "0.20"
+version = "0.23"
 default-features = false
 features = [
     "unstable_wasm",

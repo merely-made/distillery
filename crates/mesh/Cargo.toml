@@ -27,7 +27,7 @@ p2panda-core = { package = "p2mere-core", version = "0.10" }
 # Persona-derived signing keys (the same identity flow Standing's wire uses).
 identity = { workspace = true }
 serde = { version = "1", features = ["derive"] }
-thiserror = "1"
+thiserror = "2"
 blake3 = "1.5"
 proofs.workspace = true
 # The three sync traits LogSync reconciles against (`LogStore` + `TopicStore`,
