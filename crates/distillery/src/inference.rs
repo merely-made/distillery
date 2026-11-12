@@ -138,7 +138,7 @@ pub fn open_library_lane_with_journal<B: eidetic::Store + Send + 'static>(
             let (device, loader) = if resolved.weight_format().is_some() {
                 (InferenceDevice::flex(), "burn-flex")
             } else {
-                (InferenceDevice::ndarray(), "burn-ndarray")
+                (InferenceDevice::flex(), "burn-ndarray")
             };
             let source = library_layer_source(library, &resolved);
             let provider = resolved.load_with_layer_source(

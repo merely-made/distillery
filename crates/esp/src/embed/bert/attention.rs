@@ -208,7 +208,7 @@ mod tests {
     }
 
     fn rand_input(batch: usize, seq: usize, hidden: usize) -> Tensor<3> {
-        let device = Device::ndarray();
+        let device = Device::flex();
         Tensor::random(
             [batch, seq, hidden],
             burn::tensor::Distribution::Normal(0.0, 1.0),
@@ -218,7 +218,7 @@ mod tests {
 
     #[test]
     fn self_attention_returns_input_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let attn: BertSelfAttention = BertSelfAttention::new(&config(), &device);
         let input = rand_input(2, 8, 384);
         let out = attn.forward(input);
@@ -227,7 +227,7 @@ mod tests {
 
     #[test]
     fn self_output_returns_input_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let so: BertSelfOutput = BertSelfOutput::new(&config(), &device);
         let attn = rand_input(2, 8, 384);
         let residual = rand_input(2, 8, 384);
@@ -237,7 +237,7 @@ mod tests {
 
     #[test]
     fn full_attention_block_returns_input_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let block: BertAttention = BertAttention::new(&config(), &device);
         let input = rand_input(2, 8, 384);
         let out = block.forward(input);
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn attention_handles_single_token_sequence() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let block: BertAttention = BertAttention::new(&config(), &device);
         let input = rand_input(1, 1, 384);
         let out = block.forward(input);
@@ -255,7 +255,7 @@ mod tests {
 
     #[test]
     fn attention_no_nans_on_random_input() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let block: BertAttention = BertAttention::new(&config(), &device);
         let input = rand_input(2, 16, 384);
         let out = block.forward(input);

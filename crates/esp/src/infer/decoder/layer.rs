@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn layer_forward_shape_and_finite_and_deterministic() {
         let config = tiny_config();
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let layer = det_layer(&config, 40, &dev);
         let rope = LlamaRotaryEncoding::new(
             config.max_position_embeddings,
@@ -267,7 +267,7 @@ mod tests_wgpu {
     #[test]
     fn layer_parity_ndarray_wgpu() {
         let config = tiny_config();
-        let cpu = layer_out(&config, &Device::ndarray());
+        let cpu = layer_out(&config, &Device::flex());
         let gpu = layer_out(
             &config,
             &Device::wgpu(burn::tensor::DeviceKind::DiscreteGpu(0)),

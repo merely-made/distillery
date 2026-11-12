@@ -255,7 +255,7 @@ fn tokenize(
 /// real gradients.
 ///
 /// `device` is the **ordinary inner device** the caller would use for
-/// inference — `Device::ndarray()`, `Device::wgpu(..)`. Autodiff is a
+/// inference — `Device::flex()`, `Device::wgpu(..)`. Autodiff is a
 /// property of the device in Burn's dispatch backend, so this function wraps
 /// it with `Device::autodiff` itself and runs the whole training loop on the
 /// wrapper; the caller never has to know that. (An already-autodiff device is
@@ -435,7 +435,7 @@ mod tests {
     #[test]
     fn autodiff_gradient_matches_v0_central_difference() {
         let config = tiny_config();
-        let inner = Device::ndarray();
+        let inner = Device::flex();
         let train_device = inner.clone().autodiff();
         let settings = settings();
         let module = settings.target_modules[0].clone();
@@ -531,7 +531,7 @@ mod tests {
     #[test]
     fn factor_set_reproduces_v0_initialization_for_one_module() {
         let config = tiny_config();
-        let device = Device::ndarray().autodiff();
+        let device = Device::flex().autodiff();
         let settings = settings();
         let factors = LoraFactorSet::init(&config, &settings, &device).unwrap();
         let (in_features, out_features) = dimensions(&config, &settings.target_modules[0]).unwrap();

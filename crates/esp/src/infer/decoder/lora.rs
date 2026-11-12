@@ -376,7 +376,7 @@ mod tests {
     #[test]
     fn applies_real_low_rank_product_to_only_declared_projection() {
         let config = tiny_config();
-        let device = Device::ndarray();
+        let device = Device::flex();
         let mut loaded = det_loaded(&config, &device);
         let before_q = loaded.layers[0].q_w.clone().into_data();
         let before_v = loaded.layers[0].v_w.clone().into_data();

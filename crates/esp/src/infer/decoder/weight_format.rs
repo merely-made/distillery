@@ -407,12 +407,16 @@ mod tests {
     }
 
     #[test]
-    fn cpu_preserves_halves_and_refuses_unsupported_packed_schemes() {
-        for format in [WeightFormat::F16, WeightFormat::Bf16] {
+    fn cpu_preserves_halves_and_multiplies_packed_blocks() {
+        // Burn 0.23's CPU backend (flex) supports the packed schemes the
+        // ndarray backend refused, so they are checked like the halves.
+        for format in [
+            WeightFormat::F16,
+            WeightFormat::Bf16,
+            WeightFormat::Q8Block32,
+            WeightFormat::Q4Block32,
+        ] {
             check(Device::flex(), format, 64, 1);
-        }
-        for format in [WeightFormat::Q8Block32, WeightFormat::Q4Block32] {
-            assert!(format.validate_device(&Device::flex()).is_err());
         }
     }
 

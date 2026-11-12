@@ -30,7 +30,7 @@ impl StageExecutor for Chain {
 }
 
 fn check(name: &str) {
-    check_on(name, Device::ndarray());
+    check_on(name, Device::flex());
 }
 
 fn check_on(name: &str, device: Device) {

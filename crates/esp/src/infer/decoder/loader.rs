@@ -680,14 +680,14 @@ pub(crate) mod tests {
     }
 
     fn ids() -> Tensor<2, Int> {
-        Tensor::from_data([[1, 5, 9, 2, 7]], &Device::ndarray())
+        Tensor::from_data([[1, 5, 9, 2, 7]], &Device::flex())
     }
 
     #[test]
     fn loads_synthetic_checkpoint_and_produces_logits() {
         let config = tiny_config();
         let bytes = serialize_f32(&tiny_tensor_table(&config, true));
-        let model = load_decoder_from_bytes(&config, &bytes, &Device::ndarray()).unwrap();
+        let model = load_decoder_from_bytes(&config, &bytes, &Device::flex()).unwrap();
         let logits = model.logits(ids(), 0);
         assert_eq!(logits.dims(), [1, 5, config.vocab_size]);
         let v = logits.into_data().try_to_vec::<f32>().unwrap();
@@ -699,9 +699,9 @@ pub(crate) mod tests {
         let config = tiny_config();
         let table = tiny_tensor_table(&config, true);
         let f32_model =
-            load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::ndarray()).unwrap();
+            load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::flex()).unwrap();
         let bf16_model =
-            load_decoder_from_bytes(&config, &serialize_bf16(&table), &Device::ndarray()).unwrap();
+            load_decoder_from_bytes(&config, &serialize_bf16(&table), &Device::flex()).unwrap();
         let a = f32_model
             .logits(ids(), 0)
             .into_data()
@@ -725,7 +725,7 @@ pub(crate) mod tests {
         let mut config = tiny_config();
         config.tie_word_embeddings = true;
         let bytes = serialize_f32(&tiny_tensor_table(&config, false));
-        let model = load_decoder_from_bytes(&config, &bytes, &Device::ndarray()).unwrap();
+        let model = load_decoder_from_bytes(&config, &bytes, &Device::flex()).unwrap();
         assert_eq!(model.logits(ids(), 0).dims(), [1, 5, config.vocab_size]);
     }
 
@@ -733,7 +733,7 @@ pub(crate) mod tests {
     fn missing_lm_head_without_tie_flag_rejected() {
         let config = tiny_config(); // tie_word_embeddings = false
         let bytes = serialize_f32(&tiny_tensor_table(&config, false));
-        let err = load_decoder_from_bytes(&config, &bytes, &Device::ndarray()).unwrap_err();
+        let err = load_decoder_from_bytes(&config, &bytes, &Device::flex()).unwrap_err();
         assert!(matches!(err, InferError::InvalidWeights(_)));
     }
 
@@ -744,7 +744,7 @@ pub(crate) mod tests {
         let mut table = tiny_tensor_table(&config, true);
         let n = shape.iter().product();
         table.push((name.to_string(), shape, det_vec(n, 3)));
-        match load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::ndarray()) {
+        match load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::flex()) {
             Err(InferError::Unsupported { feature, .. }) => feature,
             Err(other) => panic!("expected Unsupported, got {other:?}"),
             Ok(_) => panic!("expected Unsupported, got a model"),
@@ -806,7 +806,7 @@ pub(crate) mod tests {
             vec![1],
             vec![1.0],
         ));
-        load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::ndarray()).unwrap();
+        load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::flex()).unwrap();
     }
 
     #[test]
@@ -814,7 +814,7 @@ pub(crate) mod tests {
         let config = tiny_config();
         let mut table = tiny_tensor_table(&config, true);
         table.retain(|(n, _, _)| n != "model.layers.1.mlp.up_proj.weight");
-        let err = load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::ndarray())
+        let err = load_decoder_from_bytes(&config, &serialize_f32(&table), &Device::flex())
             .unwrap_err();
         match err {
             InferError::InvalidWeights(msg) => {

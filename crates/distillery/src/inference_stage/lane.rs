@@ -103,7 +103,7 @@ fn open_library_lane<B: eidetic::Store + Send + 'static>(
                 StagedLaneDevice::Cpu if resolved.weight_format().is_some() => {
                     (DecoderDevice::flex(), "burn-flex", None)
                 },
-                StagedLaneDevice::Cpu => (DecoderDevice::ndarray(), "burn-ndarray", None),
+                StagedLaneDevice::Cpu => (DecoderDevice::flex(), "burn-ndarray", None),
                 #[cfg(feature = "inference-gpu")]
                 StagedLaneDevice::Gpu(access) => {
                     let (device, _) = crate::inference::discrete_gpu_inference_device()

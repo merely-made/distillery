@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn linear_from_loaded_round_trips_a_known_weight() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         // 2-input, 3-output linear. Weight [in=2, out=3].
         let w = Tensor::<2>::from_data([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], &device);
         let b = Tensor::<1>::from_data([0.5, 0.5, 0.5], &device);
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn embedding_from_loaded_round_trips_lookups() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         // 4-token vocabulary, 2-dim embeddings.
         let w = Tensor::<2>::from_data(
             [
@@ -108,7 +108,7 @@ mod tests {
 
     #[test]
     fn layer_norm_from_loaded_applies_gamma_and_beta() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         // Identity LN: gamma=1, beta=0. Should normalize input to ~zero mean, unit variance.
         let gamma = Tensor::<1>::from_data([1.0, 1.0, 1.0, 1.0], &device);
         let beta = Tensor::<1>::from_data([0.0, 0.0, 0.0, 0.0], &device);
@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn layer_norm_from_loaded_with_nontrivial_gamma_scales_output() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let gamma = Tensor::<1>::from_data([2.0, 2.0, 2.0, 2.0], &device);
         let beta = Tensor::<1>::from_data([0.0, 0.0, 0.0, 0.0], &device);
         let ln = layer_norm_from_loaded(gamma, beta, 1.0e-5, &device);
@@ -137,7 +137,7 @@ mod tests {
 
     #[test]
     fn linear_from_loaded_no_nans() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let w = Tensor::<2>::random(
             [16, 32],
             burn::tensor::Distribution::Normal(0.0, 1.0),

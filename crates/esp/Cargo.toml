@@ -44,10 +44,10 @@ workspace = true
 optional = true
 
 [dependencies.burn]
-version = "=0.22.1"
+version = "=0.23.0-pre.2"
 default-features = false
 features = [
-    "ndarray",
+    "flex",
     "std",
 ]
 optional = true

@@ -726,7 +726,7 @@ pub(crate) mod tests {
     fn warm_blocks_match_single_tokens_and_full_recompute() {
         use burn::tensor::TensorData;
         let config = tiny_config();
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let model = DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev);
         let tokens = vec![1i32, 4, 7, 2, 9, 3];
         let full = model
@@ -765,7 +765,7 @@ pub(crate) mod tests {
     #[test]
     fn logits_shape_finite_deterministic() {
         let config = tiny_config();
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let model = DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev);
 
         let a = model
@@ -788,7 +788,7 @@ pub(crate) mod tests {
     fn tied_lm_head_equals_explicit_transposed_embedding() {
         let mut config = tiny_config();
         config.tie_word_embeddings = true;
-        let dev = Device::ndarray();
+        let dev = Device::flex();
 
         let mut tied = det_loaded(&config, &dev);
         tied.lm_head_w = None;

@@ -145,7 +145,7 @@ mod fixture_tests {
         use burn::tensor::Device;
         let mut cfg = MINILM_L6_V2.clone();
         cfg.hidden_act = "gelu".to_string();
-        let p = BertEmbeddingProvider::new(cfg, Device::ndarray());
+        let p = BertEmbeddingProvider::new(cfg, Device::flex());
         let err = p.embed(&["test"]).unwrap_err();
         assert_eq!(err, EmbedError::ModelNotLoaded);
     }
@@ -170,7 +170,7 @@ mod fixture_tests {
         let dir = minilm_dir().expect("ESP_MINILM_DIR must be set");
         let artifacts = load_artifacts(&dir).expect("artifact loading should succeed");
 
-        let device = Device::ndarray();
+        let device = Device::flex();
         let model = load_into_model(&artifacts, &device).expect("load model");
 
         let provider = BertEmbeddingProvider::new_with_components(

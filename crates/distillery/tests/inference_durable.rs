@@ -28,7 +28,7 @@ fn provider(changed: bool) -> Box<dyn InferenceProvider> {
         &fixture::weights_bytes(),
         "fixture",
         "burn-ndarray",
-        &DecoderDevice::ndarray(),
+        &DecoderDevice::flex(),
     )
     .unwrap();
     let mut template = PromptTemplate::from_bytes(esp_test_support::SMOLLM2_INSTRUCT_V1).unwrap();

@@ -301,7 +301,7 @@ mod tests {
 
     fn model() -> DecoderModel {
         let config = tiny_config();
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev)
     }
 

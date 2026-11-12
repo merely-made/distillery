@@ -244,7 +244,7 @@ mod tests {
         // total 16).
         // This test compiles only if the struct really has 16 named tensors.
         // We construct a LoadedBertLayer with placeholder tensors to enforce.
-        let device = Device::ndarray();
+        let device = Device::flex();
         let _layer: LoadedBertLayer = LoadedBertLayer {
             q_w: burn::tensor::Tensor::zeros([2, 2], &device),
             q_b: burn::tensor::Tensor::zeros([2], &device),
@@ -267,7 +267,7 @@ mod tests {
 
     #[test]
     fn loaded_embeddings_has_five_tensor_fields() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let _emb: LoadedEmbeddings = LoadedEmbeddings {
             word: burn::tensor::Tensor::zeros([10, 4], &device),
             position: burn::tensor::Tensor::zeros([8, 4], &device),
@@ -296,7 +296,7 @@ mod tests {
 
     fn synth_loaded(config: &BertConfig) -> LoadedBert {
         use burn::tensor::{Device, Distribution, Tensor};
-        let device = Device::ndarray();
+        let device = Device::flex();
         let h = config.hidden_size;
         let inter = config.intermediate_size;
         let dist = Distribution::Normal(0.0, 0.02);
@@ -343,7 +343,7 @@ mod tests {
     #[test]
     fn synthesized_loaded_into_model_runs_forward_no_nans() {
         use burn::tensor::{Int, Tensor};
-        let device = Device::ndarray();
+        let device = Device::flex();
         let cfg = tiny_config();
         let loaded = synth_loaded(&cfg);
         let model = loaded.into_model(&device);
@@ -361,7 +361,7 @@ mod tests {
     #[test]
     fn synthesized_loaded_sentence_forward_returns_normalized_vec() {
         use burn::tensor::{Int, Tensor};
-        let device = Device::ndarray();
+        let device = Device::flex();
         let cfg = tiny_config();
         let loaded = synth_loaded(&cfg);
         let model = loaded.into_model(&device);
@@ -379,7 +379,7 @@ mod tests {
     #[test]
     fn synthesized_loaded_is_deterministic_per_input() {
         use burn::tensor::{Int, Tensor};
-        let device = Device::ndarray();
+        let device = Device::flex();
         let cfg = tiny_config();
         let loaded = synth_loaded(&cfg);
         let model = loaded.into_model(&device);

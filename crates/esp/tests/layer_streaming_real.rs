@@ -27,7 +27,7 @@ use std::time::Instant;
 #[test]
 #[ignore = "requires pinned ESP_SMOLLM2_DIR and ESP_STREAMING_WORK_DIR"]
 fn real_cpu_layer_streaming_matches_reference() {
-    run(DecoderDevice::ndarray(), "burn-ndarray");
+    run(DecoderDevice::flex(), "burn-ndarray");
 }
 
 #[cfg(feature = "decoder-wgpu")]

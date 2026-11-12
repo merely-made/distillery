@@ -109,7 +109,7 @@ mod tests {
 
     #[test]
     fn bf16_decodes_close_to_f32() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let values = [0.05_f32, -0.31, 1.5, -2.25];
         let bf16_bytes: Vec<u8> = values
             .iter()
@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn transposed_extraction_flips_hf_orientation() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         // HF [out=2, in=3], row-major [1 2 3 | 4 5 6].
         let bytes = f32_bytes(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
         let view = TensorView::new(Dtype::F32, vec![2, 3], &bytes).unwrap();
@@ -140,7 +140,7 @@ mod tests {
 
     #[test]
     fn unsupported_dtype_names_the_policy() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let bytes = vec![0u8; 8];
         let view = TensorView::new(Dtype::I64, vec![1], &bytes).unwrap();
         let err = extract_1d(&view, 1, &device).unwrap_err();
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn shape_mismatch_rejected() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let bytes = f32_bytes(&[1.0, 2.0, 3.0]);
         let view = TensorView::new(Dtype::F32, vec![3], &bytes).unwrap();
         assert!(extract_1d(&view, 4, &device).is_err());

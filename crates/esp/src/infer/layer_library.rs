@@ -477,7 +477,7 @@ mod tests {
         };
         let streamed = resolved
             .load_with_layer_source(
-                &DecoderDevice::ndarray(),
+                &DecoderDevice::flex(),
                 "burn-ndarray",
                 8,
                 Some(Box::new(source)),
@@ -489,14 +489,14 @@ mod tests {
             &serialize_f32(&tiny_tensor_table(&tiny_config(), true)),
             "fixture/layered",
             "burn-ndarray",
-            &DecoderDevice::ndarray(),
+            &DecoderDevice::flex(),
         )
         .unwrap()
         .with_literal_prompt();
         assert!(streamed.capability().loader.ends_with("/layer-stream-v1"));
         assert!(
             resolved
-                .load(&DecoderDevice::ndarray(), "burn-ndarray", 8)
+                .load(&DecoderDevice::flex(), "burn-ndarray", 8)
                 .is_err()
         );
         for temperature in [0.0, 0.8] {
@@ -572,7 +572,7 @@ mod tests {
             },
             "fixture/layered",
             "burn-ndarray/layer-stream-v1",
-            &DecoderDevice::ndarray(),
+            &DecoderDevice::flex(),
         );
         assert!(
             matches!(result, Err(InferError::InvalidWeights(message)) if message.contains("shared artifact"))
@@ -641,7 +641,7 @@ mod tests {
         let (_store, resolved) = imported(directory.path());
         let provider = resolved
             .load_with_layer_source(
-                &DecoderDevice::ndarray(),
+                &DecoderDevice::flex(),
                 "burn-ndarray",
                 8,
                 Some(Box::new(|_, _| {

@@ -540,19 +540,19 @@ mod tests {
 
     #[test]
     fn dimensions_match_config_hidden_size() {
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(config(), Device::flex());
         assert_eq!(p.dimensions(), 384);
     }
 
     #[test]
     fn metric_is_cosine() {
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(config(), Device::flex());
         assert_eq!(p.metric(), SimilarityMetric::Cosine);
     }
 
     #[test]
     fn unloaded_provider_returns_model_not_loaded() {
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(config(), Device::flex());
         let err = p.embed(&["test"]).unwrap_err();
         assert_eq!(err, EmbedError::ModelNotLoaded);
         assert!(!p.is_loaded());
@@ -560,7 +560,7 @@ mod tests {
 
     #[test]
     fn unloaded_async_provider_returns_model_not_loaded() {
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(config(), Device::flex());
         let err = pollster::block_on(p.embed_async(&["test"])).unwrap_err();
         assert_eq!(err, EmbedError::ModelNotLoaded);
     }
@@ -568,19 +568,19 @@ mod tests {
     #[test]
     fn config_borrow_matches_constructor() {
         let cfg = config();
-        let p = BertEmbeddingProvider::new(cfg.clone(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(cfg.clone(), Device::flex());
         assert_eq!(p.config(), &cfg);
     }
 
     #[test]
     fn satisfies_embedding_provider_trait_object_safety_check() {
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(config(), Device::flex());
         let _: &dyn EmbeddingProvider = &p;
     }
 
     #[test]
     fn pooling_and_normalize_overrides_compose() {
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray())
+        let p = BertEmbeddingProvider::new(config(), Device::flex())
             .with_pooling(Pooling::Cls)
             .with_l2_normalize(false);
         assert_eq!(p.pooling, Pooling::Cls);
@@ -593,7 +593,7 @@ mod tests {
         // (so this works even when model/tokenizer are missing? — actually
         // the early-return is *after* the loaded check, so this is still
         // ModelNotLoaded for an unloaded provider).
-        let p = BertEmbeddingProvider::new(config(), Device::ndarray());
+        let p = BertEmbeddingProvider::new(config(), Device::flex());
         let err = p.embed(&[]).unwrap_err();
         assert_eq!(err, EmbedError::ModelNotLoaded);
     }
@@ -613,7 +613,7 @@ mod tests {
 /// is a real requirement, not a workaround, which is why the generic API is not
 /// hidden behind this.
 pub fn load_cpu(model_dir: impl AsRef<Path>) -> Result<Box<dyn EmbeddingProvider>, EmbedError> {
-    let provider = BertEmbeddingProvider::load(model_dir, Device::ndarray())?;
+    let provider = BertEmbeddingProvider::load(model_dir, Device::flex())?;
     Ok(Box::new(provider))
 }
 
@@ -652,7 +652,7 @@ pub fn from_bytes_cpu(
         config_bytes,
         tokenizer_bytes,
         weights_bytes,
-        Device::ndarray(),
+        Device::flex(),
     )?;
     Ok(Box::new(provider))
 }
@@ -664,7 +664,7 @@ mod compatibility_tests {
     #[ignore = "requires digest-pinned ESP_MINILM_DIR"]
     fn loaded_bert_artifacts_and_output_transforms_bind_the_space() {
         let path = std::path::PathBuf::from(std::env::var_os("ESP_MINILM_DIR").unwrap());
-        let provider = BertEmbeddingProvider::load(&path, Device::ndarray()).unwrap();
+        let provider = BertEmbeddingProvider::load(&path, Device::flex()).unwrap();
         let first = provider.compatibility_space().unwrap();
         assert_eq!(first.dimensions, 384);
         assert_eq!(first.producer.artifacts.len(), 3);
@@ -706,7 +706,7 @@ mod compatibility_tests {
         assert_ne!(first.normalization, changed.normalization);
         assert_eq!(first.producer, changed.producer);
         assert!(
-            BertEmbeddingProvider::new(crate::embed::MINILM_L6_V2.clone(), Device::ndarray())
+            BertEmbeddingProvider::new(crate::embed::MINILM_L6_V2.clone(), Device::flex())
                 .compatibility_space()
                 .is_none()
         );

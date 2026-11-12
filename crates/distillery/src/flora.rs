@@ -1164,7 +1164,7 @@ mod tests {
         let tokenizer = loader_tokenizer();
         let weights = loader_base_weights();
         #[allow(deprecated)]
-        let device = esp::infer::decoder::DecoderDevice::ndarray();
+        let device = esp::infer::decoder::DecoderDevice::flex();
         let loader = esp::infer::decoder::PeftLoraAdapterLoader::new(
             base_model_ref,
             tokenizer_ref,

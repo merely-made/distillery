@@ -416,12 +416,12 @@ mod tests {
             config.max_position_embeddings,
             config.head_dim(),
             config.rope_theta,
-            &Device::ndarray(),
+            &Device::flex(),
         )
     }
 
     fn attention(config: &DecoderConfig) -> DecoderAttention {
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let h = config.hidden_size;
         let kv = config.kv_heads() * config.head_dim();
         DecoderAttention::from_loaded(
@@ -439,7 +439,7 @@ mod tests {
         let config = tiny_config();
         let attention = attention(&config);
         let rope = rope(&config);
-        let device = Device::ndarray();
+        let device = Device::flex();
         let x = t2(7, config.hidden_size, 19, &device).reshape([1, 7, config.hidden_size]);
         let next = t2(1, config.hidden_size, 21, &device).reshape([1, 1, config.hidden_size]);
         for chunk in [1, 2, 3, 7] {
@@ -483,14 +483,14 @@ mod tests {
         let config = tiny_config();
         let attn = attention(&config);
         let x =
-            t2(5, config.hidden_size, 99, &Device::ndarray()).reshape([1, 5, config.hidden_size]);
+            t2(5, config.hidden_size, 99, &Device::flex()).reshape([1, 5, config.hidden_size]);
         let out = attn.forward(x, &rope(&config), 0);
         assert_eq!(out.dims(), [1, 5, config.hidden_size]);
     }
 
     #[test]
     fn rotary_pairs_split_halves_like_llama() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let rope = LlamaRotaryEncoding::new(4, 4, 10_000.0, &device);
         let input = Tensor::from_data([[[[1.0, 2.0, 3.0, 4.0]]]], &device);
         let output = rope
@@ -522,7 +522,7 @@ mod tests {
     fn causal_mask_blocks_future_positions() {
         let config = tiny_config();
         let attn = attention(&config);
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let h = config.hidden_size;
 
         let base = t2(5, h, 99, &dev).reshape([1, 5, h]);
@@ -577,7 +577,7 @@ mod tests {
     /// block once per group. Locks in the grouping convention.
     #[test]
     fn gqa_matches_mha_with_duplicated_kv_blocks() {
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let mut gqa_cfg = tiny_config(); // hidden 8, 4 heads -> head_dim 2
         gqa_cfg.num_key_value_heads = Some(2);
         let mut mha_cfg = gqa_cfg.clone();

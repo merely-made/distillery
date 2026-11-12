@@ -158,7 +158,7 @@ fn train_v1(prefixes: &[&str], expected: &str) -> TrainedLoraAdapter {
         MODEL_ID,
         &cases(prefixes, expected),
         &autodiff_settings(),
-        &DecoderDevice::ndarray(),
+        &DecoderDevice::flex(),
     )
     .expect("train a v1 adapter")
 }
@@ -179,7 +179,7 @@ fn train_v0(prefixes: &[&str], expected: &str) -> TrainedLoraAdapter {
             minimum_step_length: 1.0e-4,
             epsilon: 0.02,
         },
-        &DecoderDevice::ndarray(),
+        &DecoderDevice::flex(),
     )
     .expect("train a v0 adapter")
 }

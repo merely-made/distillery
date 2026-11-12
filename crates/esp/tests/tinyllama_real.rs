@@ -62,7 +62,7 @@ fn request(prompt: &str, max_tokens: usize) -> GenerationRequest {
 #[test]
 #[ignore = "requires ESP_TINYLLAMA_DIR (2.2GB checkpoint)"]
 fn greedy_continuation_answers_paris() {
-    let provider = load_provider(burn::tensor::Device::ndarray(), "burn-ndarray");
+    let provider = load_provider(burn::tensor::Device::flex(), "burn-ndarray");
     let out = provider
         .generate(&request("The capital of France is", 8))
         .expect("generate");
@@ -78,7 +78,7 @@ fn greedy_continuation_answers_paris() {
 #[test]
 #[ignore = "requires ESP_TINYLLAMA_DIR (2.2GB checkpoint)"]
 fn streaming_matches_collected_on_real_tokenizer() {
-    let provider = load_provider(burn::tensor::Device::ndarray(), "burn-ndarray");
+    let provider = load_provider(burn::tensor::Device::flex(), "burn-ndarray");
     let req = request("The capital of France is", 8);
     let mut fragments = Vec::new();
     let streamed = provider
@@ -100,7 +100,7 @@ fn timing_tokens_per_second_cpu_vs_gpu() {
     let prompt = "The old lighthouse keeper climbed the stairs and";
     let tokens = 16usize;
 
-    let cpu = load_provider(burn::tensor::Device::ndarray(), "burn-ndarray");
+    let cpu = load_provider(burn::tensor::Device::flex(), "burn-ndarray");
     let t = std::time::Instant::now();
     let out_cpu = cpu
         .generate(&request(prompt, tokens))

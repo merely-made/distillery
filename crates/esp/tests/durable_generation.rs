@@ -16,7 +16,7 @@ fn provider() -> DecoderProvider {
         &fixture::weights_bytes(),
         "fixture",
         "burn-ndarray",
-        &DecoderDevice::ndarray(),
+        &DecoderDevice::flex(),
     )
     .unwrap()
 }

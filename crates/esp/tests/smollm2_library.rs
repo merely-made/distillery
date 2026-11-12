@@ -32,7 +32,7 @@ fn save<T: TypedPayload>(store: &mut dyn eidetic::Store, value: &T) -> ManifestI
 #[ignore = "requires ESP_SMOLLM2_DIR with pinned 724MB checkpoint; run in release mode"]
 fn library_cpu_matches_independent_greedy_reference() {
     library_matches_reference(
-        DecoderDevice::ndarray(),
+        DecoderDevice::flex(),
         "burn-ndarray",
         serde_json::Value::Null,
     );

@@ -160,7 +160,7 @@ mod tests {
     }
 
     fn ids(rows: &[&[i64]]) -> Tensor<2, Int> {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let max_len = rows.iter().map(|r| r.len()).max().unwrap_or(0);
         let batch = rows.len();
         let mut flat = Vec::with_capacity(batch * max_len);
@@ -178,7 +178,7 @@ mod tests {
 
     #[test]
     fn forward_tokens_returns_per_token_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let model: BertModel = BertModel::new(&config(), &device);
         let input = ids(&[&[101, 1023, 2057, 6010, 102]]);
         let out = model.forward_tokens(input);
@@ -187,7 +187,7 @@ mod tests {
 
     #[test]
     fn forward_sentence_mean_pool_returns_correct_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let model: BertModel = BertModel::new(&config(), &device);
         let input = ids(&[&[101, 1023, 2057, 6010, 102], &[101, 7592, 2088, 102]]);
         let out = model.forward_sentence(input, Pooling::Mean, true);
@@ -196,7 +196,7 @@ mod tests {
 
     #[test]
     fn forward_sentence_cls_pool_returns_correct_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let model: BertModel = BertModel::new(&config(), &device);
         let input = ids(&[&[101, 1023, 2057, 6010, 102]]);
         let out = model.forward_sentence(input, Pooling::Cls, false);
@@ -205,7 +205,7 @@ mod tests {
 
     #[test]
     fn l2_normalized_rows_have_unit_norm() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let model: BertModel = BertModel::new(&config(), &device);
         let input = ids(&[&[101, 1023, 2057, 6010, 102]]);
         let out = model.forward_sentence(input, Pooling::Mean, true);
@@ -216,7 +216,7 @@ mod tests {
 
     #[test]
     fn no_nans_through_full_stack() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let model: BertModel = BertModel::new(&config(), &device);
         let input = ids(&[&[101, 1023, 2057, 6010, 102]]);
         let out = model.forward_sentence(input, Pooling::Mean, true);

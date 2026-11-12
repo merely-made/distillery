@@ -180,13 +180,13 @@ mod tests {
 
     #[test]
     fn embeddings_construct_without_panic() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let _emb: BertEmbeddings = BertEmbeddings::new(&config(), &device);
     }
 
     #[test]
     fn forward_returns_correct_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let emb: BertEmbeddings = BertEmbeddings::new(&config(), &device);
         // batch=2, seq_len=5
         let input_ids: Tensor<2, Int> = Tensor::from_data(
@@ -199,7 +199,7 @@ mod tests {
 
     #[test]
     fn forward_handles_single_token() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let emb: BertEmbeddings = BertEmbeddings::new(&config(), &device);
         let input_ids: Tensor<2, Int> = Tensor::from_data([[101]], &device);
         let out = emb.forward(input_ids);

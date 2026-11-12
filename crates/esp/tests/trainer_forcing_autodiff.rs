@@ -74,7 +74,7 @@ fn trainer_settings() -> AutodiffLoraSettings {
 
 #[test]
 fn autodiff_adapter_beats_baseline_on_held_out_ranking_in_fewer_steps() {
-    let device = Device::ndarray();
+    let device = Device::flex();
     let mut store = MemoryBackend::default();
     let provenance = || ProvenanceRecord::self_imported(ADAPTER_NAME);
 

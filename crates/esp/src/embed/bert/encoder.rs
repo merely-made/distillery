@@ -67,20 +67,20 @@ mod tests {
     }
 
     fn rand(shape: [usize; 3]) -> Tensor<3> {
-        let device = Device::ndarray();
+        let device = Device::flex();
         Tensor::random(shape, burn::tensor::Distribution::Normal(0.0, 1.0), &device)
     }
 
     #[test]
     fn encoder_stacks_correct_number_of_layers() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let encoder: BertEncoder = BertEncoder::new(&config(), &device);
         assert_eq!(encoder.num_layers(), 6);
     }
 
     #[test]
     fn encoder_returns_input_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let encoder: BertEncoder = BertEncoder::new(&config(), &device);
         let input = rand([2, 8, 384]);
         let out = encoder.forward(input);
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn encoder_no_nans_through_full_stack() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let encoder: BertEncoder = BertEncoder::new(&config(), &device);
         let input = rand([1, 16, 384]);
         let out = encoder.forward(input);

@@ -109,7 +109,7 @@ fn logits_before_and_after(
     trained: &TrainedLoraAdapter,
     prompt: &str,
 ) -> (Vec<f32>, Vec<f32>) {
-    let device = Device::ndarray();
+    let device = Device::flex();
     let manifest = manifest(settings, trained);
     let adapter_ref = ManifestId::of_blob(b"autodiff adapter manifest");
     let tokenizer = tokenizer_json();
@@ -159,7 +159,7 @@ fn logits_before_and_after(
 #[test]
 fn training_strictly_reduces_the_loss_on_cpu() {
     let settings = settings(&["v_proj"], 8);
-    let trained = train(&settings, &train_cases(), &Device::ndarray());
+    let trained = train(&settings, &train_cases(), &Device::flex());
     assert!(
         trained.trained_loss < trained.initial_loss,
         "training must reduce the loss: {} -> {}",
@@ -175,7 +175,7 @@ fn training_strictly_reduces_the_loss_on_cpu() {
 #[test]
 fn trained_adapter_loads_through_the_unchanged_loader_and_moves_the_logits() {
     let settings = settings(&["v_proj"], 8);
-    let trained = train(&settings, &train_cases(), &Device::ndarray());
+    let trained = train(&settings, &train_cases(), &Device::flex());
 
     // The published config carries the v1 stamp the manifest is checked
     // against; a v0 stamp here would be refused by `apply_peft_lora`.
@@ -199,7 +199,7 @@ fn trained_adapter_loads_through_the_unchanged_loader_and_moves_the_logits() {
 #[test]
 fn two_module_adapter_covers_both_projections() {
     let settings = settings(&["q_proj", "v_proj"], 8);
-    let trained = train(&settings, &train_cases(), &Device::ndarray());
+    let trained = train(&settings, &train_cases(), &Device::flex());
     assert!(trained.trained_loss < trained.initial_loss);
 
     let tensors = safetensors::SafeTensors::deserialize(&trained.adapter_safetensors).unwrap();
@@ -252,7 +252,7 @@ fn per_case_targets_train_without_a_shared_expected_token() {
         "the batch must actually disagree for this test to mean anything"
     );
     let settings = settings(&["v_proj"], 8);
-    let trained = train(&settings, &cases, &Device::ndarray());
+    let trained = train(&settings, &cases, &Device::flex());
     assert!(
         trained.trained_loss < trained.initial_loss,
         "mixed-target training must reduce the loss: {} -> {}",
@@ -277,7 +277,7 @@ fn cases_with_different_lengths_are_refused_by_name() {
         MODEL_ID,
         &cases,
         &settings(&["v_proj"], 2),
-        &Device::ndarray(),
+        &Device::flex(),
     );
     let error = match outcome {
         Ok(_) => panic!("cases of different lengths must be refused"),

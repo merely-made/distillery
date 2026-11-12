@@ -927,7 +927,7 @@ mod tests {
 
     fn provider() -> DecoderProvider {
         let config = tiny_config();
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let model = DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev);
         DecoderProvider::from_parts(model, word_level_tokenizer(), "test/tiny", "burn-ndarray")
     }
@@ -984,7 +984,7 @@ mod tests {
         let mut config = tiny_config();
         config.vocab_size = 256;
         config.max_position_embeddings = 128;
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let model = DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev);
         let provider = DecoderProvider::from_parts(
             model,
@@ -1039,7 +1039,7 @@ mod tests {
         let mut config = tiny_config();
         config.vocab_size = 256;
         config.max_position_embeddings = 128;
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let model = DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev);
         let provider = DecoderProvider::from_parts(
             model,
@@ -1108,7 +1108,7 @@ mod tests {
         let mut config = tiny_config();
         config.vocab_size = 256;
         config.max_position_embeddings = 128;
-        let dev = Device::ndarray();
+        let dev = Device::flex();
         let model = DecoderModel::from_loaded(config.clone(), det_loaded(&config, &dev), &dev);
         let provider = DecoderProvider::from_parts(
             model,

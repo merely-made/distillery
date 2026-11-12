@@ -62,7 +62,7 @@ fn trainer_settings() -> LoraTrainerSettings {
 
 #[test]
 fn adapter_trained_from_corpus_beats_baseline_on_held_out_ranking() {
-    let device = Device::ndarray();
+    let device = Device::flex();
     let mut store = MemoryBackend::default();
     let provenance = || ProvenanceRecord::self_imported(ADAPTER_NAME);
 

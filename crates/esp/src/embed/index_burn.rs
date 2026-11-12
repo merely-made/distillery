@@ -203,7 +203,7 @@ mod tests {
 
     #[test]
     fn matches_vector_index_nearest() {
-        let device = burn::tensor::Device::ndarray();
+        let device = burn::tensor::Device::flex();
         let (queries, corpus) = fixture();
         let k = 3;
         let got = cosine_top_k(&queries, &corpus, k, &device);
@@ -225,7 +225,7 @@ mod tests {
     #[test]
     fn all_pairs_ranks_self_first() {
         // Queries == corpus: each item's nearest is itself at cosine ~1.
-        let device = burn::tensor::Device::ndarray();
+        let device = burn::tensor::Device::flex();
         let (_, corpus) = fixture();
         let got = cosine_top_k(&corpus, &corpus, 1, &device);
         for (i, row) in got.iter().enumerate() {
@@ -240,8 +240,8 @@ mod tests {
 
     #[test]
     fn edges_are_handled() {
-        let device = burn::tensor::Device::ndarray();
-        let dev = burn::tensor::Device::ndarray();
+        let device = burn::tensor::Device::flex();
+        let dev = burn::tensor::Device::flex();
         let corpus = vec![vec![1.0, 0.0], vec![0.0, 1.0]];
         // No queries → no rows.
         assert!(cosine_top_k(&[], &corpus, 2, &dev).is_empty());
@@ -264,7 +264,7 @@ mod tests {
     #[test]
     fn zero_query_scores_zero_everywhere() {
         // A token-free (zero) query vector: cosine 0 to all, like the flat index.
-        let device = burn::tensor::Device::ndarray();
+        let device = burn::tensor::Device::flex();
         let corpus = vec![vec![1.0, 0.0, 0.0], vec![0.0, 1.0, 0.0]];
         let got = cosine_top_k(&[vec![0.0, 0.0, 0.0]], &corpus, 2, &device);
         for (_, s) in &got[0] {
@@ -274,7 +274,7 @@ mod tests {
 
     #[test]
     fn nearest_over_index_matches_cpu_nearest() {
-        let device = burn::tensor::Device::ndarray();
+        let device = burn::tensor::Device::flex();
         let mut index = VectorIndex::<u32>::new(3, SimilarityMetric::Cosine);
         index.insert(10, vec![1.0, 0.0, 0.0]).unwrap();
         index.insert(20, vec![0.9, 0.1, 0.0]).unwrap();
@@ -294,7 +294,7 @@ mod tests {
     fn affinity_pairs_over_index_matches_cpu() {
         use crate::embed::affinity::affinity_pairs;
         use std::collections::HashMap;
-        let device = burn::tensor::Device::ndarray();
+        let device = burn::tensor::Device::flex();
         // Two clean clusters (A near axis 0, B near axis 1) — the affinity fixture.
         let mut index = VectorIndex::<u32>::new(4, SimilarityMetric::Cosine);
         for (key, v) in [
@@ -339,7 +339,7 @@ mod tests {
     #[test]
     fn parity_ndarray_wgpu() {
         let (queries, corpus) = fixture();
-        let cpu = cosine_top_k(&queries, &corpus, 4, &Device::ndarray());
+        let cpu = cosine_top_k(&queries, &corpus, 4, &Device::flex());
         let gpu = cosine_top_k(
             &queries,
             &corpus,
@@ -368,7 +368,7 @@ mod tests {
     #[ignore = "timing sweep; run in release with --ignored --nocapture (see the doc comment)"]
     fn crossover_cpu_flat_vs_gpu_batched() {
         use std::time::Instant;
-        let cpu_device = Device::ndarray();
+        let cpu_device = Device::flex();
         let gpu_device = Device::wgpu(burn::tensor::DeviceKind::DiscreteGpu(0));
         let d = 384; // a realistic embedding dimension (MiniLM-class)
         let k = 10;

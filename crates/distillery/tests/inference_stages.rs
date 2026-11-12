@@ -284,7 +284,7 @@ fn device(loader: &str) -> DecoderDevice {
         #[cfg(feature = "inference-gpu")]
         "burn-wgpu" => DecoderDevice::wgpu(esp::infer::decoder::DecoderGpuKind::DiscreteGpu(0)),
         "burn-flex" => DecoderDevice::flex(),
-        _ => DecoderDevice::ndarray(),
+        _ => DecoderDevice::flex(),
     }
 }
 

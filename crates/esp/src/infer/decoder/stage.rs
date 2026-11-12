@@ -531,7 +531,7 @@ mod tests {
     #[test]
     fn disjoint_stages_match_full_layers_and_enforce_positions() {
         let config = tiny_config();
-        let device = Device::ndarray();
+        let device = Device::flex();
         let loaded = det_loaded(&config, &device);
         let rope = LlamaRotaryEncoding::new(
             config.max_position_embeddings,
@@ -644,7 +644,7 @@ mod tests {
 
     #[test]
     fn hidden_wire_refuses_overflow_nonfinite_and_dtype_changes() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let mut bytes = encode_hidden(Tensor::ones([1, 3, 8], &device), 112).unwrap();
         assert_eq!(
             decode_hidden(&bytes, 8, 16, WeightFormat::F32, &device)

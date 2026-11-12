@@ -281,7 +281,7 @@ async fn run_trainer_job(
     registry
         .register(Arc::new(TrainerResource::new(
             artifacts.clone(),
-            DecoderDevice::ndarray(),
+            DecoderDevice::flex(),
         )))
         .expect("register trainer resource");
     let mut config = HostConfig::supervised(space.clone());

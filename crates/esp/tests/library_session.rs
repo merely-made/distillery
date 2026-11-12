@@ -71,7 +71,7 @@ fn a_model_row_loads_its_exact_template_and_runs_a_bound_request() {
         let provider = load_library_session(
             &mut store,
             row,
-            &DecoderDevice::ndarray(),
+            &DecoderDevice::flex(),
             "burn-ndarray",
             4,
         )
@@ -106,7 +106,7 @@ fn a_model_row_loads_its_exact_template_and_runs_a_bound_request() {
         let changed = load_library_session(
             &mut store,
             changed,
-            &DecoderDevice::ndarray(),
+            &DecoderDevice::flex(),
             "burn-ndarray",
             4,
         )
@@ -131,7 +131,7 @@ fn missing_rows_and_wrong_template_schemas_fail_without_a_fetcher() {
             load_library_session(
                 &mut store,
                 absent,
-                &DecoderDevice::ndarray(),
+                &DecoderDevice::flex(),
                 "burn-ndarray",
                 4
             )
@@ -154,7 +154,7 @@ fn missing_rows_and_wrong_template_schemas_fail_without_a_fetcher() {
             load_library_session(
                 &mut store,
                 row,
-                &DecoderDevice::ndarray(),
+                &DecoderDevice::flex(),
                 "burn-ndarray",
                 4
             )

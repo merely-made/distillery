@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     fn extract_1d_round_trips_f32() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let values = [1.0_f32, 2.0, 3.0, 4.0];
         let bytes = f32_bytes(&values);
         let view = make_view(Dtype::F32, vec![4], &bytes);
@@ -126,7 +126,7 @@ mod tests {
 
     #[test]
     fn extract_2d_round_trips_f32() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         // 2x3: row-major [1, 2, 3 | 4, 5, 6]
         let values = [1.0_f32, 2.0, 3.0, 4.0, 5.0, 6.0];
         let bytes = f32_bytes(&values);
@@ -138,7 +138,7 @@ mod tests {
 
     #[test]
     fn rank_mismatch_errors() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let bytes = f32_bytes(&[1.0, 2.0]);
         let view = make_view(Dtype::F32, vec![2], &bytes);
         let result = extract::<2>(&view, [1, 2], &device);
@@ -147,7 +147,7 @@ mod tests {
 
     #[test]
     fn shape_mismatch_errors() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let bytes = f32_bytes(&[1.0, 2.0, 3.0]);
         let view = make_view(Dtype::F32, vec![3], &bytes);
         let result = extract_1d(&view, 4, &device);
@@ -156,7 +156,7 @@ mod tests {
 
     #[test]
     fn extract_1d_decodes_f16_to_f32() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let expected = [1.0_f32, -2.0, 0.5, 65_504.0];
         let raw_bytes = expected
             .iter()
@@ -169,7 +169,7 @@ mod tests {
 
     #[test]
     fn unsupported_dtype_errors() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let raw_bytes = vec![0; 8];
         let view = make_view(Dtype::BF16, vec![4], &raw_bytes);
         let result = extract_1d(&view, 4, &device);
@@ -180,7 +180,7 @@ mod tests {
     fn extract_2d_with_realistic_dimensions() {
         // MiniLM word embedding shape: [vocab_size, hidden_size]. Try a
         // smaller analog to verify multi-dim layouts round-trip cleanly.
-        let device = Device::ndarray();
+        let device = Device::flex();
         let mut values = Vec::with_capacity(16 * 8);
         for i in 0..(16 * 8) {
             values.push(i as f32 * 0.01);

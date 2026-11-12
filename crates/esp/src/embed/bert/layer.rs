@@ -74,13 +74,13 @@ mod tests {
     }
 
     fn rand(shape: [usize; 3]) -> Tensor<3> {
-        let device = Device::ndarray();
+        let device = Device::flex();
         Tensor::random(shape, burn::tensor::Distribution::Normal(0.0, 1.0), &device)
     }
 
     #[test]
     fn layer_returns_input_shape() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let layer: BertLayer = BertLayer::new(&config(), &device);
         let input = rand([2, 8, 384]);
         let out = layer.forward(input);
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn layer_no_nans_on_random_input() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let layer: BertLayer = BertLayer::new(&config(), &device);
         let input = rand([1, 16, 384]);
         let out = layer.forward(input);
@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn layer_handles_long_sequence() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let layer: BertLayer = BertLayer::new(&config(), &device);
         let input = rand([1, 128, 384]);
         let out = layer.forward(input);

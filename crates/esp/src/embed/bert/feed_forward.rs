@@ -107,13 +107,13 @@ mod tests {
     }
 
     fn rand(shape: [usize; 3]) -> Tensor<3> {
-        let device = Device::ndarray();
+        let device = Device::flex();
         Tensor::random(shape, burn::tensor::Distribution::Normal(0.0, 1.0), &device)
     }
 
     #[test]
     fn intermediate_expands_to_intermediate_size() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let cfg = config();
         let layer: BertIntermediate = BertIntermediate::new(&cfg, &device);
         let input = rand([2, 8, cfg.hidden_size]);
@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn output_contracts_to_hidden_size() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let cfg = config();
         let layer: BertOutput = BertOutput::new(&cfg, &device);
         let intermediate = rand([2, 8, cfg.intermediate_size]);
@@ -134,7 +134,7 @@ mod tests {
 
     #[test]
     fn intermediate_no_nans() {
-        let device = Device::ndarray();
+        let device = Device::flex();
         let layer: BertIntermediate = BertIntermediate::new(&config(), &device);
         let input = rand([1, 4, 384]);
         let out = layer.forward(input);
