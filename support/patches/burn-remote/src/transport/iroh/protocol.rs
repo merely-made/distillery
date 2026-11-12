@@ -24,6 +24,9 @@ use super::{
 };
 
 /// Serves Burn Remote's compute and tensor-transfer streams on an Iroh endpoint.
+///
+/// Mere: public, cloneable and inspectable, so an application that owns the endpoint can list its
+/// sessions and close one before revoking its owner.
 pub struct IrohRemoteProtocol<B: BackendIr> {
     node: RemoteNode,
     sessions: Arc<SessionManager<B, IrohTransfer<B>>>,
@@ -33,13 +36,17 @@ pub struct IrohRemoteProtocol<B: BackendIr> {
     lifetime: Arc<ProtocolLifetime>,
 }
 
-// Only protocol owners retain this guard; worker token clones cannot keep it alive.
+/// A router dropped without `shutdown` drops its handlers, and the sessions they spawned would
+/// otherwise outlive it. Only protocol owners retain this guard, so the last owner clone to drop
+/// ends the sessions; worker token clones cannot keep it alive.
 struct ProtocolLifetime(CancellationToken);
+
 impl Drop for ProtocolLifetime {
     fn drop(&mut self) {
         self.0.cancel();
     }
 }
+
 impl<B: BackendIr> Clone for IrohRemoteProtocol<B> {
     fn clone(&self) -> Self {
         Self {
@@ -95,7 +102,8 @@ impl<B: BackendIr> IrohRemoteProtocol<B> {
         self.sessions.sessions().await
     }
 
-    /// Close one session, acknowledging only completed backend teardown.
+    /// Close one session, acknowledging only completed backend teardown. `Ok(false)` if no such
+    /// session is registered; a teardown failure is returned and the session stays registered.
     pub async fn close_session(&self, id: crate::shared::SessionId) -> Result<bool, String> {
         self.sessions.close_session(id).await
     }
@@ -176,7 +184,7 @@ impl<B: BackendIr> ProtocolHandler for IrohRemoteProtocol<B> {
                             log::warn!("Rejected or failed Iroh remote session: {err}");
                         }
                     });
-                },
+                }
                 StreamKind::TensorTransfer => {
                     let transfer = self.transfer.clone();
                     spawn_detached(async move {
@@ -184,7 +192,7 @@ impl<B: BackendIr> ProtocolHandler for IrohRemoteProtocol<B> {
                             log::warn!("Iroh tensor-transfer stream failed: {err}");
                         }
                     });
-                },
+                }
             }
         }
     }

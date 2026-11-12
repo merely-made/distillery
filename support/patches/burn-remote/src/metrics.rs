@@ -71,7 +71,7 @@ impl TelemetryLogger {
                     graph, ops, bytes, ..
                 } => self.log_registration(*graph, ops.len(), *bytes),
                 TelemetryEvent::GraphExecuted { .. } => self.log_progress(),
-                _ => {},
+                _ => {}
             }
         }
     }

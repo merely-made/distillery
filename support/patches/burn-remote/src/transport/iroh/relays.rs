@@ -95,7 +95,7 @@ impl IrohRelays {
             Self::Public => Endpoint::builder(presets::N0),
             Self::Private { url } => {
                 Endpoint::builder(presets::Minimal).relay_mode(RelayMode::custom([url.clone()]))
-            },
+            }
             Self::Disabled => Endpoint::builder(presets::Minimal).relay_mode(RelayMode::Disabled),
         };
         // Drop with iroh#4555.

@@ -52,7 +52,7 @@ impl<B: BackendIr> TensorTransfer<B> for WebSocketTransfer<B> {
             PeerAddr::Iroh(_) => {
                 log::error!("A WebSocket compute node cannot download from a non-WebSocket peer");
                 return None;
-            },
+            }
         };
         self.inner
             .download_tensor(address, capability_to_websocket_id(capability))

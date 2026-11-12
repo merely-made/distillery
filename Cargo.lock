@@ -669,7 +669,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "itertools 0.12.1",
+ "itertools 0.11.0",
  "lazy_static",
  "lazycell",
  "log",
@@ -1191,8 +1191,6 @@ dependencies = [
 [[package]]
 name = "burn-remote"
 version = "0.23.0-pre.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a97b5fb4f78afe43fd0bc578d92093b2a844e7899c751fb87409ab6020b3fa5"
 dependencies = [
  "blake3",
  "burn-backend",
@@ -8179,7 +8177,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b570b25f7617e43d59005d0990ccb79e950a423952cea19671b7a876da390adf"
 dependencies = [
  "anyhow",
- "itertools 0.14.0",
+ "itertools 0.11.0",
  "proc-macro2",
  "quote",
  "syn 2.0.119",
@@ -11970,7 +11968,3 @@ checksum = "27bc9d5b815bc103f142aa054f561d9187d191692ec7c2d1e2b4737f8dbd7296"
 dependencies = [
  "zune-core",
 ]
-
-[[patch.unused]]
-name = "burn-remote"
-version = "0.22.1"

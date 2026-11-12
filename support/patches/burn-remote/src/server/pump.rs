@@ -5,18 +5,27 @@
 //! the sink (a detached writer) while forwarding submitted task batches from the source to the
 //! session worker. This is the single implementation both transports (iroh, websocket) drive — the
 //! per-transport modules only build the [`FrameSource`]/[`FrameSink`] halves and the authorizer.
+//!
+//! The handshake is one bare frame each way; every message after it is carried in frames.
 
 use std::sync::Arc;
 
-use crate::PeerId;
-use crate::server::service::{SessionBinding, SessionService, parse_init_handshake};
-use crate::server::spawn::spawn_detached;
-use crate::shared::{
-    PROTOCOL_VERSION, RemoteMessage, SessionId, SessionInfo, SessionInit, SessionRefusal, Task,
-    TaskResponse, TaskResponseContent,
+use crate::{
+    PeerId,
+    server::{
+        service::{SessionChannels, SessionService, parse_init_handshake},
+        spawn::spawn_detached,
+    },
+    shared::{
+        Encode, PROTOCOL_VERSION, RemoteMessage, SessionId, SessionInfo, SessionInit,
+        SessionRefusal, Task, TaskResponse, TaskResponseContent,
+    },
+    transport::{
+        link::{FrameSink, FrameSource, MAX_UNAUTHORIZED_FRAME_SIZE},
+        message::{MessageSink, MessageSource},
+    },
 };
-use crate::transport::link::{FrameSink, FrameSource};
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, watch};
 use tokio_util::sync::CancellationToken;
 
 /// Drive one session to completion over a duplex link.
@@ -44,11 +53,11 @@ where
 {
     // The session stream opens with exactly one `Init` frame.
     let handshake = tokio::select! {
-        frame = source.recv() => frame?
+        frame = source.recv(MAX_UNAUTHORIZED_FRAME_SIZE) => frame?
             .ok_or_else(|| "Session stream closed before initialization".to_string())?,
         () = shutdown.cancelled() => return Ok(()),
     };
-    // Reserve before application authorization so owner reclaim can fence admission.
+    // Mere: reserve before application authorization, so owner reclaim can fence admission.
     let parsed = match parse_init_handshake(&handshake) {
         Ok(init) => init,
         Err(reason) => {
@@ -60,7 +69,7 @@ where
             )
             .await;
             return Err(reason);
-        },
+        }
     };
     service
         .reserve_session(
@@ -77,69 +86,92 @@ where
             refuse(&mut sink, refusal).await;
             cleanup?;
             return Err(reason);
-        },
+        }
     };
-    let SessionBinding {
-        task_sender,
-        mut responses,
-        close,
-    } = match service.bind_session(init.session_id).await {
-        Ok(binding) => binding,
-        Err(error) => {
-            service.finish_session(init.session_id).await?;
-            return Err(error);
-        },
-    };
+
+    // Reply with the selected device's settings + this server's identity, so the client can fill in
+    // `RemoteDevice::defaults`/`enumerate` without an extra round-trip.
     let info = TaskResponse {
         id: 0,
-        content: TaskResponseContent::Init(SessionInfo {
+        content: TaskResponseContent::Init(Box::new(SessionInfo {
             version: PROTOCOL_VERSION,
             settings: service.device_settings(init.device_index),
             device_count,
             peer_id: server_peer_id,
-        }),
+            dtype_usage: service.dtype_usage(init.device_index),
+        })),
     };
-    let info = match rmp_serde::to_vec(&info) {
+    let info = match info.encode() {
         Ok(info) => info,
-        Err(error) => {
-            drop(task_sender);
+        Err(err) => {
             service.finish_session(init.session_id).await?;
             return Err(format!(
-                "Failed to encode session handshake response: {error}"
+                "Failed to encode session handshake response: {err}"
             ));
-        },
+        }
     };
 
-    // Cancellation interrupts both a quiet reader and a response writer under backpressure.
+    let SessionChannels {
+        tasks: task_sender,
+        mut responses,
+        close,
+    } = match service.bind_session(init.session_id).await {
+        Ok(channels) => channels,
+        Err(error) => {
+            service.finish_session(init.session_id).await?;
+            return Err(error);
+        }
+    };
+
+    // The writer sends the handshake reply before any task responses. An owner's close interrupts
+    // it even under backpressure, and the sink is closed however the writer ends.
     let (writer_done, mut writer_result) = tokio::sync::oneshot::channel();
     let writer_close = close.clone();
     spawn_detached(async move {
-        let writing = async {
-            sink.send(info.into()).await?;
-            while let Some(response) = responses.recv().await {
-                let bytes = rmp_serde::to_vec(&response)
-                    .map_err(|err| format!("Failed to encode task response: {err}"))?;
-                sink.send(bytes.into()).await?;
-            }
-            Ok(())
-        };
-        let result = tokio::select! {
+        // Bare, like a refusal: a client reads its reply before knowing which one it is.
+        let sent = tokio::select! {
             biased;
-            () = wait_for_close(writer_close) => Ok(()),
-            result = writing => result,
+            () = wait_for_close(writer_close.clone()) => Ok(false),
+            result = sink.send(info.into_bytes()) => result.map(|()| true),
         };
-        let result = result.and(sink.close().await);
+        let result = match sent {
+            Ok(true) => {
+                let mut sink = MessageSink::new(sink);
+                let written = tokio::select! {
+                    biased;
+                    () = wait_for_close(writer_close) => Ok(()),
+                    result = write_responses(&mut sink, &mut responses) => result,
+                };
+                written.and(sink.close().await)
+            }
+            Ok(false) => sink.close().await,
+            Err(err) => {
+                let _ = sink.close().await;
+                Err(err)
+            }
+        };
         let _ = writer_done.send(result);
     });
+
+    // Either half ending triggers teardown: a failed write need not close the incoming half.
+    // Save a completed writer result so we don't poll the oneshot receiver twice.
     let (read_result, completed_writer) = tokio::select! {
         biased;
         () = wait_for_close(close) => (Ok(()), None),
         () = shutdown.cancelled() => (Ok(()), None),
         result = &mut writer_result => (Ok(()), Some(result)),
-        result = forward_tasks(source, &task_sender, init.session_id) => (result, None),
+        result = forward_tasks(
+            MessageSource::new(source),
+            &task_sender,
+            init.session_id,
+        ) => (result, None),
     };
+
+    // Drop our task sender and finish the session so its worker drains and closes, which closes
+    // the response queue and ends the writer; then await the writer so we don't tear the runtime
+    // down mid-send. Mere: the acknowledgement includes worker drain, interpreter drop and device
+    // completion, and a teardown failure is returned.
     drop(task_sender);
-    // The acknowledgement includes worker drain, interpreter drop and device completion.
     let cleanup = service.finish_session(init.session_id).await;
     let write_result = match completed_writer {
         Some(result) => result,
@@ -149,7 +181,22 @@ where
     cleanup.and(read_result).and(write_result)
 }
 
-async fn wait_for_close(mut close: tokio::sync::watch::Receiver<bool>) {
+/// Send each task response in order until the worker drops the response queue.
+async fn write_responses(
+    sink: &mut MessageSink<impl FrameSink>,
+    responses: &mut mpsc::Receiver<TaskResponse>,
+) -> Result<(), String> {
+    while let Some(response) = responses.recv().await {
+        let message = response
+            .encode()
+            .map_err(|err| format!("Failed to encode task response: {err}"))?;
+        sink.send(message).await?;
+    }
+    Ok(())
+}
+
+/// Resolve once the owner has closed the session, or its close signal is gone.
+async fn wait_for_close(mut close: watch::Receiver<bool>) {
     while !*close.borrow_and_update() {
         if close.changed().await.is_err() {
             break;
@@ -200,8 +247,8 @@ async fn refuse(sink: &mut impl FrameSink, refusal: SessionRefusal) {
         id: 0,
         content: TaskResponseContent::InitRefused(refusal),
     };
-    if let Ok(frame) = rmp_serde::to_vec(&reply) {
-        let _ = sink.send(frame.into()).await;
+    if let Ok(frame) = reply.encode() {
+        let _ = sink.send(frame.into_bytes()).await;
     }
     let _ = sink.close().await;
 }
@@ -209,13 +256,15 @@ async fn refuse(sink: &mut impl FrameSink, refusal: SessionRefusal) {
 /// Forward each submitted task batch to the session worker in arrival order, until the client
 /// closes the session or its stream ends.
 async fn forward_tasks(
-    mut source: impl FrameSource,
+    mut source: MessageSource<impl FrameSource>,
     task_sender: &mpsc::Sender<Task>,
     session_id: SessionId,
 ) -> Result<(), String> {
-    while let Some(frame) = source.recv().await? {
-        let messages: Vec<RemoteMessage> = rmp_serde::from_slice(&frame)
+    while let Some(batch) = source.recv().await? {
+        let messages: Vec<RemoteMessage> = rmp_serde::from_slice(&batch)
             .map_err(|err| format!("Invalid remote task batch: {err}"))?;
+        // Its buffer goes back to the pool before a full task queue can hold it.
+        drop(batch);
         for message in messages {
             match message {
                 RemoteMessage::Task(task) => task_sender
@@ -227,10 +276,10 @@ async fn forward_tasks(
                     return Err(format!(
                         "Session {session_id} attempted to close unrelated session {id}"
                     ));
-                },
+                }
                 RemoteMessage::Init(_) => {
                     return Err("A session stream cannot be initialized twice".into());
-                },
+                }
             }
         }
     }
@@ -240,7 +289,8 @@ async fn forward_tasks(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use burn_std::{BoolDType, DeviceSettings, FloatDType, IntDType};
+    use burn_backend::DTypeUsageSet;
+    use burn_std::{BoolDType, DType, DeviceSettings, FloatDType, IntDType};
     use bytes::Bytes;
     use std::{collections::VecDeque, sync::Mutex};
 
@@ -253,7 +303,7 @@ mod tests {
         tasks: Mutex<Option<mpsc::Receiver<Task>>>,
         closed: Mutex<Vec<SessionId>>,
         bound_elsewhere: bool,
-        close: Mutex<Option<tokio::sync::watch::Sender<bool>>>,
+        close: Mutex<Option<watch::Sender<bool>>>,
     }
 
     impl SessionService for FakeService {
@@ -268,17 +318,18 @@ mod tests {
                     "Session {session_id} is already bound to another stream"
                 ));
             }
-            *self.close.lock().unwrap() = Some(tokio::sync::watch::channel(false).0);
+            *self.close.lock().unwrap() = Some(watch::channel(false).0);
             Ok(())
         }
-        async fn bind_session(&self, _session_id: SessionId) -> Result<SessionBinding, String> {
+
+        async fn bind_session(&self, _session_id: SessionId) -> Result<SessionChannels, String> {
             let (tasks, worker) = mpsc::channel(1);
             let (sender, responses) = mpsc::channel(1);
             *self.tasks.lock().unwrap() = Some(worker);
             *self.responses.lock().unwrap() = Some(sender);
             let close = self.close.lock().unwrap().as_ref().unwrap().subscribe();
-            Ok(SessionBinding {
-                task_sender: tasks,
+            Ok(SessionChannels {
+                tasks,
                 responses,
                 close,
             })
@@ -292,6 +343,10 @@ mod tests {
             1
         }
 
+        fn dtype_usage(&self, _device_index: u32) -> Vec<(DType, DTypeUsageSet)> {
+            Vec::new()
+        }
+
         async fn finish_session(&self, session_id: SessionId) -> Result<(), String> {
             self.closed.lock().unwrap().push(session_id);
             self.responses.lock().unwrap().take();
@@ -303,7 +358,7 @@ mod tests {
     struct ScriptedSource(VecDeque<Result<Option<Bytes>, String>>);
 
     impl FrameSource for ScriptedSource {
-        async fn recv(&mut self) -> Result<Option<Bytes>, String> {
+        async fn recv(&mut self, _max_len: usize) -> Result<Option<Bytes>, String> {
             self.0.pop_front().unwrap_or(Ok(None))
         }
     }
@@ -312,7 +367,7 @@ mod tests {
     struct OpenSource(Option<Bytes>);
 
     impl FrameSource for OpenSource {
-        async fn recv(&mut self) -> Result<Option<Bytes>, String> {
+        async fn recv(&mut self, _max_len: usize) -> Result<Option<Bytes>, String> {
             match self.0.take() {
                 Some(frame) => Ok(Some(frame)),
                 None => std::future::pending().await,

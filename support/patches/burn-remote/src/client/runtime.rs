@@ -44,7 +44,7 @@ impl Executor {
                      `Device::remote_options(&host).init_async().await` and read tensors with \
                      `into_data_async().await`."
                 )
-            },
+            }
         }
     }
 

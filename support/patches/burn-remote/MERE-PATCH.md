@@ -1,7 +1,8 @@
 # Mere burn-remote patch
 
-Source: crates.io `burn-remote 0.22.1`, upstream Burn commit
-`907ab111a02c2dea47bc41633754f095c6b2220e`.
+Source: crates.io `burn-remote 0.23.0-pre.2`, upstream Burn commit
+`cc3a1d4052fc72ee96dfb9664530c837cca7a88b` (rebased 2026-11-12; see the last
+section). Earlier cuts: `0.22.1`, commit `907ab111a02c2dea47bc41633754f095c6b2220e`.
 License: MIT OR Apache-2.0, unchanged from upstream.
 
 The released server authorizes an Iroh session only at admission. Removing a
@@ -66,3 +67,54 @@ after the original stable-release receipt. New upstream source changes are
 retained. Selected execution gates pass in the Burn migration plan, section 13.48.
 The bounded macOS receipt and remaining platform/model limits are recorded
 there; the source rebase alone is not a wider acceptance claim.
+
+## 0.23.0-pre.2 rebase (2026-11-12)
+
+Cut from the crates.io `burn-remote 0.23.0-pre.2` archive in the local cargo
+registry (commit `cc3a1d40`). Pristine `0.22.1` was not on the machine, so the
+local delta was taken from this file and the patched 0.22.1 tree, not from a
+mechanical three-way diff. Upstream 0.23 has no session registry, no targeted
+close, no public `IrohRemoteProtocol` and no teardown that reports failure, so
+nothing was dropped as upstreamed. `RemoteNode::from_endpoint` and
+`ServerSettings::sessions_of` are upstream and are reused.
+
+Carried, onto upstream's 0.23 code (capture locks, device queries, dtype usage,
+`MessageSink`/`MessageSource` framing and `MAX_UNAUTHORIZED_FRAME_SIZE` kept):
+
+- `server/service/mod.rs`: `bind`/`close` become `reserve_session`,
+  `bind_session` and `finish_session -> Result`; `SessionChannels` gains the
+  owner's `close` signal.
+- `server/session.rs`: the registry (`ServedSession`, `sessions`,
+  `close_session`, completion watch, failed teardown stays registered).
+  `finish_session` also calls upstream's `local_comm.abandon_session` before
+  waiting, as upstream's `close` did, so a worker parked on a barrier drains.
+  Teardown regression test carried.
+- `server/pump.rs`: reserve before authorization, finish on every refusal or
+  bind failure, close signal interrupts reader and writer, sink closed however
+  the writer ends; upstream pump tests moved onto the new trait.
+- `server/worker.rs`: `spawn` returns the teardown completion; teardown keeps
+  every failure, waits for the device after the release, runs a second
+  `memory_cleanup`; `teardown_fault` test hook.
+- `transport/iroh/protocol.rs`: public, `Clone` with an owner-only lifetime
+  guard (replaces upstream's `Drop` on the handler), `from_endpoint`,
+  `sessions`, `close_session`.
+- `server/mod.rs`, `shared/mod.rs`: export `SessionId`, `IrohRemoteProtocol`,
+  `ServedSession` (0.23 made `shared::*` crate-private, so `SessionId` gets
+  its own `pub use`).
+- `lib.rs`: `lease_tests`; the in-flight test now sends `Init` with upstream's
+  `FrameSink`/`Encode` instead of the removed `send_frame`.
+- Manifests: `tokio/macros` in `Cargo.toml.orig`; empty `[workspace]`, self
+  patch and exact `=0.23.0-pre.2` dev-dependencies (`burn-dispatch`,
+  `burn-flex`, `burn-tensor` with upstream's features) in `Cargo.toml`.
+
+Upstream also removed the 0.22 hosted-device id translation
+(`HostedDeviceIds`); collectives are now local all-reduce tasks, so it is not
+carried.
+
+Verified: Distillery `--features remote` checks and its tests pass (both
+remote-session tests included). The crate's own tests could not run as
+shipped: `serial_test 4.0.1` and `burn-communication 0.23.0-pre.2` are not in
+the local registry. A scratch copy with the websocket transport and its tests
+removed ran offline: 75 unit tests (pump, teardown and both lease tests
+included) and 31 `tests/iroh.rs` tests pass. Not run: the websocket tests, the
+fusion feature, wasm, two-peer reclaim/recovery and headed gates.

@@ -1,7 +1,6 @@
-use burn_backend::tensor::Device;
-use burn_ir::{BackendIr, DeviceIdIr, DistributedOperationIr, OperationIr};
+use burn_backend::{DTypeUsageSet, tensor::Device};
+use burn_ir::BackendIr;
 use burn_router::{CustomOpRegistry, TensorInterpreter};
-use burn_std::device::Device as _;
 use std::{
     collections::HashMap,
     sync::{Arc, Once},
@@ -9,12 +8,14 @@ use std::{
 use tokio::sync::{Mutex, mpsc, oneshot, watch};
 
 use crate::metrics::{MetricSide, logger_task};
+use crate::server::DeviceCaptureLock;
+use crate::server::DeviceQueries;
 use crate::server::local_comm::LocalCommService;
-use crate::server::service::{SessionBinding, SessionService};
+use crate::server::service::{SessionChannels, SessionService};
 use crate::server::spawn::spawn_detached;
 use crate::server::transfer::TensorTransfer;
-use crate::server::worker::SessionHandler;
-use crate::shared::{SessionId, Task};
+use crate::server::worker::{SessionHandler, SessionServices};
+use crate::shared::{HANDSHAKE_DTYPES, SessionId, Task};
 use crate::telemetry::{TelemetryEvent, TelemetryProbe};
 
 /// Capacity for the per-session response queue.
@@ -23,33 +24,6 @@ use crate::telemetry::{TelemetryEvent, TelemetryProbe};
 /// doesn't block on backpressure during a burst, but small enough that a stuck response
 /// writer surfaces as a backpressure stall rather than memory growth.
 const RESPONSE_CHANNEL_CAPACITY: usize = 64;
-
-/// The backend id of each hosted device, by its position on this server, which is how a client
-/// names the devices of a collective.
-#[derive(Clone, Debug)]
-pub(crate) struct HostedDeviceIds(Arc<[DeviceIdIr]>);
-
-impl HostedDeviceIds {
-    pub(crate) fn of<B: BackendIr>(devices: &[Device<B>]) -> Self {
-        Self(devices.iter().map(|device| device.to_id().into()).collect())
-    }
-
-    /// Point an all-reduce's devices, named by position, at their backend ids.
-    pub(crate) fn resolve(&self, op: &mut OperationIr) -> Result<(), String> {
-        if let OperationIr::Distributed(DistributedOperationIr::AllReduce(desc)) = op {
-            for id in desc.device_ids.iter_mut() {
-                *id = *self.0.get(usize::from(id.index_id)).ok_or_else(|| {
-                    format!(
-                        "an all_reduce names device {} of this server, which hosts {}",
-                        id.index_id,
-                        self.0.len()
-                    )
-                })?;
-            }
-        }
-        Ok(())
-    }
-}
 
 /// Coordinates per-session state.
 ///
@@ -71,22 +45,32 @@ where
 {
     /// All devices this server hosts, indexed by the device index the client selects at
     /// session init. `devices[0]` is the default device (`DeviceIndex::Default`).
-    devices: Vec<Device<B>>,
-    device_ids: HostedDeviceIds,
+    devices: Vec<HostedDevice<B>>,
     pub(crate) transfer: Arc<T>,
     /// Rendezvous registry for same-host tensor transfers between this server's sessions.
     pub(crate) local_comm: Arc<LocalCommService<B>>,
     /// Custom-op handlers shared (read-only) with every session's interpreter.
     custom_ops: CustomOpRegistry<B>,
+    /// Device-query handlers shared (read-only) with every session.
+    queries: DeviceQueries<B>,
     sessions: Mutex<HashMap<SessionId, Session>>,
     probe: TelemetryProbe,
     /// Spawns the telemetry logger once, on the first session.
     logger: Once,
 }
 
+/// A device this server hosts, with the lock its sessions' graph captures share.
+struct HostedDevice<B: BackendIr> {
+    device: Device<B>,
+    capture_lock: DeviceCaptureLock,
+}
+
+/// One reserved or bound session (Mere: reserved before authorization, so an owner can see and
+/// close it from admission on, and kept registered until its teardown is known to be clean).
 struct Session {
-    /// Inbound channel to the session's dispatcher thread; cloned once per submit connection.
-    _task_sender: Option<mpsc::Sender<Task>>,
+    /// Inbound channel to the session's dispatcher thread, held from binding until teardown so a
+    /// worker cannot disappear while the pump is active.
+    task_sender: Option<mpsc::Sender<Task>>,
     device_index: u32,
     authorization: Arc<[u8]>,
     close: watch::Sender<bool>,
@@ -124,11 +108,17 @@ where
             "A remote server must host at least one device"
         );
         Self {
-            device_ids: HostedDeviceIds::of::<B>(&devices),
-            devices,
+            local_comm: Arc::new(LocalCommService::new(devices.len())),
+            devices: devices
+                .into_iter()
+                .map(|device| HostedDevice {
+                    device,
+                    capture_lock: DeviceCaptureLock::default(),
+                })
+                .collect(),
             transfer,
-            local_comm: Arc::new(LocalCommService::new()),
             custom_ops: CustomOpRegistry::default(),
+            queries: DeviceQueries::default(),
             sessions: Mutex::new(HashMap::new()),
             probe: TelemetryProbe::disabled(),
             logger: Once::new(),
@@ -138,6 +128,12 @@ where
     /// Register custom-op handlers, shared read-only with every session's interpreter.
     pub fn with_custom_ops(mut self, custom_ops: CustomOpRegistry<B>) -> Self {
         self.custom_ops = custom_ops;
+        self
+    }
+
+    /// Register device-query handlers, shared read-only with every session.
+    pub fn with_device_queries(mut self, queries: DeviceQueries<B>) -> Self {
+        self.queries = queries;
         self
     }
 
@@ -163,18 +159,20 @@ where
     /// device 0 — for a collective that would reduce a device against itself and silently corrupt
     /// the result instead of producing a clear failure.
     pub(crate) fn device(&self, device_index: u32) -> Device<B> {
-        self.devices
-            .get(device_index as usize)
-            .cloned()
-            .unwrap_or_else(|| {
-                panic!(
-                    "Requested device index {device_index} but server hosts only {} device(s)",
-                    self.devices.len()
-                )
-            })
+        self.hosted(device_index).device.clone()
     }
 
-    /// Snapshot active sessions in deterministic id order.
+    /// The hosted device at `device_index`, failing as [`device`](Self::device) does.
+    fn hosted(&self, device_index: u32) -> &HostedDevice<B> {
+        self.devices.get(device_index as usize).unwrap_or_else(|| {
+            panic!(
+                "Requested device index {device_index} but server hosts only {} device(s)",
+                self.devices.len()
+            )
+        })
+    }
+
+    /// Snapshot reserved and active sessions in deterministic id order.
     pub async fn sessions(&self) -> Vec<ServedSession> {
         let sessions = self.sessions.lock().await;
         let mut served: Vec<_> = sessions
@@ -189,9 +187,10 @@ where
         served
     }
 
-    /// Ask one active pump to close, and wait until its worker has released backend state.
+    /// Ask one session's pump to close, and wait until its worker has released backend state.
+    /// `Ok(false)` if no such session is registered.
     pub async fn close_session(&self, session_id: SessionId) -> Result<bool, String> {
-        let (close, mut done) = {
+        let (close, done) = {
             let sessions = self.sessions.lock().await;
             let Some(session) = sessions.get(&session_id) else {
                 return Ok(false);
@@ -200,16 +199,24 @@ where
         };
 
         close.send_replace(true);
-        loop {
-            match done.borrow().clone() {
-                SessionCompletion::Running => {},
-                SessionCompletion::Clean => return Ok(true),
-                SessionCompletion::Failed(error) => return Err(error.to_string()),
-            }
-            done.changed()
-                .await
-                .map_err(|_| format!("Session {session_id} teardown signal was dropped"))?;
+        wait_for_completion(session_id, done).await.map(|()| true)
+    }
+}
+
+/// Wait for a session's teardown to finish: clean, or the failure it reported.
+async fn wait_for_completion(
+    session_id: SessionId,
+    mut done: watch::Receiver<SessionCompletion>,
+) -> Result<(), String> {
+    loop {
+        match done.borrow().clone() {
+            SessionCompletion::Running => {}
+            SessionCompletion::Clean => return Ok(()),
+            SessionCompletion::Failed(error) => return Err(error.to_string()),
         }
+        done.changed()
+            .await
+            .map_err(|_| format!("Session {session_id} teardown signal was dropped"))?;
     }
 }
 
@@ -227,7 +234,9 @@ where
         self.ensure_logger();
         let mut sessions = self.sessions.lock().await;
         if sessions.contains_key(&session_id) {
-            return Err(format!("Session {session_id} is already active"));
+            return Err(format!(
+                "Session {session_id} is already bound to another stream"
+            ));
         }
 
         let (close, _) = watch::channel(false);
@@ -235,7 +244,7 @@ where
         sessions.insert(
             session_id,
             Session {
-                _task_sender: None,
+                task_sender: None,
                 device_index,
                 authorization,
                 close,
@@ -247,7 +256,8 @@ where
         Ok(())
     }
 
-    async fn bind_session(&self, session_id: SessionId) -> Result<SessionBinding, String> {
+    /// One lock for the whole bind, so a `close_session` from another task cannot land inside it.
+    async fn bind_session(&self, session_id: SessionId) -> Result<SessionChannels, String> {
         let mut sessions = self.sessions.lock().await;
         let session = sessions
             .get_mut(&session_id)
@@ -255,34 +265,42 @@ where
         if *session.close.borrow() {
             return Err(format!("Session {session_id} was closed during admission"));
         }
-        if session._task_sender.is_some() {
-            return Err(format!("Session {session_id} is already active"));
+        if session.task_sender.is_some() {
+            return Err(format!(
+                "Session {session_id} is already bound to another stream"
+            ));
         }
 
         let device_index = session.device_index;
         let (response_sender, responses) = mpsc::channel(RESPONSE_CHANNEL_CAPACITY);
+        // The session is pinned to its device for its whole lifetime. This runs inside the tokio
+        // runtime, so the handler can capture the runtime handle its worker threads need for the
+        // async parts of a task.
         let runner =
             TensorInterpreter::with_custom_ops(self.device(device_index), self.custom_ops.clone());
         let (task_sender, worker_done) = SessionHandler::spawn(
             session_id,
             runner,
-            self.device_ids.clone(),
             response_sender,
-            self.transfer.clone(),
-            self.local_comm.clone(),
-            self.probe.clone(),
+            SessionServices {
+                transfer: self.transfer.clone(),
+                local_comm: self.local_comm.clone(),
+                queries: self.queries.clone(),
+                probe: self.probe.clone(),
+            },
+            self.hosted(device_index).capture_lock.clone(),
         );
-        session._task_sender = Some(task_sender.clone());
+        session.task_sender = Some(task_sender.clone());
         session.worker_done = Some(worker_done);
-        let close_receiver = session.close.subscribe();
+        let close = session.close.subscribe();
         self.probe.emit(|| TelemetryEvent::SessionOpened {
             session: session_id,
             device: device_index,
         });
-        Ok(SessionBinding {
-            task_sender,
+        Ok(SessionChannels {
+            tasks: task_sender,
             responses,
-            close: close_receiver,
+            close,
         })
     }
 
@@ -299,40 +317,37 @@ where
         self.devices.len() as u32
     }
 
+    fn dtype_usage(&self, device_index: u32) -> Vec<(burn_std::DType, DTypeUsageSet)> {
+        let device = self.device(device_index);
+        HANDSHAKE_DTYPES
+            .into_iter()
+            .map(|dtype| (dtype, B::dtype_usage(&device, dtype)))
+            .collect()
+    }
+
+    /// Tear the session down and acknowledge it only once its worker has synced, dropped its
+    /// interpreter, run backend memory cleanup and waited for that release on the device (Mere).
+    /// Dropping the manager's task sender, once the pump has dropped its own, closes the
+    /// dispatcher's channel, so the worker drains and exits. A failed teardown is reported to every
+    /// closer and leaves the session registered, never acknowledged clean.
     async fn finish_session(&self, session_id: SessionId) -> Result<(), String> {
-        let (worker_done, mut concurrent_done, was_bound) = {
+        let (worker_done, was_bound) = {
             let mut sessions = self.sessions.lock().await;
             let Some(session) = sessions.get_mut(&session_id) else {
                 return Ok(());
             };
             if session.finishing {
-                (None, Some(session.done.subscribe()), false)
-            } else {
-                session.finishing = true;
-                session.close.send_replace(true);
-                let was_bound = session._task_sender.is_some();
-                // The manager retains one sender so a worker cannot disappear while the pump is
-                // active. Drop it before waiting, then acknowledge closure only after the worker
-                // has synced, dropped its interpreter, run backend memory cleanup, and waited for
-                // that release to complete on the device. A teardown failure is reported, never
-                // acknowledged as a clean close.
-                drop(session._task_sender.take());
-                (session.worker_done.take(), None, was_bound)
+                let done = session.done.subscribe();
+                drop(sessions);
+                return wait_for_completion(session_id, done).await;
             }
+            session.finishing = true;
+            session.close.send_replace(true);
+            let was_bound = session.task_sender.take().is_some();
+            (session.worker_done.take(), was_bound)
         };
-
-        if let Some(done) = concurrent_done.as_mut() {
-            loop {
-                match done.borrow().clone() {
-                    SessionCompletion::Running => {},
-                    SessionCompletion::Clean => return Ok(()),
-                    SessionCompletion::Failed(error) => return Err(error.to_string()),
-                }
-                done.changed()
-                    .await
-                    .map_err(|_| format!("Session {session_id} teardown signal was dropped"))?;
-            }
-        }
+        // Release a barrier or rendezvous the worker may be parked on, so it can drain.
+        self.local_comm.abandon_session(session_id).await;
 
         let cleanup = match worker_done {
             Some(worker_done) => worker_done
@@ -361,13 +376,13 @@ where
                     });
                 }
                 Ok(())
-            },
+            }
             Err(error) => {
                 session
                     .done
                     .send_replace(SessionCompletion::Failed(Arc::from(error.as_str())));
                 Err(error)
-            },
+            }
         }
     }
 }
@@ -458,45 +473,5 @@ mod teardown_tests {
                 .is_err_and(|error| error.contains("injected teardown sync failure")),
             "a later close must report the same failure: {again:?}"
         );
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use burn_backend::{DType, Shape, distributed::ReduceOperation};
-    use burn_ir::{AllReduceOpIr, TensorId, TensorIr};
-
-    fn device(type_id: u16, index_id: u16) -> DeviceIdIr {
-        DeviceIdIr { type_id, index_id }
-    }
-
-    fn all_reduce(device_ids: Vec<DeviceIdIr>) -> OperationIr {
-        let tensor = TensorIr::uninit(TensorId::new(0), Shape::new([2]), DType::F32);
-        OperationIr::Distributed(DistributedOperationIr::AllReduce(AllReduceOpIr {
-            out: tensor.clone(),
-            tensor,
-            op: ReduceOperation::Sum,
-            device_ids,
-        }))
-    }
-
-    #[test]
-    fn a_collective_names_the_hosted_devices_by_position() {
-        for devices in [[device(3, 2), device(3, 3)], [device(3, 3), device(3, 2)]] {
-            let hosted = HostedDeviceIds(Arc::from(devices));
-            let mut op = all_reduce(vec![device(0, 0), device(0, 1)]);
-
-            hosted.resolve(&mut op).unwrap();
-
-            assert_eq!(op, all_reduce(devices.to_vec()));
-        }
-    }
-
-    #[test]
-    fn a_collective_naming_an_unhosted_position_is_refused() {
-        let hosted = HostedDeviceIds(Arc::from([device(3, 2)]));
-
-        assert!(hosted.resolve(&mut all_reduce(vec![device(0, 1)])).is_err());
     }
 }

@@ -127,7 +127,6 @@ pub fn classify(op: &OperationIr) -> OpClass {
         O::Init(_) => OpClass::Init,
         O::Custom(_) => OpClass::Custom,
         O::Drop(_) => OpClass::Drop,
-        O::Distributed(_) => OpClass::Distributed,
         O::Bool(_) | O::Int(_) => OpClass::Elementwise,
     }
 }
@@ -304,7 +303,7 @@ impl TelemetryEvent {
                     inputs,
                     outputs,
                 }
-            },
+            }
         }
     }
 
@@ -463,7 +462,7 @@ impl TrafficAggregator {
                         ops: ops.len() as u64,
                     },
                 );
-            },
+            }
             TelemetryEvent::GraphExecuted {
                 graph,
                 bindings_bytes,
@@ -474,16 +473,16 @@ impl TrafficAggregator {
                     self.fused_ops += cost.ops;
                 }
                 self.actual += *bindings_bytes as u64;
-            },
+            }
             TelemetryEvent::Op { kind, .. } => {
                 self.unfused_ops += 1;
                 *self.unfused_by_kind.entry(*kind).or_default() += 1;
-            },
+            }
             TelemetryEvent::TensorDropped { .. } => {
                 self.unfused_ops += 1;
                 *self.unfused_by_kind.entry(OpClass::Drop).or_default() += 1;
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 

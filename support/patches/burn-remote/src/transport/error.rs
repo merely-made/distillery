@@ -77,7 +77,7 @@ impl fmt::Display for OpenError {
             #[cfg(feature = "iroh")]
             Self::NoAddress => {
                 f.write_str("no address was given and the endpoint cannot look one up")
-            },
+            }
             Self::Failed(message) => f.write_str(message),
         }
     }
