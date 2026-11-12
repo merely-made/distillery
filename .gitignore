@@ -2,3 +2,5 @@
 /.cargo/config.local.toml
 
 /models/
+# Not tracked: what cargo resolved is a git note on each commit (scripts/record-resolved.sh).
+Cargo.lock
