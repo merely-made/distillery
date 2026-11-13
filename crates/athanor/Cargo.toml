@@ -21,7 +21,7 @@ workshop-surface = ["workshop", "dep:cambium"]
 workshop-native = ["workshop-surface", "dep:cambium-desktop"]
 workshop-worker = ["workshop", "dep:armillary"]
 workshop-sealed = ["workshop", "dep:eidetic"]
-workshop-destination = ["workshop", "dep:pandect", "dep:kernel", "dep:chartulary", "dep:euclid", "dep:uuid"]
+workshop-destination = ["workshop", "dep:pandect", "dep:kernel", "dep:portolan", "dep:euclid", "dep:uuid"]
 
 [dependencies]
 cambium = { workspace = true, optional = true }
@@ -34,7 +34,7 @@ armillary = { workspace = true, optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", optional = true }
 blake3 = { version = "1", optional = true }
-chartulary = { workspace = true, optional = true }
+portolan = { workspace = true, optional = true }
 euclid = { version = "0.22", optional = true }
 uuid = { version = "1", optional = true }
 
@@ -74,7 +74,7 @@ pandect = { version = "0.2.0", git = "https://github.com/merely-made/mere.git", 
 eidetic = { version = "0.0.3", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 servitor = { version = "0.0.3", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 muniment = { version = "0.2.1", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-chartulary = { version = "0.3.0", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+portolan = { version = "0.1.0", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", branch = "main" }
 taproot = { version = "0.1.0", git = "https://github.com/merely-made/genet.git", branch = "main", default-features = false, features = ["accesskit"] }
 

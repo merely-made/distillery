@@ -75,7 +75,8 @@ undocumented_unsafe_blocks = "warn"
 too_many_lines = "warn"
 
 [patch.crates-io]
-chartulary = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+hodograph = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+portolan = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 eidetic = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 gemot = { git = "https://github.com/merely-made/gemot.git", branch = "main" }
 mere-proofs = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }

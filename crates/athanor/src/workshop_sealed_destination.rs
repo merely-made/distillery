@@ -250,7 +250,7 @@ pub fn prepare_graph(
     let (ledger_iri, ledger_id) = ledger_identity(acceptance);
     if graph.get_node_by_id(node_id).is_some()
         || graph.resource_nodes().any(|r| {
-            r.canonical_iri() == chartulary::canonical_url(&iri) || r.canonical_iri() == ledger_iri
+            r.canonical_iri() == portolan::canonical_url(&iri) || r.canonical_iri() == ledger_iri
         })
     {
         return Err(Error::Conflict);
@@ -265,7 +265,7 @@ pub fn prepare_graph(
         protection,
     )?;
     same_epoch(protection, epoch)?;
-    let resource_id = chartulary::resource_id_from_canonical_iri(&chartulary::canonical_url(&iri));
+    let resource_id = portolan::resource_id_from_canonical_iri(&portolan::canonical_url(&iri));
     let deltas = vec![
         GraphDelta::AddNode {
             id: Some(node_id),
@@ -283,7 +283,7 @@ pub fn prepare_graph(
         GraphDelta::ReplaySetResourceRecordById {
             resource_id,
             record: Some(record(
-                chartulary::canonical_url(&iri),
+                portolan::canonical_url(&iri),
                 NOTE_FACET,
                 &sealed_note,
             )?),
@@ -333,7 +333,7 @@ pub fn open_note(
         return Err(Error::Conflict);
     }
     let bytes =
-        facet(graph, &chartulary::canonical_url(&iri), NOTE_FACET)?.ok_or(Error::Missing)?;
+        facet(graph, &portolan::canonical_url(&iri), NOTE_FACET)?.ok_or(Error::Missing)?;
     let clear = open_entry(owner, acceptance, "note", &bytes, protection)?;
     same_epoch(protection, epoch)?;
     if clear != proposal.djot.as_bytes() {
@@ -393,7 +393,7 @@ pub fn open_result_resource(
         .resources
         .iter()
         .find(|record| {
-            chartulary::resource_id_from_canonical_iri(&record.canonical_iri).to_string()
+            portolan::resource_id_from_canonical_iri(&record.canonical_iri).to_string()
                 == resource
         })
         .ok_or(Error::Missing)?;
@@ -806,8 +806,8 @@ mod tests {
         ));
         protection.open.store(true, Ordering::SeqCst);
         let (_, note_iri, _) = identifiers(&acceptance);
-        let note_iri = chartulary::canonical_url(&note_iri);
-        let note_id = chartulary::resource_id_from_canonical_iri(&note_iri);
+        let note_iri = portolan::canonical_url(&note_iri);
+        let note_id = portolan::resource_id_from_canonical_iri(&note_iri);
         let mut note_tampered = graph.clone();
         let mut note = facet(&graph, &note_iri, NOTE_FACET).unwrap().unwrap();
         note[0] ^= 1;

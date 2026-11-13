@@ -26,7 +26,8 @@ sha2 = "0.11"
 rust-version = "1.97.1"
 
 [patch.crates-io]
-chartulary = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+hodograph = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+portolan = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 eidetic = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 muniment = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 esp = { path = "../../../esp" }

@@ -66,7 +66,7 @@ pub(crate) fn identifiers(acceptance: &Acceptance) -> (Uuid, String, String) {
         "https://mere.computer/notes/evidence-brief/{}",
         hex(&acceptance.operation)
     );
-    let resource = chartulary::resource_id_from_canonical_iri(&chartulary::canonical_url(&iri));
+    let resource = portolan::resource_id_from_canonical_iri(&portolan::canonical_url(&iri));
     let hash =
         blake3::hash(format!("alembic-note-surface-v1/{}", hex(&acceptance.operation)).as_bytes());
     let mut bytes = [0; 16];
@@ -89,8 +89,8 @@ pub(crate) fn ledger_identity_for(operation: &[u8; 32]) -> (String, Uuid) {
         "https://mere.computer/operations/evidence-brief/{}",
         hex(operation)
     );
-    let iri = chartulary::canonical_url(&iri);
-    let id = chartulary::resource_id_from_canonical_iri(&iri);
+    let iri = portolan::canonical_url(&iri);
+    let id = portolan::resource_id_from_canonical_iri(&iri);
     (iri, id)
 }
 
@@ -378,7 +378,7 @@ pub fn prepare_graph(
     let (ledger_iri, ledger_id) = ledger_identity(acceptance);
     if graph.get_node_by_id(node_id).is_some()
         || graph.resource_nodes().any(|r| {
-            r.canonical_iri() == chartulary::canonical_url(&iri) || r.canonical_iri() == ledger_iri
+            r.canonical_iri() == portolan::canonical_url(&iri) || r.canonical_iri() == ledger_iri
         })
     {
         return Err(Error::Conflict);
@@ -573,7 +573,7 @@ mod tests {
         assert_ne!(graph_revision(&a).unwrap(), graph_revision(&b).unwrap());
         // A recorded graph is the snapshot plus its facet sidecar. Snapshot
         // reconstruction alone assigns a new wall-clock visit timestamp.
-        let facet_id = chartulary::FacetId::new(kernel::graph::node_facets::VISIT_HISTORY);
+        let facet_id = portolan::FacetId::new(kernel::graph::node_facets::VISIT_HISTORY);
         let sentinel = serde_json::json!({"last_visited_ms": 1, "last_session_visited": 7});
         let mut facets = a.facets().clone();
         facets
@@ -581,7 +581,7 @@ mod tests {
                 id,
                 facet_id.clone(),
                 sentinel.clone(),
-                &chartulary::AcceptAll,
+                &portolan::AcceptAll,
             )
             .unwrap();
         a.install_facets(facets.clone()).unwrap();
