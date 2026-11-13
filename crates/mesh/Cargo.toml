@@ -23,7 +23,7 @@ serde_json = { version = "1", optional = true }
 insigne = { workspace = true, features = ["verify"] }
 # The operation/signing substrate the job ops ride (the same signed
 # Operation<Ext> wire as Standing and Murm posts; mirrors Gemot's pin).
-p2panda-core = { package = "p2mere-core", version = "0.10" }
+p2panda-core = { package = "p2mere-core", version = "0.11" }
 # Persona-derived signing keys (the same identity flow Standing's wire uses).
 identity = { workspace = true }
 serde = { version = "1", features = ["derive"] }
@@ -35,7 +35,7 @@ proofs.workspace = true
 # `stickleback`'s `MunimentStore`, not p2panda-store's bundled SQLite
 # backend. (This said "the mooting adapter" until 2026-07-26; mooting stopped
 # being a mesh dependency when the shared store moved to stickleback.)
-p2panda-store = { package = "p2mere-store", version = "0.10", default-features = false }
+p2panda-store = { package = "p2mere-store", version = "0.11", default-features = false }
 # Shared validated operation store; live sync belongs to murm-sync.
 stickleback = { workspace = true }
 muniment = { workspace = true, features = ["redb"] }
