@@ -34,15 +34,15 @@ esp = { version = "0.1.0", path = "crates/esp" }
 esp-testkit = { version = "0.1.0", path = "crates/esp-test-support" }
 mesh = { package = "mere-mesh", version = "0.0.1", path = "crates/mesh" }
 # The published contract crates Distillery produces through (Mere distillery-extraction D7).
-cambium = "0.6.1"
-chirograph = "0.0.5"
-graphshell-endpoint = "0.0.4"
-incipit = "0.2.1"
-mere-surface-api = "0.1.1"
-sceno = "0.0.7"
-scenograph = "0.0.6"
-scenomise = "0.0.7"
-scenotime = "0.0.5"
+cambium = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+chirograph = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+graphshell-endpoint = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+incipit = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+mere-surface-api = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+sceno = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+scenograph = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+scenomise = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+scenotime = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 # Suppliers at Mere's pins, so a Mere graph resolves one copy of each.
 apparatus-core = { version = "0.1.0", git = "https://github.com/merely-made/armillary.git", branch = "main", default-features = false }
 armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", branch = "main" }
@@ -89,6 +89,14 @@ burn-remote = { path = "support/patches/burn-remote" }
 layout-dom-api = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.1" }
 genet-scripted-dom = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.2" }
 genet-text = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.0" }
+# Graphshell's crates name each other by published version; one copy of each.
+cambium = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+mere-surface-api = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+hest = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+sceno = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+scenograph = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+scenomise = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
+scenotime = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 esp = { path = "crates/esp" }
 
 [patch."https://github.com/merely-made/retinue.git"]

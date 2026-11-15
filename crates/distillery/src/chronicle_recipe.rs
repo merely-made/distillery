@@ -26,6 +26,8 @@ pub const CHRONICLE_ERA_BANDS_OPTION: &str = "era_bands";
 /// Build the one Chronicle recipe used for its named Distillery and Djinn
 /// inputs. The caller supplies source locators and authority-emitted
 /// generations; this authoring seam never acquires either authority.
+// Until Graphshell's recipe grows its next slot, every field is named here.
+#[allow(clippy::needless_update)]
 pub fn chronicle_definition(
     sources: BTreeMap<String, ProjectionInputBinding>,
     author: impl Into<String>,
@@ -67,6 +69,8 @@ pub fn chronicle_definition(
             note: "One read-only job-board recipe; source bindings carry authority generation expectations."
                 .to_owned(),
         },
+        // Slots added to the recipe later take their defaults.
+        ..Default::default()
     }
 }
 
