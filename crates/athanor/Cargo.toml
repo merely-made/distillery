@@ -71,7 +71,7 @@ cambium = { version = "0.6.1", git = "https://github.com/merely-made/graphshell.
 cambium-desktop = { version = "0.1.0", git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 kernel = { package = "mere-kernel", version = "0.0.3", git = "https://github.com/merely-made/mere.git", branch = "main" }
 pandect = { version = "0.2.0", git = "https://github.com/merely-made/mere.git", branch = "main" }
-eidetic = { version = "0.0.3", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+eidetic = { version = ">=0.0.3, <0.1", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 servitor = { version = "0.0.3", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 muniment = { version = "0.2.1", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 portolan = { version = "0.1.0", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
