@@ -43,6 +43,7 @@ pub fn chronicle_definition(
             kind: "mesh.jobs".to_owned(),
             key: "job_id".to_owned(),
             value: Some("state".to_owned()),
+            ..Default::default()
         },
         encoding: Encoding {
             x: Channel::Field("observation_tick".to_owned()),
