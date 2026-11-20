@@ -27,7 +27,7 @@ authors = [
 
 [workspace.dependencies]
 murm-sync = { version = ">=0.0.1", git = "https://github.com/merely-made/murm.git", branch = "main" }
-wgpu = "30.0.1"
+wgpu = "30.0.2"
 sha2 = "0.11"
 # Members of this repository.
 esp = { version = "0.1.0", path = "crates/esp" }
