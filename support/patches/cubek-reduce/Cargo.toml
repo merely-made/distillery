@@ -66,7 +66,7 @@ name = "lib"
 path = "tests/lib.rs"
 
 [dependencies.cubecl]
-version = "0.11.1"
+version = "0.11.4"
 default-features = false
 
 [dependencies.cubek-std]
@@ -105,7 +105,7 @@ version = "2"
 default-features = false
 
 [dev-dependencies.cubecl]
-version = "0.11.1"
+version = "0.11.4"
 features = ["test-runtime"]
 default-features = false
 
