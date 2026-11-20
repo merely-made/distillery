@@ -678,7 +678,7 @@ mod tests {
         use burn::nn::LayerNormConfig;
         use burn::tensor::{Device, DeviceKind, Tensor, TensorData};
 
-        let device = Device::wgpu(DeviceKind::DiscreteGpu(0));
+        let device = Device::wgpu(DeviceKind::DefaultDevice);
         let input = [
             -0.6897_f32,
             -2.7106,
