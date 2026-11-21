@@ -475,10 +475,7 @@ impl IntentSink for ChronicleEndpoint {
         }
         let version = self.observer.revision();
         if intent.observed_epoch != version.epoch || intent.observed_revision != version.revision {
-            return Ok(IntentResult::Stale {
-                current_epoch: version.epoch,
-                current_revision: version.revision,
-            });
+            return Ok(IntentResult::stale(version.epoch, version.revision));
         }
         Ok(IntentResult::Rejected {
             reason: "Distillery Chronicle v1 does not offer intents".to_string(),
