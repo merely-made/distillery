@@ -208,3 +208,16 @@ to the driver.
   integrity reads the reviewed brief's digest. Athanor's 35 library tests
   pass with `workshop-worker` (33 as before, 2 new). Its `workshop-sealed`
   and `workshop-destination` features were not rebuilt. Still no model.
+- **2026-11-21:** P1, third slice (D10): `distillery::decision` behind a
+  light `decision` feature (`decide`, `replay`), and the first real turn.
+  `tests/decision_turn.rs` (ignored without `ESP_QWEN3_DIR`; artifacts
+  pinned by SHA-256) passed on Burn wgpu, RTX 4060 Laptop GPU, Vulkan:
+  Qwen3-0.6B was offered three passages, one of them a recipe, and decided
+  `{"op":"brief","order":[0,2]}` in 11 tokens; the record replayed to the
+  same decision, a second greedy run produced the same tokens, and a
+  cut-short record, a record under other operations and a three-token turn
+  were refused. Debug build: 65 s to load, 9.1 s for the turn; not a speed
+  claim. One prompt is not a measure of the model's judgement. Not yet
+  done for P1: the Athanor feature that implements `DecisionDriver` with
+  `decide` (D10), and template selection (D8); the test renders Qwen's chat
+  format by hand.

@@ -50,6 +50,9 @@ mod chronicle;
 pub mod chronicle_recipe;
 pub mod gpu;
 
+/// One model decision over an esp provider, bound by a JSON Schema.
+#[cfg(feature = "decision")]
+pub mod decision;
 #[cfg(feature = "flora")]
 pub mod flora;
 /// The resident inference lane and its `inference.ask` route.

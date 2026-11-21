@@ -71,6 +71,9 @@ flora = ["dep:eidetic", "dep:esp", "esp/decoder-lora", "dep:safetensors"]
 # The resident inference lane (resident inference and recall plan, I1): esp's
 # actor and provider seam, the run table and the `inference.ask` endpoint. No
 # model runtime: the host supplies the provider.
+# One model decision over an esp provider, constrained by a JSON Schema
+# (decision-driver D10). No lane, no decoder: the host supplies the provider.
+decision = ["dep:esp", "esp/output-schema"]
 inference = ["dep:esp", "esp/actor", "dep:apparatus-core"]
 inference-embedding = ["inference-model", "esp/persistence", "esp/bert"]
 inference-gpu = ["inference-model", "esp/decoder-wgpu", "dep:tracing"]
@@ -79,6 +82,7 @@ inference-wire = ["dep:eidetic"]
 inference-model = ["inference-wire","dep:eidetic-search", "inference", "esp/decoder-flex", "esp/model-session", "dep:eidetic", "dep:pollster", "dep:stickleback", "dep:murm-sync", "dep:p2panda-store", "dep:chacha20poly1305", "dep:getrandom", "dep:zeroize"]
 
 [dev-dependencies]
+sha2 = { workspace = true }
 # Supplier-owned tiny models and templates; enabled only for test targets.
 esp-testkit = { workspace = true }
 safetensors = "0.4"
@@ -103,6 +107,11 @@ layout-dom-api = { workspace = true }
 
 # Personae's tracking allocator owns this binary's heap, so it runs without
 # libtest (vault lock rulings 44 and 92).
+# One real model decision turn (decision-driver P1); ignored without the checkpoint.
+[[test]]
+name = "decision_turn"
+required-features = ["decision", "inference-gpu"]
+
 [[test]]
 name = "transport_residue"
 path = "tests/transport_residue.rs"
