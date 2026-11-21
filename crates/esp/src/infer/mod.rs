@@ -35,6 +35,8 @@ pub mod library;
 #[cfg(feature = "model-session")]
 pub mod prompt;
 pub mod provider;
+#[cfg(feature = "output-schema")]
+pub mod schema;
 #[cfg(feature = "model-session")]
 pub mod session;
 pub mod stub;

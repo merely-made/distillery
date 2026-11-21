@@ -463,6 +463,42 @@ pub(super) mod tests {
         assert!(c.accept(b'\n' as u32).is_err());
         assert!(Constraint::new(&string(4097), &t, 256).is_err());
     }
+    #[cfg(feature = "output-schema")]
+    #[test]
+    fn a_schema_compiled_grammar_forces_syntax_and_masks_out_of_range_values() {
+        let schema = serde_json::json!({
+            "type": "object", "additionalProperties": false, "required": ["count", "op"],
+            "properties": {
+                "count": {"type": "integer", "minimum": 0, "maximum": 12},
+                "op": {"enum": ["keep", "drop"]}}});
+        let grammar = crate::infer::schema::grammar_from_schema(&schema).unwrap();
+        let t = tokenizer();
+        let mut c = Constraint::new(&grammar, &t, 256).unwrap();
+        let finite = |c: &Constraint| -> Vec<u8> {
+            let mut row = vec![0.; 256];
+            c.mask(&mut row).unwrap();
+            (0..=255u8).filter(|b| row[*b as usize].is_finite()).collect()
+        };
+        let take = |c: &mut Constraint, text: &[u8]| {
+            for &b in text {
+                c.accept(b as u32).unwrap();
+            }
+        };
+        let forced = c.forced(&t).unwrap();
+        assert_eq!(forced, b"{\"count\":".map(u32::from));
+        take(&mut c, b"{\"count\":");
+        assert_eq!(finite(&c), b"0123456789");
+        take(&mut c, b"1");
+        // 10, 11 and 12 continue; 13 and above cannot be chosen.
+        assert_eq!(finite(&c), b",012");
+        take(&mut c, b"2");
+        assert_eq!(c.forced(&t).unwrap(), b",\"op\":\"".map(u32::from));
+        take(&mut c, b",\"op\":\"");
+        assert_eq!(finite(&c), b"dk");
+        take(&mut c, b"keep\"}");
+        assert!(c.complete());
+        assert!(c.accept(b'}' as u32).is_err());
+    }
     #[test]
     fn nonfinite_scores_cannot_win_or_create_an_eligible_choice() {
         let t = tokenizer();

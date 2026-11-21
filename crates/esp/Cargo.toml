@@ -158,6 +158,11 @@ decoder-autodiff = [
 persistence = [
     "dep:eidetic",
 ]
+# JSON Schema compiled into `OutputGrammar` (decision-driver D7). No model
+# runtime: the compiler and its validator only.
+output-schema = [
+    "dep:serde_json",
+]
 # The `GoalEmbedder` adapter over an ESP provider (D2 of Mere's cycle breaks plan):
 # `eidetic-search` keeps only the trait, ESP implements it.
 goal-model = [

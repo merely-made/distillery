@@ -77,12 +77,29 @@ your recommendations".
 
   Links: summary esp's inert template stays the default; a model's own chat template may be selected per model and is rendered by minijinja, recorded in the session identity.
 
+- **D9. Both layers now (Mark, 2026-11-21):** shown that Athanor's only body
+  is `evaluate(Dispatch) -> Observation`, shaped around the evidence brief,
+  and asked what the driver trait should look like: "Both layers now", over
+  the general decision turn alone and over the workshop's own types alone.
+
+  Links: summary Athanor gets a general decision-turn trait (context and operation schemas in, one validated decision out) and, in the same slice, a workshop adapter that turns a decision into an Observation.
+
 No `doctrine.md` exists in this repository yet, so these are recorded as
 cases without a statement to file them under (DOC_POLICY §11).
 
+Standing for this plan (Mark, 2026-11-21): "Commit and push each green
+slice": when a slice's tests and the repository's hooks pass, it is committed
+to main and pushed.
+
 ## Open forks
 
-None open. The shape these decisions sit in is the
+1. **The confirming step (P3).** `evaluate` requires the candidate proposal
+   at step 2 to equal what the deterministic code would build
+   (`crates/athanor/src/workshop.rs`, `evaluate`). A model's proposal cannot
+   pass that as written; how a model-made proposal is confirmed belongs with
+   the Alembic plan.
+
+Otherwise none open. The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
 
 ## Phases
@@ -142,9 +159,27 @@ to the driver.
   `crates/esp/src/infer` mentions tool calls, a chat template or a JSON
   schema.
 
+- **F6 (2026-11-21).** D7 needed no change to the grammar engine. Numbers,
+  booleans and lists compile into the four existing `OutputGrammar` variants
+  (`crates/esp/src/infer/schema.rs`), so replay, forced spans and
+  private-text clearing are as they were. The subset: `const`, `enum`,
+  `anyOf`, `boolean`, `null`, `string` with `maxLength`, `integer` with
+  `minimum` and `maximum`, `array` with `maxItems`, and closed objects whose
+  properties are all required. Integer ranges are exact. Limits: a string is
+  nonempty and `maxLength` bounds its UTF-8 bytes; `number` (floats),
+  `oneOf`, `$ref`, `pattern` and every other keyword are refused by name;
+  nesting is capped by the engine's depth of 24 (about eight list items);
+  members are emitted in sorted name order.
+
 ## Progress
 
 - **2026-11-20:** plan written from the harness brief, the tree at `0e2c7ff`
   and Mark's answers. No code changed.
 - **2026-11-20:** D3–D6 recorded; the four first forks closed and two that
   follow from them opened.
+- **2026-11-21:** P1, first slice: the JSON Schema front end and its
+  validator landed in esp behind `output-schema`
+  (`grammar_from_schema`, `validate_against_schema`), with tests for exact
+  integer ranges, array bounds, refusal by keyword, refusal of a decision by
+  path, and the constraint engine driven through a compiled schema. No model
+  has run a turn yet.

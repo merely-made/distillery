@@ -45,6 +45,11 @@ title = "Inert templates by default, the model's own through minijinja (Mark, 20
 source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
 summary = "esp's inert template stays the default; a model's own chat template may be selected per model and is rendered by minijinja, recorded in the session identity."
 
+[decisions."decision-driver D9"]
+title = "Both layers now (Mark, 2026-11-21)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "Athanor gets a general decision-turn trait (context and operation schemas in, one validated decision out) and, in the same slice, a workshop adapter that turns a decision into an Observation."
+
 [decisions."distillery-extraction D1"]
 title = "The move (Mark, 2026-10-31)"
 source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md"
