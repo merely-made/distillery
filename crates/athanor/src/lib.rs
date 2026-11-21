@@ -13,6 +13,8 @@
 pub mod alembic;
 #[cfg(feature = "decision")]
 pub mod decision;
+#[cfg(feature = "workshop-model")]
+mod decision_model;
 #[cfg(feature = "workshop")]
 pub mod workshop;
 #[cfg(feature = "workshop")]

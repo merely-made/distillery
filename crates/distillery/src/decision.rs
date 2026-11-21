@@ -86,6 +86,89 @@ pub fn decide(
     finish(provider, operations, checkpoint)
 }
 
+/// Why a [`ModelDecider`] produced no decision, in terms a caller that does
+/// not name esp can act on.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DecideError {
+    /// The operations or the request are outside what this model path serves.
+    Unsupported(String),
+    /// The model's output is not a decision among the offered operations.
+    Invalid(String),
+    /// Generation failed or did not finish.
+    Failed(String),
+}
+
+impl From<InferError> for DecideError {
+    fn from(error: InferError) -> Self {
+        match error {
+            InferError::Unsupported { .. } => Self::Unsupported(error.to_string()),
+            InferError::InvalidRequest(_) => Self::Invalid(error.to_string()),
+            _ => Self::Failed(error.to_string()),
+        }
+    }
+}
+
+/// Renders a turn's context and offered operations into the model's prompt.
+pub type RenderPrompt = dyn Fn(&str, &Value) -> String + Send + Sync;
+
+/// A loaded provider and its prompt rendering, behind a surface that names no
+/// esp type: what a decision-driver adapter outside this crate holds.
+pub struct ModelDecider {
+    provider: Box<dyn InferenceProvider>,
+    render: Box<RenderPrompt>,
+}
+
+impl ModelDecider {
+    /// Bind a provider to the rendering its model expects.
+    pub fn new(provider: Box<dyn InferenceProvider>, render: Box<RenderPrompt>) -> Self {
+        Self { provider, render }
+    }
+
+    /// Render the turn and ask the provider for one decision.
+    ///
+    /// # Errors
+    /// As [`decide`], mapped to [`DecideError`].
+    pub fn decide(
+        &self,
+        context: &str,
+        operations: &Value,
+        max_tokens: usize,
+    ) -> Result<ModelDecision, DecideError> {
+        let prompt = (self.render)(context, operations);
+        Ok(decide(self.provider.as_ref(), &prompt, operations, max_tokens)?)
+    }
+}
+
+/// Load a decoder from its config, tokenizer and safetensors bytes onto the
+/// first discrete GPU and bind it to `render`. The rendered prompt is taken
+/// literally; `template_eos` names an end-of-turn token the base config
+/// lacks. The placement the runtime bound is part of the provider identity.
+///
+/// # Errors
+/// When no discrete adapter would be bound or the decoder does not load.
+#[cfg(feature = "inference-gpu")]
+pub fn discrete_gpu_decider(
+    config: &[u8],
+    tokenizer: &[u8],
+    weights: &[u8],
+    model_id: &str,
+    template_eos: Option<&str>,
+    render: Box<RenderPrompt>,
+) -> Result<ModelDecider, DecideError> {
+    use esp::infer::decoder::DecoderProvider;
+    let (device, facts) =
+        crate::inference::discrete_gpu_inference_device().map_err(DecideError::Unsupported)?;
+    let placement = format!("burn-wgpu on {facts}");
+    let provider =
+        DecoderProvider::from_bytes(config, tokenizer, weights, model_id, placement, &device)?
+            .with_literal_prompt();
+    let provider = match template_eos {
+        Some(eos) => provider.with_template_eos(eos),
+        None => provider,
+    };
+    Ok(ModelDecider::new(Box::new(provider), render))
+}
+
 /// Re-derive a decision from its recorded checkpoint. The provider prefills
 /// the recorded prompt and token IDs and checks them against the grammar; no
 /// model choice is made again.

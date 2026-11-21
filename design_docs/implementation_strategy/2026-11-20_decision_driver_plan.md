@@ -221,3 +221,20 @@ to the driver.
   done for P1: the Athanor feature that implements `DecisionDriver` with
   `decide` (D10), and template selection (D8); the test renders Qwen's chat
   format by hand.
+- **2026-11-21:** P1, fourth slice (D10): Athanor's `workshop-model` feature
+  depends on Distillery and implements `DecisionDriver` for
+  `distillery::decision::ModelDecider`, whose surface names no esp type
+  (`crates/athanor/src/decision_model.rs`, the whole of the glue).
+  `discrete_gpu_decider` builds one from the artifact triple. Athanor's root
+  resolves Distillery's graph with no unused patch and no family, Burn or
+  wgpu crate at two sources; the 18 third-party crates at two versions are
+  the same 18 the main root shows for `distillery --features decision`.
+  End to end, ignored without `ESP_QWEN3_DIR`
+  (`a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection`,
+  feature `workshop-model-gpu`): the workshop's own fixture run with
+  Qwen3-0.6B at the proposing step on the RTX 4060. It decided
+  `{"op":"brief","order":[0,1,2]}` in 13 tokens; the owner accepted it, step
+  2 confirmed it, and the reopened run awaits review with that brief. The
+  model kept all three passages here, so this run did not exercise a real
+  subset; the scripted test does. P1's done-condition is met except that
+  the prompt is still rendered by hand (D8).

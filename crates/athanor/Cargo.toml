@@ -22,6 +22,11 @@ workshop = ["decision", "dep:servitor", "dep:muniment", "dep:serde", "dep:serde_
 workshop-surface = ["workshop", "dep:cambium"]
 workshop-native = ["workshop-surface", "dep:cambium-desktop"]
 workshop-worker = ["workshop", "dep:armillary"]
+# A model as the decision driver (decision-driver D10): the one place Athanor
+# reaches for Distillery. Nothing else in this crate names it.
+workshop-model = ["decision", "dep:distillery"]
+# The same, with Distillery's GPU decoder: for the ignored real-model workshop test.
+workshop-model-gpu = ["workshop-model", "workshop-worker", "distillery/inference-gpu"]
 workshop-sealed = ["workshop", "dep:eidetic"]
 workshop-destination = ["workshop", "dep:pandect", "dep:kernel", "dep:portolan", "dep:euclid", "dep:uuid"]
 
@@ -33,6 +38,7 @@ pandect = { workspace = true, optional = true }
 servitor = { workspace = true, optional = true }
 muniment = { workspace = true, optional = true }
 armillary = { workspace = true, optional = true }
+distillery = { path = "../distillery", default-features = false, features = ["decision"], optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", optional = true }
 blake3 = { version = "1", optional = true }
@@ -44,6 +50,7 @@ uuid = { version = "1", optional = true }
 cambium-desktop = { workspace = true, optional = true }
 
 [dev-dependencies]
+sha2 = "0.11"
 chacha20poly1305 = "=0.10.1"
 async-trait = "0.1"
 muniment = { workspace = true, features = ["directory"] }

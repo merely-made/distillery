@@ -925,3 +925,95 @@ fn decisions_outside_the_offered_choice_and_unfit_dispatches_are_refused() {
         );
     });
 }
+
+/// A real model at the proposing step (decision-driver P1, D10). Ignored: it
+/// needs the pinned Qwen3-0.6B checkpoint and a discrete GPU.
+///
+/// `ESP_QWEN3_DIR=/path/to/Qwen3-0.6B cargo test --features workshop-model-gpu --lib a_model_proposes -- --ignored --nocapture`
+#[cfg(feature = "workshop-model-gpu")]
+#[test]
+#[ignore = "needs the pinned Qwen3-0.6B checkpoint (ESP_QWEN3_DIR) and a discrete GPU"]
+fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
+    use crate::decision::DecisionError;
+    use sha2::{Digest as _, Sha256};
+    let dir = std::path::PathBuf::from(std::env::var_os("ESP_QWEN3_DIR").expect("ESP_QWEN3_DIR"));
+    let pinned = |name: &str, expected: &str| {
+        let bytes = std::fs::read(dir.join(name)).unwrap_or_else(|e| panic!("{name}: {e}"));
+        let actual: String = Sha256::digest(&bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        assert_eq!(actual, expected, "{name} is not the pinned artifact");
+        bytes
+    };
+    let model = distillery::decision::discrete_gpu_decider(
+        &pinned(
+            "config.json",
+            "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        ),
+        &pinned(
+            "tokenizer.json",
+            "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        ),
+        &pinned(
+            "model.safetensors",
+            "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+        ),
+        "Qwen/Qwen3-0.6B",
+        Some("<|im_end|>"),
+        // Qwen's ChatML turn with thinking closed.
+        Box::new(|context, _operations| {
+            format!(
+                "<|im_start|>system\nYou choose which passages an evidence brief cites. \
+                 Reply with one JSON object.<|im_end|>\n<|im_start|>user\n{context}\n\
+                 Which passages are about retained copies and storage? Give their numbers, \
+                 most relevant first, as {{\"op\":\"brief\",\"order\":[...]}}.<|im_end|>\n\
+                 <|im_start|>assistant\n<think>\n\n</think>\n\n"
+            )
+        }),
+    )
+    .unwrap();
+
+    pollster::block_on(async {
+        let (shop, backend, auth, inputs) = fixture();
+        shop.install(SUBJECT).await.unwrap();
+        shop.begin(1, inputs.clone(), &auth, 10).await.unwrap();
+        let first = shop.dispatch(1, &auth, 11).await.unwrap();
+        shop.observe(evaluate(first).unwrap(), &auth, 12)
+            .await
+            .unwrap();
+        let second = shop.dispatch(1, &auth, 13).await.unwrap();
+        match propose_with(&model, second, 32) {
+            Ok(proposed) => {
+                println!(
+                    "decision {} from {}, {} tokens",
+                    proposed.decision.value, proposed.decision.provider, proposed.decision.tokens
+                );
+                assert!(proposed.decision.provider.starts_with("Qwen/Qwen3-0.6B"));
+                assert!(proposed.decision.tokens > 0);
+                let chosen = proposed.observation.proposal.as_ref().unwrap().sources.clone();
+                assert!(chosen.len() >= 2 && chosen.iter().all(|p| inputs.contains(p)));
+                shop.observe(proposed.observation, &auth, 14).await.unwrap();
+                let third = shop.dispatch(1, &auth, 15).await.unwrap();
+                shop.observe(evaluate(third).unwrap(), &auth, 16)
+                    .await
+                    .unwrap();
+                let view = Workshop::new(backend, shop.owner.clone(), ID)
+                    .view(Some(1))
+                    .await
+                    .unwrap();
+                assert_eq!(view.review, Some(Review::AwaitingReview));
+                let brief = view.proposal.unwrap();
+                assert_eq!(brief.sources, chosen);
+                validate_proposal(&brief).unwrap();
+            },
+            // A schema-valid decision can still repeat a passage; the adapter
+            // refuses it by name and the run is left where it was.
+            Err(ProposeError::Driver(DecisionError::Invalid(detail))) => {
+                println!("decision refused: {detail}");
+                assert_eq!(shop.view(Some(1)).await.unwrap().review, Some(Review::Generating));
+            },
+            Err(other) => panic!("{other}"),
+        }
+    });
+}
