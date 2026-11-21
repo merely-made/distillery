@@ -44,20 +44,20 @@ scenograph = { git = "https://github.com/merely-made/graphshell.git", branch = "
 scenomise = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 scenotime = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 # Suppliers at Mere's pins, so a Mere graph resolves one copy of each.
-apparatus-core = { version = "0.1.0", git = "https://github.com/merely-made/armillary.git", branch = "main", default-features = false }
+apparatus-core = { version = ">=0.1.0", git = "https://github.com/merely-made/armillary.git", branch = "main", default-features = false }
 armillary = { version = "0.1.1", git = "https://github.com/merely-made/armillary.git", branch = "main" }
 eidetic = { version = ">=0.0.3", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 eidetic-search = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 gemot = { version = "0.1.1", git = "https://github.com/merely-made/gemot.git", branch = "main" }
-genet-scripted-dom = { version = "0.1.2", git = "https://github.com/merely-made/genet.git", branch = "main" }
-identity = { package = "personae", version = "0.3.0", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
+genet-scripted-dom = { version = ">=0.1.2", git = "https://github.com/merely-made/genet.git", branch = "main" }
+identity = { package = "personae", version = ">=0.3.0", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
 insigne = { version = ">=0.0.2", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
-layout-dom-api = { version = "0.1.1", git = "https://github.com/merely-made/genet.git", branch = "main" }
+layout-dom-api = { version = ">=0.1.1", git = "https://github.com/merely-made/genet.git", branch = "main" }
 mien = { version = ">=0.0.1", git = "https://github.com/merely-made/gemot.git", branch = "main" }
 mooting = { version = "0.1.0", git = "https://github.com/merely-made/gemot.git", branch = "main" }
-muniment = { version = "0.2.1", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
-notochord = { version = "0.1.1", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
-personae = { version = "0.3.0", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
+muniment = { version = ">=0.2.1", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
+notochord = { version = ">=0.1.1", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
+personae = { version = ">=0.3.0", git = "https://github.com/merely-made/dramatis.git", branch = "main" }
 proofs = { package = "mere-proofs", version = "0.1.0", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 stickleback = { version = "0.4", git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 tracing = "0.1"
@@ -86,9 +86,9 @@ servitor = { git = "https://github.com/merely-made/eidetic.git", branch = "main"
 stickleback = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 muniment = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 burn-remote = { path = "support/patches/burn-remote" }
-layout-dom-api = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.1" }
-genet-scripted-dom = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.2" }
-genet-text = { git = "https://github.com/merely-made/genet.git", branch = "main", version = "0.1.0" }
+layout-dom-api = { git = "https://github.com/merely-made/genet.git", branch = "main", version = ">=0.1.1" }
+genet-scripted-dom = { git = "https://github.com/merely-made/genet.git", branch = "main", version = ">=0.1.2" }
+genet-text = { git = "https://github.com/merely-made/genet.git", branch = "main", version = ">=0.1.0" }
 # Graphshell's crates name each other by published version; one copy of each.
 cambium = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 mere-surface-api = { git = "https://github.com/merely-made/graphshell.git", branch = "main" }
