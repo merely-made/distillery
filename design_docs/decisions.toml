@@ -50,6 +50,18 @@ title = "Both layers now (Mark, 2026-11-21)"
 source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
 summary = "Athanor gets a general decision-turn trait (context and operation schemas in, one validated decision out) and, in the same slice, a workshop adapter that turns a decision into an Observation."
 
+[decisions."decision-driver D10"]
+title = "Athanor reaches for Distillery (Mark, 2026-11-21)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "The trait stays in Athanor with no esp dependency by default; Distillery exposes a plain model-decision function and knows nothing of Athanor; an optional Athanor feature depends on Distillery and holds the trait implementation."
+draws_on = ["mere:engine-split D117"]
+amends = ["decision-driver D5"]
+
+[decisions."decision-driver D11"]
+title = "A driver chooses and orders passages (Mark, 2026-11-21)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "At the proposing step a driver picks at least two of the owner's selected passages and their order; the brief text stays deterministic; the workshop accepts a duplicate-free subset of the run's passages and confirms the recorded candidate."
+
 [decisions."distillery-extraction D1"]
 title = "The move (Mark, 2026-10-31)"
 source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md"

@@ -84,6 +84,22 @@ your recommendations".
 
   Links: summary Athanor gets a general decision-turn trait (context and operation schemas in, one validated decision out) and, in the same slice, a workshop adapter that turns a decision into an Observation.
 
+- **D10. Athanor reaches for Distillery (Mark, 2026-11-21):** shown that D5
+  as written needs Distillery to depend on Athanor, which engine-split D117
+  avoided by giving Athanor its own workspace root: "Athanor reaches for
+  Distillery", over a shared leaf crate, over Distillery depending on
+  Athanor, and over the trait in Servitor.
+
+  Links: amends decision-driver D5 · draws on mere:engine-split D117 · summary The trait stays in Athanor with no esp dependency by default; Distillery exposes a plain model-decision function and knows nothing of Athanor; an optional Athanor feature depends on Distillery and holds the trait implementation.
+
+- **D11. A driver chooses and orders passages (Mark, 2026-11-21):** shown
+  that the workshop accepted a worker's proposal only when identical to the
+  brief built from the run's passages in their original order: "Choose and
+  order passages", over an adapter that leaves the workshop's checks alone
+  and over deferring the adapter to P3.
+
+  Links: summary At the proposing step a driver picks at least two of the owner's selected passages and their order; the brief text stays deterministic; the workshop accepts a duplicate-free subset of the run's passages and confirms the recorded candidate.
+
 No `doctrine.md` exists in this repository yet, so these are recorded as
 cases without a statement to file them under (DOC_POLICY §11).
 
@@ -93,13 +109,13 @@ to main and pushed.
 
 ## Open forks
 
-1. **The confirming step (P3).** `evaluate` requires the candidate proposal
-   at step 2 to equal what the deterministic code would build
-   (`crates/athanor/src/workshop.rs`, `evaluate`). A model's proposal cannot
-   pass that as written; how a model-made proposal is confirmed belongs with
-   the Alembic plan.
-
-Otherwise none open. The shape these decisions sit in is the
+1. **Where a model's identity and usage are kept.** `propose_with` returns
+   the decision's provider identity and token count to the host, but the
+   workshop's run record has no place for them and its limits carry
+   `tokens: 0`. The brief asks that both be retained.
+2. **The Alembic plan has not seen D11.** It is the single acceptance
+   specification for the evidence brief and lives in Mere; D11 widens what
+   the workshop accepts and is recorded only here so far. The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
 
 ## Phases
@@ -183,3 +199,12 @@ to the driver.
   integer ranges, array bounds, refusal by keyword, refusal of a decision by
   path, and the constraint engine driven through a compiled schema. No model
   has run a turn yet.
+- **2026-11-21:** P1, second slice (D9, D11): `athanor::decision` (the
+  `DecisionDriver` trait, `Turn`, `Decision`, a `Scripted` driver) behind a
+  light `decision` feature, and `workshop::propose_with`, which lets a
+  driver choose and order passages at step 1. The workshop's load check,
+  `observe` and `evaluate`'s confirming step accept a duplicate-free subset
+  of the run's passages and confirm the recorded candidate; acceptance
+  integrity reads the reviewed brief's digest. Athanor's 35 library tests
+  pass with `workshop-worker` (33 as before, 2 new). Its `workshop-sealed`
+  and `workshop-destination` features were not rebuilt. Still no model.

@@ -16,7 +16,9 @@ path = "src/lib.rs"
 
 [features]
 default = []
-workshop = ["dep:servitor", "dep:muniment", "dep:serde", "dep:serde_json", "dep:blake3"]
+# The decision-turn trait alone (decision-driver D5): no workshop, no model runtime.
+decision = ["dep:serde_json"]
+workshop = ["decision", "dep:servitor", "dep:muniment", "dep:serde", "dep:serde_json", "dep:blake3"]
 workshop-surface = ["workshop", "dep:cambium"]
 workshop-native = ["workshop-surface", "dep:cambium-desktop"]
 workshop-worker = ["workshop", "dep:armillary"]

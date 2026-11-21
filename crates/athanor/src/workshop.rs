@@ -288,6 +288,19 @@ pub(crate) fn proposal(id: [u8; 16], run: u64, sources: &[Passage]) -> Result<Pr
     Ok(value)
 }
 
+/// A brief `proposal` builds from at least two distinct passages of `inputs`,
+/// in any order (decision-driver D11): a body may choose and order what the
+/// owner selected, never add to it or alter the text.
+fn drawn_from(candidate: &Proposal, id: [u8; 16], run: u64, inputs: &[Passage]) -> bool {
+    let sources = &candidate.sources;
+    (2..=inputs.len()).contains(&sources.len())
+        && sources
+            .iter()
+            .enumerate()
+            .all(|(at, passage)| inputs.contains(passage) && !sources[..at].contains(passage))
+        && proposal(id, run, sources).is_ok_and(|built| &built == candidate)
+}
+
 /// Resolve only references contained in this immutable proposal. The source
 /// owner must authorize and open this exact version; there is no latest-version
 /// fallback and this function never acquires content.
@@ -689,9 +702,11 @@ impl<B: WorkshopBackend> Workshop<B> {
                 return Err(Error::Invalid("run limits"));
             }
             let reducer = run.replay(&self.owner)?;
-            let expected = proposal(self.id, run.id, &run.inputs)?;
-            if run.candidate.as_ref().is_some_and(|p| p != &expected)
-                || run.proposal.as_ref().is_some_and(|p| p != &expected)
+            if run
+                .candidate
+                .as_ref()
+                .is_some_and(|p| !drawn_from(p, self.id, run.id, &run.inputs))
+                || run.proposal.is_some() && run.proposal != run.candidate
             {
                 return Err(Error::Invalid("persisted proposal integrity"));
             }
@@ -711,17 +726,21 @@ impl<B: WorkshopBackend> Workshop<B> {
                 _ => (None, None),
             };
             if let Some(a) = acceptance {
+                // An acceptance names the brief that was reviewed.
+                let Some(reviewed) = run.proposal.as_ref() else {
+                    return Err(Error::Invalid("acceptance integrity"));
+                };
                 if a.operation
                     != digest(&(
                         "alembic-acceptance-v1",
                         &self.owner,
                         self.id,
                         run.id,
-                        expected.digest,
+                        reviewed.digest,
                     ))
                     || a.installation != self.id
                     || a.run != run.id
-                    || a.proposal != expected.digest
+                    || a.proposal != reviewed.digest
                     || a.proposing_subject != run.admitted.subject
                     || a.destination.owner != self.owner
                     || a.destination.graph.is_empty()
@@ -998,14 +1017,18 @@ impl<B: WorkshopBackend> Workshop<B> {
             self.save(Some(before), record).await?;
             return Err(Error::Budget);
         }
-        let wanted = if c.step == 0 {
-            None
-        } else {
-            Some(proposal(self.id, run.id, &run.inputs)?)
+        let drawn = |p: &Proposal| drawn_from(p, self.id, run.id, &run.inputs);
+        let accepted = match (c.step, observation.proposal.as_ref()) {
+            (0, None) => true,
+            (1, Some(p)) => drawn(p),
+            // The confirmed brief is the candidate recorded at step 1.
+            (2, Some(p)) => run.candidate.as_ref() == Some(p) && drawn(p),
+            _ => false,
         };
-        if observation.proposal != wanted {
+        if !accepted {
             return Err(Error::Invalid("worker proposal"));
         }
+        let wanted = observation.proposal;
         if c.step == 1 {
             run.candidate = wanted;
         } else if c.step == 2 {
@@ -1383,12 +1406,13 @@ pub fn evaluate(dispatch: Dispatch) -> Result<Observation, Error> {
     let proposed = match c.step {
         0 => None,
         1 => Some(proposal(dispatch.installation, c.run, &dispatch.inputs)?),
-        2 => {
-            let wanted = proposal(dispatch.installation, c.run, &dispatch.inputs)?;
-            if dispatch.candidate.as_ref() != Some(&wanted) {
-                return Err(Error::Invalid("candidate"));
-            }
-            Some(wanted)
+        2 => match &dispatch.candidate {
+            Some(candidate)
+                if drawn_from(candidate, dispatch.installation, c.run, &dispatch.inputs) =>
+            {
+                Some(candidate.clone())
+            },
+            _ => return Err(Error::Invalid("candidate")),
         },
         _ => return Err(Error::Invalid("workflow step")),
     };
@@ -1444,6 +1468,9 @@ pub mod worker {
         }
     }
 }
+
+mod propose;
+pub use propose::{ProposeError, Proposed, context, operations, propose_with};
 
 #[cfg(test)]
 mod tests;

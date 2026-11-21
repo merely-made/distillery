@@ -811,3 +811,117 @@ fn armillary_driver_uses_the_same_body_and_observes_join() {
         );
     });
 }
+
+#[test]
+fn a_driver_chooses_and_orders_passages_and_the_owner_accepts_only_that_choice() {
+    pollster::block_on(async {
+        let (shop, backend, auth, inputs) = fixture();
+        shop.install(SUBJECT).await.unwrap();
+        shop.begin(1, inputs.clone(), &auth, 10).await.unwrap();
+        let first = shop.dispatch(1, &auth, 11).await.unwrap();
+        shop.observe(evaluate(first).unwrap(), &auth, 12)
+            .await
+            .unwrap();
+
+        let second = shop.dispatch(1, &auth, 13).await.unwrap();
+        assert_eq!(
+            operations(&second)["properties"]["order"]["items"]["maximum"],
+            2
+        );
+        assert!(context(&second).starts_with("Passage 0: Field notes\nA retained copy"));
+        let driver =
+            crate::decision::Scripted::new([serde_json::json!({"op": "brief", "order": [2, 0]})]);
+        let proposed = propose_with(&driver, second, 64).unwrap();
+        assert_eq!(proposed.decision.provider, "athanor.scripted");
+        let chosen = vec![inputs[2].clone(), inputs[0].clone()];
+        assert_eq!(
+            proposed.observation.proposal.as_ref().unwrap().sources,
+            chosen
+        );
+
+        // A passage the owner never selected cannot enter through a worker.
+        let mut stray = inputs[1].clone();
+        stray.source.resource = "outside-grant".into();
+        let mut outside = proposed.observation.clone();
+        outside.proposal = Some(proposal(ID, 1, &[inputs[0].clone(), stray]).unwrap());
+        assert_eq!(
+            shop.observe(outside, &auth, 14).await,
+            Err(Error::Invalid("worker proposal"))
+        );
+        shop.observe(proposed.observation, &auth, 14).await.unwrap();
+
+        // Step 2 confirms the recorded candidate and nothing else.
+        let third = shop.dispatch(1, &auth, 15).await.unwrap();
+        let confirmed = evaluate(third).unwrap();
+        let mut swapped = confirmed.clone();
+        swapped.proposal = Some(proposal(ID, 1, &inputs).unwrap());
+        assert_eq!(
+            shop.observe(swapped, &auth, 16).await,
+            Err(Error::Invalid("worker proposal"))
+        );
+        shop.observe(confirmed, &auth, 16).await.unwrap();
+
+        let reopened = Workshop::new(backend, shop.owner.clone(), ID);
+        let view = reopened.view(Some(1)).await.unwrap();
+        assert_eq!(view.review, Some(Review::AwaitingReview));
+        let brief = view.proposal.unwrap();
+        assert_eq!(brief.sources, chosen);
+        validate_proposal(&brief).unwrap();
+        assert!(
+            brief.djot.find("Acceptance finishes").unwrap()
+                < brief.djot.find("A retained copy").unwrap()
+        );
+        assert!(!brief.djot.contains("The café note"));
+    });
+}
+
+#[test]
+fn decisions_outside_the_offered_choice_and_unfit_dispatches_are_refused() {
+    use crate::decision::{DecisionError, Scripted};
+    use serde_json::json;
+    pollster::block_on(async {
+        let (shop, _, auth, inputs) = fixture();
+        shop.install(SUBJECT).await.unwrap();
+        shop.begin(1, inputs, &auth, 0).await.unwrap();
+        let script = |value| Scripted::new([value]);
+        let fine = || json!({"op": "brief", "order": [0, 1]});
+
+        let zero = shop.dispatch(1, &auth, 1).await.unwrap();
+        assert_eq!(
+            propose_with(&script(fine()), zero.clone(), 8).unwrap_err(),
+            ProposeError::Workshop(Error::Invalid("workflow step"))
+        );
+        shop.observe(evaluate(zero).unwrap(), &auth, 2)
+            .await
+            .unwrap();
+
+        let one = shop.dispatch(1, &auth, 3).await.unwrap();
+        for bad in [
+            json!({"op": "brief", "order": [0, 0]}),
+            json!({"op": "brief", "order": [1]}),
+            json!({"op": "brief", "order": [0, 3]}),
+            json!({"op": "brief", "order": [0, -1]}),
+            json!({"op": "drop", "order": [0, 1]}),
+            json!({"op": "brief", "order": [0, 1], "extra": 1}),
+            json!("brief"),
+        ] {
+            assert!(
+                matches!(
+                    propose_with(&script(bad.clone()), one.clone(), 8),
+                    Err(ProposeError::Driver(DecisionError::Invalid(_)))
+                ),
+                "{bad}"
+            );
+        }
+        assert!(matches!(
+            propose_with(&Scripted::default(), one.clone(), 8),
+            Err(ProposeError::Driver(DecisionError::Failed(_)))
+        ));
+        let mut private = one;
+        private.protected = true;
+        assert_eq!(
+            propose_with(&script(fine()), private, 8).unwrap_err(),
+            ProposeError::Workshop(Error::Invalid("private storage is not qualified"))
+        );
+    });
+}

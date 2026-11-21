@@ -11,6 +11,8 @@
 
 #[cfg(feature = "workshop")]
 pub mod alembic;
+#[cfg(feature = "decision")]
+pub mod decision;
 #[cfg(feature = "workshop")]
 pub mod workshop;
 #[cfg(feature = "workshop")]
