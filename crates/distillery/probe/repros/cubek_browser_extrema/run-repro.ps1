@@ -30,7 +30,7 @@ Push-Location $TargetDir
 try {
     # The committed wasm cfg (.cargo/config.toml, ruling 558); this neutral
     # directory would not find it.
-    cargo build --locked --manifest-path (Join-Path $reproRoot 'Cargo.toml') --config (Join-Path $reproRoot '.cargo\config.toml') --config "build.build-dir='$TargetDir'" --release --target wasm32-unknown-unknown
+    cargo build --manifest-path (Join-Path $reproRoot 'Cargo.toml') --config (Join-Path $reproRoot '.cargo\config.toml') --config "build.build-dir='$TargetDir'" --release --target wasm32-unknown-unknown
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 } finally {
     Pop-Location

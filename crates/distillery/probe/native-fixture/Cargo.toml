@@ -10,7 +10,7 @@ description = "Native numerical control for Distillery's browser model matrix."
 [workspace]
 
 [dependencies]
-burn = { version = "=0.22.1", default-features = false, features = ["ndarray", "std"] }
+burn = { version = "=0.23.0-pre.2", default-features = false, features = ["flex", "std"] }
 esp = { features = ["bert", "decoder"], path = "../../../esp" }
 serde_json = "1"
 

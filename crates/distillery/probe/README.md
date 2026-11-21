@@ -19,8 +19,9 @@ crates/distillery/probe/run-probe.ps1 `
 ```
 
 The fetch command verifies every configured byte count and SHA-256 before
-installing the ignored local artifacts. The standalone lockfile and exact wasm-bindgen CLI pin define the build inputs.
-The runner uses `--locked`; it also overrides the build directory explicitly
+installing the ignored local artifacts. The manifest and the exact wasm-bindgen CLI pin define the build inputs.
+The runner resolves fresh, with no tracked lock and no `--locked`
+(`mere:engine-split D139`); it overrides the build directory explicitly
 when loading the portable wasm configuration.
 
 The e5-base-v2 row names a manifest instead of carrying its own pin: its
@@ -66,11 +67,14 @@ in use to return exactly to baseline, and repeats the numerical and cleanup
 proof under a fresh lease and session. Reserved allocator bytes are recorded
 but are not a live-allocation gate. The base fixture's receipt remains scoped
 to allocator telemetry.
-Unlike the browser workspace, this nested fixture has a stable committed lock
-and runs Cargo from outside the checkout with `--locked`, so gitignored local
-patch redirects cannot contaminate the receipt. It explicitly patches to
-Mere's production Burn Remote and CubeCL sources and restates Mere's p2panda
-fork because nested workspaces do not inherit the root patch table. The first
+The fixture follows `esp` and `distillery` onto their Burn cohort (0.23.0-pre.2
+and CubeCL 0.12.0-pre.2 since 2026-11-20); pinning it apart from them puts two
+Burns in one graph. It resolves fresh, with no tracked lock and no `--locked`
+(`mere:engine-split D139`), and patches Burn Remote to this repository's
+`support/patches/burn-remote` because nested workspaces do not inherit the root
+patch table. The `cubek-reduce` patch was built for CubeCL 0.11.4 and is not
+applied here. Both runners take the model directory from `-ModelDir` or
+`ESP_MINILM_DIR`. The first
 passing machine receipt is
 [`receipts/2026-08-23_remote_minilm.json`](receipts/2026-08-23_remote_minilm.json).
 The allocator and feature-sidequest summary is

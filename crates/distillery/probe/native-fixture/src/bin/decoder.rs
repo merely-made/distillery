@@ -47,8 +47,8 @@ fn main() -> Result<(), String> {
         &tokenizer,
         &weights,
         "HuggingFaceTB/SmolLM2-135M-Instruct",
-        "burn-ndarray",
-        &burn::tensor::Device::ndarray(),
+        "burn-flex",
+        &burn::tensor::Device::flex(),
     )
     .map_err(|error| format!("load decoder: {error}"))?;
     let load_ms = load_started.elapsed().as_secs_f64() * 1_000.0;

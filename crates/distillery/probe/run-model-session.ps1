@@ -28,7 +28,7 @@ $env:ESP_MODEL_SESSION_DIRTY = if ($ownedStatus) { 'true' } else { 'false' }
 # contaminate the committed standalone lockfile or its receipt.
 Push-Location ([System.IO.Path]::GetTempPath())
 try {
-    cargo run --release --locked --manifest-path $fixture -- $resolvedModel
+    cargo run --release --manifest-path $fixture -- $resolvedModel
     $cargoExit = $LASTEXITCODE
 } finally {
     Pop-Location

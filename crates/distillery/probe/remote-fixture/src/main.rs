@@ -10,7 +10,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use burn::backend::Backend;
+use burn_backend::Backend;
 use burn::tensor::Device;
 use burn_wgpu::{Wgpu, WgpuDevice};
 use cubecl::wgpu::WgpuDeviceKind;
@@ -979,7 +979,7 @@ async fn run_remote(
                 "server_peer": server_endpoint.id().to_string(),
                 "client_peer": client_endpoint.id().to_string(),
                 "same_endpoint": false,
-                "server_backend": format!("burn-wgpu 0.22.1 Wgpu/AutoCompiler DiscreteGpu(0), {}", backend_profile()),
+                "server_backend": format!("burn-wgpu 0.23.0-pre.2 Wgpu/AutoCompiler DiscreteGpu(0), {}", backend_profile()),
                 "client_backend": "Burn Dispatch Remote over authorized Iroh"
             },
             "first_run": {

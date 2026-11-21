@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 param(
-    [string]$ModelDir = (Join-Path $PSScriptRoot '..\..\..\models\all-MiniLM-L6-v2'),
+    [string]$ModelDir = $env:ESP_MINILM_DIR,
     [string]$Text = 'query: Mere keeps a model local.',
     [int]$CancellationBatch = 512,
     [string]$TargetDir = 'C:\t\cargo-targets\esp',
@@ -14,6 +14,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+if (-not $ModelDir) { throw 'Pass -ModelDir or set ESP_MINILM_DIR to an all-MiniLM-L6-v2 directory.' }
 $probeRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $distilleryRoot = (Resolve-Path (Join-Path $probeRoot '..\..\..')).Path
 $fixture = Join-Path $probeRoot 'remote-fixture\Cargo.toml'
@@ -37,7 +38,7 @@ function Build-Fixture {
     $env:CARGO_TARGET_DIR = $profileTarget
     $env:CARGO_BUILD_BUILD_DIR = $profileTarget
     $featureArgs = if ($Features) { @('--features', $Features) } else { @() }
-    cargo build --release --locked --manifest-path $fixture @featureArgs | Out-Host
+    cargo build --release --manifest-path $fixture @featureArgs | Out-Host
     if ($LASTEXITCODE -ne 0) { throw "fixture build failed for $Profile" }
     $artifactDir = Join-Path $TargetDir 'matrix-artifacts'
     New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
@@ -58,7 +59,7 @@ function Build-DiagnosticFixture {
     $profileTarget = $TargetDir
     $env:CARGO_TARGET_DIR = $profileTarget
     $env:CARGO_BUILD_BUILD_DIR = $profileTarget
-    cargo build --release --locked --manifest-path $fixture --features $Features | Out-Host
+    cargo build --release --manifest-path $fixture --features $Features | Out-Host
     if ($LASTEXITCODE -ne 0) { throw "fixture build failed for $Profile" }
 
     $artifactDir = Join-Path $TargetDir 'matrix-artifacts'
@@ -122,14 +123,14 @@ function Invoke-FixtureRow {
     }
 }
 
-# Avoid the gitignored checkout-local Cargo redirects so the committed nested
-# lockfile is the exact clean-checkout dependency graph used by the receipt.
+# Run from outside the checkout so its gitignored local Cargo redirects do not
+# apply. The graph resolves fresh; no lock is tracked.
 Push-Location ([System.IO.Path]::GetTempPath())
 try {
     if (-not $Matrix) {
         $env:CARGO_TARGET_DIR = $TargetDir
         $env:CARGO_BUILD_BUILD_DIR = $TargetDir
-        cargo run --release --locked --manifest-path $fixture -- remote $resolvedModel $Text $CancellationBatch
+        cargo run --release --manifest-path $fixture -- remote $resolvedModel $Text $CancellationBatch
         $cargoExit = $LASTEXITCODE
     } else {
         $plain = Build-Fixture -Profile 'plain' -Features ''

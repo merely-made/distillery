@@ -19,7 +19,7 @@ serde_json = "1"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 blake3 = "1.5"
-burn = { version = "=0.22.1", default-features = false, features = ["std", "wgpu"] }
+burn = { version = "=0.23.0-pre.2", default-features = false, features = ["std", "wgpu"] }
 eidetic = { default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 esp = { features = ["bert-validation", "bert-wgpu", "decoder-wgpu"], path = "../../esp" }
 # One wasm-bindgen family with graphshell-web and cambium-genet-web-host
@@ -40,7 +40,24 @@ web-sys = { version = "=0.3.106", features = [
 rust-version = "1.97.1"
 
 [patch.crates-io]
-cubek-reduce = { path = "../../../support/patches/cubek-reduce" }
+# cubecl-runtime 0.12.0-pre.2 does not compile for wasm (tune::sampler). The fork is the
+# v0.12.0-pre.2 tag plus one commit; every CubeCL crate in the graph comes from it so the
+# graph holds one copy of each. Remove when an upstream release compiles for wasm.
+cubecl = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-common = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-core = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-environment = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-ir = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-macros = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-macros-internal = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-monitoring = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-opt = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-runtime = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-server = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-std = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-tile = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-wgpu = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
+cubecl-zspace = { git = "https://github.com/mark-ik/cubecl", branch = "mark-ik/0.12" }
 hodograph = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 portolan = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 eidetic = { git = "https://github.com/merely-made/eidetic.git", branch = "main" }

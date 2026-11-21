@@ -3,6 +3,48 @@
 # (`responsa lookup`). DOC_POLICY, "Decisions and doctrine".
 schema = 1
 
+[decisions."decision-driver D1"]
+title = "A stack agent, on Burn (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "The agent is built from the stack's own parts and runs its model on Burn; Hermes Agent is a design reference only."
+draws_on = ["mere:house-style D12"]
+
+[decisions."decision-driver D2"]
+title = "Agent first, on a model esp already runs (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "The first decision driver uses a Qwen-family model esp runs natively today; Inkling 2 Mini follows as its own plan."
+plans = ["inkling-body"]
+
+[decisions."decision-driver D3"]
+title = "Qwen3, sized by measurement (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "The first driver model is Qwen3: 0.6B for wiring, 4B for work, 8B if it measures to fit."
+
+[decisions."decision-driver D4"]
+title = "Decisions are forced by constrained decoding (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "A decision is produced under `OutputGrammar` and still validated against the operation schema."
+
+[decisions."decision-driver D5"]
+title = "Trait in Athanor, model in Distillery (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "Athanor owns the decision-driver trait; Distillery implements it over esp."
+
+[decisions."decision-driver D6"]
+title = "A small fixture first, then the evidence brief (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "P1 and P2 run on a fixture; the Alembic evidence brief is P3's task."
+
+[decisions."decision-driver D7"]
+title = "JSON Schema in front of the grammar (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "Operations are declared as JSON Schema and compiled into `OutputGrammar`, which grows numbers, booleans and lists; replay and private-text clearing are unchanged."
+
+[decisions."decision-driver D8"]
+title = "Inert templates by default, the model's own through minijinja (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "esp's inert template stays the default; a model's own chat template may be selected per model and is rendered by minijinja, recorded in the session identity."
+
 [decisions."distillery-extraction D1"]
 title = "The move (Mark, 2026-10-31)"
 source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md"
@@ -119,3 +161,48 @@ source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_p
 summary = "The graph-writing workshop destinations are a pandect feature, not a new crate."
 draws_on = ["distillery-extraction D12"]
 amends = ["distillery-extraction D16"]
+
+[decisions."inkling-body D1"]
+title = "The model in the stack (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "Inkling 2 Mini is to run in esp on Burn, not only behind an outside runtime."
+
+[decisions."inkling-body D2"]
+title = "Weights may be fetched (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "The Apache-2.0 checkpoint and its quantized derivatives may be downloaded and used."
+
+[decisions."inkling-body D3"]
+title = "The whole checkpoint (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "The port covers the text decoder, the vision encoder and projector, and the multi-token-prediction head."
+
+[decisions."inkling-body D4"]
+title = "The laptop, and the mesh (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "The model must run on the Windows laptop and also split across devices through the mesh host."
+
+[decisions."inkling-body D5"]
+title = "Port from transformers (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "The transformers implementation is the port source and parity reference; llama.cpp GGUFs are a sanity check."
+
+[decisions."inkling-body D6"]
+title = "Read NVFP4 and MXFP8 directly (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "esp reads the checkpoint's own quantization rather than requantizing it at import."
+
+[decisions."inkling-body D7"]
+title = "Text, laptop GPU, vision, prediction head, mesh (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "The port lands in the order text decoder, laptop GPU, vision, MTP head, mesh split."
+
+[decisions."inkling-body D8"]
+title = "Stream experts first, mesh second (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "The 8 GB fit is tried first by streaming experts from RAM, then by a device split."
+
+[decisions."inkling-body D9"]
+title = "NVFP4/MXFP8 and GGUF readers, both now (Mark, 2026-11-20)"
+source = "design_docs/implementation_strategy/2026-11-20_inkling_body_plan.md"
+summary = "esp gains import readers for NVFP4/MXFP8 and for GGUF together; Burn's scheme stays the executed layout."

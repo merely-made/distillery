@@ -22,7 +22,9 @@ use std::path::Path;
 use burn::tensor::{Device, Int, Tensor, TensorData};
 
 use crate::embed::bert::config::BertConfig;
-use crate::embed::bert::loader::{load_artifacts, load_into_model, load_into_model_from_bytes};
+use crate::embed::bert::loader::load_into_model_from_bytes;
+#[cfg(not(feature = "persistence"))]
+use crate::embed::bert::loader::{load_artifacts, load_into_model};
 use crate::embed::bert::model::{BertModel, Pooling};
 use crate::embed::bert::tokenizer::BertTokenizer;
 use crate::embed::provider::{EmbedError, EmbeddingProvider, SimilarityMetric};
@@ -210,6 +212,7 @@ impl BertEmbeddingProvider {
             config.pad_token_id as u32,
         )?;
         let model = load_into_model_from_bytes(&config, weights_bytes, &device)?;
+        #[cfg_attr(not(feature = "persistence"), allow(unused_mut))]
         let mut provider = Self::new_with_components(config, model, tokenizer, device);
         #[cfg(feature = "persistence")]
         {
