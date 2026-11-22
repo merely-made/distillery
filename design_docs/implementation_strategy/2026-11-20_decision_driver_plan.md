@@ -123,6 +123,28 @@ Servitor's reducer were read for P2.
   what is checked", over adding a claim to check and over deferring.
 
   Links: summary P2's "a claimed success that the observations contradict is caught" becomes: a brief must be rebuildable from the owner's own passages, and the confirmed brief must equal the recorded candidate.
+D15–D17 answer three forks the P2 lane returned on 2026-11-22.
+
+- **D15. Separate limits for model runs (Mark, 2026-11-22):** shown that
+  the lane had raised the limits for every run (4 decisions, 256 tokens, 2
+  consecutive failures), which lets a model-free run retry an interrupted
+  proposing step: "Separate limits for model runs", over one raised limit
+  for all and over one limit with the token cap taken from the driver.
+
+  Links: refines decision-driver D12, decision-driver D13 · summary A run without a decision driver keeps the limits it had (3 decisions, no tokens, no retry). A run begun with a driver gets 4 decisions, one retry and a token limit of twice the driver's per-turn cap; the limits are stored with the run.
+
+- **D16. An integrity refusal pauses and writes nothing (Mark,
+  2026-11-22):** asked whether a brief that fails the owner's checks should
+  count as a failed model turn: "Yes, pause and write nothing", over
+  journalling it as a failed turn with or without a retry.
+
+  Links: refines decision-driver D13, decision-driver D14 · summary A brief not rebuildable from the owner's passages, or a confirmed brief that differs from the candidate, is refused without a journal entry and outside the retry count; the run pauses for a person.
+
+- **D17. An interrupted confirming step stays unfinishable (Mark,
+  2026-11-22):** shown that retrying step 2 would be a third tool call
+  against a limit of 2, as before P2: "Leave it", over allowing one retry.
+
+  Links: summary The tool-call limit stays 2; a run whose confirming step was interrupted ends as budget-exhausted.
 No `doctrine.md` exists in this repository yet, so these are recorded as
 cases without a statement to file them under (DOC_POLICY §11).
 
@@ -283,3 +305,24 @@ to the driver.
   at intent (`servitor` `run/reducer.rs`, `would_exceed`), the worker actor
   calls `evaluate` directly, and no journal entry carries tokens, a model
   identity or a failure.
+- **2026-11-22:** P2 landed from a lane in its own worktree (`8d80ef2`,
+  `01f1699`), verified there before merging: 55 Athanor library tests pass
+  with `workshop-model-gpu`, `workshop-sealed` and `workshop-destination`,
+  the real-model workshop run among them (Qwen3-0.6B, `[0,1,2]`, 13 tokens,
+  32 reserved against a limit of 64). The worker and the host driver take a
+  decision driver (`Decider`, `Driver::with_decider`,
+  `Workshop::begin_model`); a model run carries its own limits
+  (`model_limits`) and a model-free run keeps the old ones, its
+  interruption test unchanged (D15). The proposing step reserves its cap at
+  intent and the journal keeps provider and actual tokens (D12); a failed or
+  refused turn is journalled and retried once (D13); a cancelled run stops
+  an in-flight turn through `Turn::cancelled` and esp's stop flag;
+  integrity refusals pause and write nothing (D14, D16). The record schema
+  is 2; the brief's schema stays 1. Lane choices kept: a refused decision
+  and a driver error are journalled alike; the view's `usage.tokens` is the
+  sum of reservations and `turns` carries the actual counts; a failed turn
+  records no provider or tokens; a private dispatch with a driver fails the
+  step; resuming under a mismatched driver is refused before anything is
+  written. Not covered: no real model was cancelled mid-turn (the stop path
+  is tested with a fake provider), and the decision path still does not run
+  inside a bound session, so a decision carries no template hash.

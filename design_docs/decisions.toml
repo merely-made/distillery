@@ -77,6 +77,21 @@ title = "The claim condition restated (Mark, 2026-11-22)"
 source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
 summary = "P2's \"a claimed success that the observations contradict is caught\" becomes: a brief must be rebuildable from the owner's own passages, and the confirmed brief must equal the recorded candidate."
 
+[decisions."decision-driver D15"]
+title = "Separate limits for model runs (Mark, 2026-11-22)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "A run without a decision driver keeps the limits it had (3 decisions, no tokens, no retry). A run begun with a driver gets 4 decisions, one retry and a token limit of twice the driver's per-turn cap; the limits are stored with the run."
+
+[decisions."decision-driver D16"]
+title = "An integrity refusal pauses and writes nothing (Mark, 2026-11-22)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "A brief not rebuildable from the owner's passages, or a confirmed brief that differs from the candidate, is refused without a journal entry and outside the retry count; the run pauses for a person."
+
+[decisions."decision-driver D17"]
+title = "An interrupted confirming step stays unfinishable (Mark, 2026-11-22)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "The tool-call limit stays 2; a run whose confirming step was interrupted ends as budget-exhausted."
+
 [decisions."distillery-extraction D1"]
 title = "The move (Mark, 2026-10-31)"
 source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md"
