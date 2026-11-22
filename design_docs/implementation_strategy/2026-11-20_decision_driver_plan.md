@@ -145,6 +145,7 @@ D15–D17 answer three forks the P2 lane returned on 2026-11-22.
   against a limit of 2, as before P2: "Leave it", over allowing one retry.
 
   Links: summary The tool-call limit stays 2; a run whose confirming step was interrupted ends as budget-exhausted.
+
 No `doctrine.md` exists in this repository yet, so these are recorded as
 cases without a statement to file them under (DOC_POLICY §11).
 
@@ -154,15 +155,24 @@ to main and pushed.
 
 ## Open forks
 
-1. **Where a model's identity and usage are kept.** `propose_with` returns
-   the decision's provider identity and token count to the host, but the
-   workshop's run record has no place for them and its limits carry
-   `tokens: 0`. The brief asks that both be retained.
-2. **The Alembic plan has not seen D11.** It is the single acceptance
-   specification for the evidence brief and lives in Mere; D11 widens what
-   the workshop accepts and is recorded only here so far. The shape these decisions sit in is the
-[Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
+1. **Whether the Alembic plan adopts the driver.** That plan is the single
+   acceptance specification for the evidence brief and lives in Mere. Its
+   Findings carry an entry of 2026-11-22 describing D11, D15 and D16 and what
+   they change against its constraints; it has not ruled, and its W3 keeps
+   model decisions behind a separate gate. P3 waits on it.
+2. **Consumers have not been rebuilt.** Turnstone and Graphshell's host take
+   `mere-athanor` from this repository's `main`. P2 changed the stored run
+   record (schema 2; older records are refused), added `WorkshopView::turns`
+   and made `Observation` unconstructible outside Athanor. Neither consumer
+   has been built or run against it.
+3. **No evidence of value yet.** Two real-model runs are not a measurement.
+   Qwen3 4B, the working driver D3 names, has not been tried.
+4. **A decision carries no template hash.** The model turn does not run
+   inside a bound model session, so the chat template's bytes are not bound
+   to the decision the way `BoundModelSession::prepare` would bind them.
 
+The shape these decisions sit in is the
+[Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
 ## Phases
 
 ### P1. One decision from a real model
