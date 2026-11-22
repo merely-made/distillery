@@ -1,6 +1,6 @@
 # Decision driver: a model-guided turn for the workshop, on Burn
 
-**Status (2026-11-20):** plan. Nothing here is built. Awaiting Mark's read and the open forks below.
+**Status (2026-11-22):** in progress. P1 and P2 have landed: a real model (Qwen3-0.6B on Burn wgpu) decides at the workshop's proposing step through the host driver and Servitor. P3 waits on the Alembic plan taking up D11 and D15; P4 waits on the Inkling body. Rulings D1–D17.
 
 **For:** the "stack agent". The agent harness brief
 ([research/2026-07-03_agent_harness_brief.md](../research/2026-07-03_agent_harness_brief.md))

@@ -8,6 +8,13 @@ owns reusable admission/run semantics; Servitor remains in Eidetic.
 R1a/R1b and the Turnstone adapter have executable receipts. Athanor now consumes the same reducer in the deterministic evidence-brief
 core (the Alembic plan's W0 finding). The product adapters are under implementation;
 two-host acceptance and model-guided decisions remain open.
+**Status (2026-11-22):** section 2's decision turn is built for the evidence
+brief's proposing step: the decision-driver plan
+(`../implementation_strategy/2026-11-20_decision_driver_plan.md`, P1 and P2).
+A driver chooses and orders the owner's selected passages; the brief text
+stays deterministic. Section 2 below is unchanged and still reads as design;
+where it and that plan differ, the plan records what was built. Two-host
+acceptance and procedural guidance (R2, R3) remain open.
 
 ## 1. The composition
 

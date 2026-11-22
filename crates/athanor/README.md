@@ -51,8 +51,36 @@ current authority and owner timestamps. `begin` records the header/inputs;
 `dispatch` persists each intent; `observe` revalidates and records each result.
 The three steps read context, assemble literal Djot quotations and emit one
 immutable proposal. Limits are three decisions, two tool calls, zero tokens
-and 30,000 ms. `citation_source` resolves only captured immutable references.
+and 30,000 ms for a run begun with `begin`. `citation_source` resolves only captured immutable references.
 Private inputs refuse until a qualified custody adapter exists.
+
+**Decision drivers (2026-11-22).** The `decision` feature, which `workshop`
+includes, adds `athanor::decision`: `DecisionDriver` is handed context and the
+operations it may choose among, as one JSON Schema, and returns one decision
+with its provider identity and token count. It holds no authority. `Scripted`
+is the deterministic driver for scenarios and tests.
+
+At the proposing step a driver chooses which of the owner's selected passages
+a brief cites, at least two, and in what order (`propose_with`); the brief is
+still built deterministically, and steps 0 and 2 are unchanged. The owner
+accepts a brief only if it can be rebuilt from a duplicate-free subset of the
+run's passages, and the confirming step must match the recorded candidate. A
+brief that fails those checks pauses the run and writes nothing. Private
+dispatches are never shown to a driver.
+
+`Driver::with_decider` runs a driver through the host driver and its worker.
+Such a run is begun with `begin_model` and carries its own limits
+(`model_limits`): four decisions, one retry, and a token limit of twice the
+driver's per-turn cap. The proposing step reserves its cap when it starts, the
+journal keeps the provider and the actual token count (`WorkshopView::turns`),
+a failed or refused turn is journalled and retried once before the run ends
+as failed, and cancelling the run stops an in-flight turn. Load accepts only
+the two limit shapes.
+
+`workshop-model` is the one place this crate reaches for Distillery: it
+implements `DecisionDriver` for `distillery::decision::ModelDecider`. Athanor
+still names neither esp nor Burn. `workshop-model-gpu` adds Distillery's GPU
+decoder for the ignored real-model test, which needs `ESP_QWEN3_DIR`.
 
 `accept` fixes one destination, accepting human and operation ID before an
 effect. Concurrent callers may receive `Conflict`; reloading returns the same

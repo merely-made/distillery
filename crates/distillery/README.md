@@ -28,6 +28,20 @@ later, behind its own plan: training is one more job the works runs.
 
 ## Current slice
 
+The `decision` feature adds `distillery::decision`: one model decision over an
+esp provider, with no lane and no decoder of its own. `decide` compiles the
+offered operations, given as one JSON Schema, into the provider's output
+grammar, generates greedily through the checkpointed path, then parses the
+text and checks it against the schema again. `replay` re-derives a decision
+from its recorded checkpoint without a model choice, and `decide_until` takes
+a stop that ends a turn at a token boundary with a failure, never a fragment.
+`ModelDecider` binds a provider to its prompt rendering behind a surface that
+names no esp type; `chat_prompt` builds that rendering from a model's
+`tokenizer_config.json`, and `discrete_gpu_decider` (with `inference-gpu`)
+loads a decoder onto the first discrete GPU. The module knows nothing of who
+asks or of what a decision authorizes. `tests/decision_turn.rs` runs a real
+turn and is ignored without `ESP_QWEN3_DIR`.
+
 The `inference` feature also offers explicitly enabled, bounded observations via
 `InferenceLane::enable_observations`, independent `observation_cursor` readers and
 `read_observations`. The owner supplies a fresh nonsecret observation-run identity

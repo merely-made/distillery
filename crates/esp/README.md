@@ -31,7 +31,7 @@ tiny decoder fixtures and templates without repinning the ESP runtime package.
 
 | Namespace | CPU | WGPU | Other |
 | --- | --- | --- | --- |
-| `infer` | `decoder`, `decoder-flex` | `decoder-wgpu` | `actor`, `model-session` |
+| `infer` | `decoder`, `decoder-flex` | `decoder-wgpu` | `actor`, `model-session`, `output-schema`, `chat-template` |
 | `embed` | `index-burn`, `bert` | `index-burn-wgpu`, `bert-wgpu` | `bert-validation` |
 | `embed` goal model | `goal-model` | `recall-example` (with `bert-wgpu`) | |
 
@@ -40,6 +40,26 @@ ESP provider an `eidetic_search::GoalEmbedder`, and `recommended_match_similarit
 (220 thousandths for the pinned all-MiniLM-L6-v2). The MiniLM calibration test
 (`tests/goal_model_minilm.rs`, ignored; needs `ESP_MINILM_DIR`) and the
 `eidetic-recall` example (`recall-example`) live here.
+
+`output-schema` adds `infer::schema`, with no model runtime.
+`grammar_from_schema` compiles a bounded JSON Schema subset into
+`OutputGrammar`: `const`, `enum`, `anyOf`, `boolean`, `null`, `string` with
+`maxLength`, `integer` with `minimum` and `maximum`, `array` with `maxItems`,
+and closed objects whose properties are all required. Every document the
+grammar accepts satisfies the schema, and integer ranges are exact. A string
+is nonempty and `maxLength` bounds its UTF-8 bytes; `number`, `oneOf`, `$ref`,
+`pattern` and every other keyword are refused by name; nesting is capped by
+the grammar's depth of 24; object members are emitted in sorted name order.
+`validate_against_schema` checks a value under the same rules and names the
+failing path.
+
+`chat-template` adds `infer::chat`, also with no model runtime. `ChatTemplate`
+renders a model's own Jinja chat template with minijinja, as transformers
+does, from its source or from `tokenizer_config.json`. The template runs with
+no loader, filesystem, network or clock and under a fuel limit, and message
+content is never evaluated. Its source bytes are what
+`BoundModelSession::prepare` binds by hash. It is opt-in per model: the inert
+`PromptTemplate` (`model-session`) remains the default.
 
 Native tokenizer builds use Oniguruma. `wasm32-unknown-unknown` uses
 tokenizers' pure-Rust `unstable_wasm` path, and every Burn feature activates

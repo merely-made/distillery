@@ -123,3 +123,7 @@ attribution, is Mark's to rule.
 
 - **2026-11-20:** written after Mark's endorsement. No code changed.
 - **2026-11-20:** F3 added after the browser probe failed to compile.
+- **2026-11-22:** statement 1 holds as built: with `workshop-model`, Athanor
+  names Distillery in one file (`crates/athanor/src/decision_model.rs`) and
+  names neither esp nor Burn; Distillery knows nothing of Athanor
+  (decision-driver D10). Statement 2's body trait is not started.
