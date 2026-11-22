@@ -12,7 +12,14 @@ use distillery::decision::{DecideError, ModelDecider};
 
 impl DecisionDriver for ModelDecider {
     fn decide(&self, turn: &Turn<'_>) -> Result<Decision, DecisionError> {
-        match ModelDecider::decide(self, turn.context, turn.operations, turn.max_tokens) {
+        // The turn's cancellation is esp's stop: generation pauses at a token
+        // boundary and the turn fails instead of returning a fragment.
+        match self.decide_until(
+            turn.context,
+            turn.operations,
+            turn.max_tokens,
+            turn.cancelled,
+        ) {
             Ok(decision) => Ok(Decision {
                 value: decision.value,
                 provider: decision.provider,

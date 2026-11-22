@@ -7,7 +7,7 @@
 //! Native worker pump shared by application owners. The owner serializes its
 //! live source, authority and custody policy with dispatch and observation.
 
-use crate::workshop::{Error, Workshop, WorkshopBackend, worker::Worker};
+use crate::workshop::{Decider, Error, Workshop, WorkshopBackend, worker::Worker};
 use crate::alembic::workshop::{Control, Owner, Passage, RunStatus, WorkshopView};
 use servitor::AuthorityProvider;
 use std::sync::mpsc::TryRecvError;
@@ -18,6 +18,7 @@ pub struct Driver<B> {
     worker: Option<Worker>,
     active: Option<u64>,
     inputs: Vec<Passage>,
+    decider: Option<Decider>,
 }
 
 // This runs before the workshop/backend fields are dropped, including while
@@ -59,8 +60,23 @@ impl<B: WorkshopBackend> Driver<B> {
             worker: None,
             active: None,
             inputs: vec![],
+            decider: None,
         }
     }
+
+    /// Put a decision driver at the proposing step of every run this driver
+    /// starts or resumes (decision-driver P2). Each of its turns reserves
+    /// `decider.max_tokens` against the run's token limit at intent.
+    #[must_use]
+    pub fn with_decider(mut self, decider: Decider) -> Self {
+        self.decider = Some(decider);
+        self
+    }
+
+    fn spawn_worker(&self) -> Worker {
+        Worker::spawn_with(self.wake.clone(), self.decider.clone())
+    }
+
     pub fn busy(&self) -> bool {
         self.active.is_some()
     }
@@ -160,7 +176,7 @@ impl<B: WorkshopBackend> Driver<B> {
         }
         self.inputs = inputs;
         self.active = Some(id);
-        self.worker = Some(Worker::spawn(self.wake.clone()));
+        self.worker = Some(self.spawn_worker());
         if let Err(error) = self.dispatch_next(authority, clock, source_gate).await {
             self.quiesce(authority, clock).await?;
             return Err(error);
@@ -183,9 +199,10 @@ impl<B: WorkshopBackend> Driver<B> {
         if !self.inputs.iter().all(source_gate) {
             return Err(Error::Unauthorized);
         }
+        let reserve = self.decider.as_ref().map_or(0, Decider::reservation);
         let dispatch = self
             .workshop
-            .dispatch(self.active.ok_or(Error::Missing)?, authority, clock())
+            .dispatch_reserving(self.active.ok_or(Error::Missing)?, authority, clock(), reserve)
             .await?;
         if !self.inputs.iter().all(source_gate) {
             return Err(Error::Unauthorized);
@@ -280,7 +297,7 @@ impl<B: WorkshopBackend> Driver<B> {
                     .workshop
                     .run_inputs(view.run.ok_or(Error::Missing)?)
                     .await?;
-                self.worker = Some(Worker::spawn(self.wake.clone()));
+                self.worker = Some(self.spawn_worker());
                 self.dispatch_next(authority, clock, source_gate).await
             }
             .await;

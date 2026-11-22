@@ -80,9 +80,31 @@ pub fn decide(
     operations: &Value,
     max_tokens: usize,
 ) -> Result<ModelDecision, InferError> {
+    decide_until(provider, prompt, operations, max_tokens, &|| false)
+}
+
+/// [`decide`], stopping at a token boundary once `stop` returns true. A
+/// stopped turn is [`InferError::Interrupted`], never a fragment.
+///
+/// # Errors
+/// As [`decide`], and when `stop` ends generation before the decision is
+/// complete.
+pub fn decide_until(
+    provider: &dyn InferenceProvider,
+    prompt: &str,
+    operations: &Value,
+    max_tokens: usize,
+    stop: &dyn Fn() -> bool,
+) -> Result<ModelDecision, InferError> {
     let request = request(prompt, operations, max_tokens)?;
-    let checkpoint =
-        provider.generate_checkpointed(&request, None, &mut |_| Ok(()), &mut || false)?;
+    let mut stopped = false;
+    let checkpoint = provider.generate_checkpointed(&request, None, &mut |_| Ok(()), &mut || {
+        stopped = stopped || stop();
+        stopped
+    })?;
+    if stopped && !checkpoint.complete {
+        return Err(InferError::Interrupted);
+    }
     finish(provider, operations, checkpoint)
 }
 
@@ -162,8 +184,29 @@ impl ModelDecider {
         operations: &Value,
         max_tokens: usize,
     ) -> Result<ModelDecision, DecideError> {
+        self.decide_until(context, operations, max_tokens, &|| false)
+    }
+
+    /// [`Self::decide`], stopping at a token boundary once `stop` returns
+    /// true; a stopped turn is a [`DecideError::Failed`].
+    ///
+    /// # Errors
+    /// As [`decide_until`], mapped to [`DecideError`].
+    pub fn decide_until(
+        &self,
+        context: &str,
+        operations: &Value,
+        max_tokens: usize,
+        stop: &dyn Fn() -> bool,
+    ) -> Result<ModelDecision, DecideError> {
         let prompt = (self.render)(context, operations)?;
-        Ok(decide(self.provider.as_ref(), &prompt, operations, max_tokens)?)
+        Ok(decide_until(
+            self.provider.as_ref(),
+            &prompt,
+            operations,
+            max_tokens,
+            stop,
+        )?)
     }
 }
 
@@ -213,4 +256,105 @@ pub fn replay(
     let checkpoint =
         provider.generate_checkpointed(&request, Some(recorded), &mut |_| Ok(()), &mut || false)?;
     finish(provider, operations, checkpoint)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use esp::infer::ModelCapability;
+    use esp::infer::provider::GenerationCheckpoint;
+    use serde_json::json;
+    use std::cell::Cell;
+    use std::ops::ControlFlow;
+    use std::sync::Mutex;
+
+    /// Emits a fixed decision one byte per token and consults `stop` before
+    /// each token, as a checkpointing provider does.
+    struct Typist {
+        capability: ModelCapability,
+        emitted: Mutex<usize>,
+    }
+    impl Typist {
+        const TEXT: &str = r#"{"op":"brief"}"#;
+        fn new() -> Self {
+            Self {
+                capability: ModelCapability {
+                    model_id: "typist".into(),
+                    context_window: 64,
+                    quantization: None,
+                    loader: "test".into(),
+                    streaming: false,
+                },
+                emitted: Mutex::new(0),
+            }
+        }
+    }
+    impl InferenceProvider for Typist {
+        fn capability(&self) -> &ModelCapability {
+            &self.capability
+        }
+        fn generate_streaming(
+            &self,
+            _: &GenerationRequest,
+            _: &mut dyn FnMut(&str) -> ControlFlow<()>,
+        ) -> Result<String, InferError> {
+            Err(InferError::ModelNotLoaded)
+        }
+        fn generate_checkpointed(
+            &self,
+            request: &GenerationRequest,
+            _: Option<&GenerationCheckpoint>,
+            _: &mut dyn FnMut(&GenerationCheckpoint) -> Result<(), InferError>,
+            stop: &mut dyn FnMut() -> bool,
+        ) -> Result<GenerationCheckpoint, InferError> {
+            let mut checkpoint = GenerationCheckpoint {
+                placements: Vec::new(),
+                session: None,
+                request: request.clone(),
+                prompt_ids: vec![0],
+                token_ids: Vec::new(),
+                draws: 0,
+                text: String::new(),
+                complete: false,
+            };
+            for byte in Self::TEXT.bytes() {
+                if stop() {
+                    break;
+                }
+                checkpoint.token_ids.push(u32::from(byte));
+                checkpoint.text.push(char::from(byte));
+            }
+            *self.emitted.lock().unwrap() = checkpoint.token_ids.len();
+            checkpoint.complete = checkpoint.text == Self::TEXT;
+            Ok(checkpoint)
+        }
+    }
+
+    fn operations() -> Value {
+        json!({
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["op"],
+            "properties": {"op": {"const": "brief"}},
+        })
+    }
+
+    #[test]
+    fn a_stopped_turn_fails_at_a_token_boundary_instead_of_returning_a_fragment() {
+        let typist = Typist::new();
+        let decided = decide(&typist, "p", &operations(), 32).unwrap();
+        assert_eq!(decided.value, json!({"op": "brief"}));
+        assert_eq!(decided.tokens, Typist::TEXT.len() as u64);
+
+        let asked = Cell::new(0);
+        let stop = || {
+            asked.set(asked.get() + 1);
+            asked.get() > 3
+        };
+        assert_eq!(
+            decide_until(&typist, "p", &operations(), 32, &stop),
+            Err(InferError::Interrupted)
+        );
+        assert_eq!(*typist.emitted.lock().unwrap(), 3);
+    }
 }

@@ -82,6 +82,21 @@ pub fn propose_with(
     dispatch: Dispatch,
     max_tokens: usize,
 ) -> Result<Proposed, ProposeError> {
+    propose_until(driver, dispatch, max_tokens, &|| false)
+}
+
+/// [`propose_with`], with the turn cancelled once `cancelled` returns true.
+/// The observation carries the decision's provider and token count, which the
+/// workshop journals with the result (decision-driver D12).
+///
+/// # Errors
+/// As [`propose_with`].
+pub fn propose_until(
+    driver: &dyn DecisionDriver,
+    dispatch: Dispatch,
+    max_tokens: usize,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Proposed, ProposeError> {
     let refuse = |reason| ProposeError::Workshop(Error::Invalid(reason));
     if dispatch.correlation.step != 1 {
         return Err(refuse("workflow step"));
@@ -98,6 +113,7 @@ pub fn propose_with(
             context: &context(&dispatch),
             operations: &operations,
             max_tokens,
+            cancelled,
         })
         .map_err(ProposeError::Driver)?;
     let outside = |detail: &str| ProposeError::Driver(DecisionError::Invalid(detail.into()));
@@ -120,6 +136,9 @@ pub fn propose_with(
         observation: Observation {
             correlation: dispatch.correlation,
             proposal: Some(proposal),
+            turn: Some(super::turn::Outcome::Decided(super::turn::ModelUse::of(
+                &decision,
+            ))),
         },
         decision,
     })

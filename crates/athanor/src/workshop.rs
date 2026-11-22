@@ -23,16 +23,23 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
 };
 
+/// The brief artifact's shape.
 const SCHEMA: u32 = 1;
+/// The persisted installation record's shape. 2: the journal keeps token
+/// reservations, a driver's identity and usage, and failed turns.
+const RECORD_SCHEMA: u32 = 2;
 const MAX_RECORD: usize = 1024 * 1024;
 const MAX_RUNS: usize = 32;
 const DEADLINE: u64 = 30_000;
+/// Servitor holds every run to these. Three steps plus one retry of the
+/// proposing step (decision-driver D13): a turn that fails twice ends the run
+/// as failed. `tokens` bounds what proposing steps reserve at intent (D12).
 pub const LIMITS: Limits = Limits {
-    decisions: 3,
+    decisions: 4,
     tool_calls: 2,
-    tokens: 0,
+    tokens: 256,
     elapsed_ms: DEADLINE,
-    consecutive_failures: 0,
+    consecutive_failures: 2,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -391,11 +398,22 @@ enum Entry {
     Intent {
         correlation: Correlation,
         at: u64,
+        /// Tokens charged at intent; nonzero only at the proposing step (D12).
+        reserved: u64,
     },
     Result {
         correlation: Correlation,
         at: u64,
         completed: bool,
+        /// The decision driver behind a proposing step's result, if any.
+        model: Option<turn::ModelUse>,
+    },
+    /// A decision-driver turn that failed or was refused (D13). Whether the
+    /// reducer reads it as retryable follows from the run's failure limit.
+    Failed {
+        correlation: Correlation,
+        at: u64,
+        reason: String,
     },
     Interrupted(u64),
     Paused(u64),
@@ -454,44 +472,71 @@ impl Run {
                 required: requirements(owner, self.admitted.id, &self.inputs),
             },
         })?;
+        // The reservation of the intent a result answers (D12).
+        let mut reserved = 0;
         for entry in &self.entries {
-            let event = match *entry {
-                Entry::Intent { correlation: c, at } => RunEvent::IntentRecorded {
-                    correlation: correlation(c),
-                    effect: servitor::Effect {
-                        kind: servitor::EffectKind::ReadOnly,
-                        operation: c.step,
-                    },
-                    usage: servitor::Usage {
-                        decisions: 1,
-                        tool_calls: tool_calls(c.step),
-                        elapsed_ms: at.checked_sub(reducer.last_at_ms()).ok_or(Error::Stale)?,
-                        ..Default::default()
-                    },
-                    at_ms: at,
+            let since = |at: u64| at.checked_sub(reducer.last_at_ms()).ok_or(Error::Stale);
+            let event = match entry {
+                &Entry::Intent {
+                    correlation: c,
+                    at,
+                    reserved: r,
+                } => {
+                    if r != 0 && c.step != 1 {
+                        return Err(Error::Invalid("token reservation"));
+                    }
+                    reserved = r;
+                    RunEvent::IntentRecorded {
+                        correlation: correlation(c),
+                        effect: servitor::Effect {
+                            kind: servitor::EffectKind::ReadOnly,
+                            operation: c.step,
+                        },
+                        usage: servitor::Usage {
+                            decisions: 1,
+                            tool_calls: tool_calls(c.step),
+                            tokens: r,
+                            elapsed_ms: since(at)?,
+                            ..Default::default()
+                        },
+                        at_ms: at,
+                    }
                 },
                 Entry::Result {
                     correlation: c,
                     at,
                     completed,
-                } => RunEvent::ResultRecorded {
-                    correlation: correlation(c),
-                    result: if completed {
-                        servitor::ResultKind::Completed
-                    } else {
-                        servitor::ResultKind::Progress
-                    },
-                    usage: servitor::Usage {
-                        elapsed_ms: at.checked_sub(reducer.last_at_ms()).ok_or(Error::Stale)?,
-                        ..Default::default()
-                    },
-                    at_ms: at,
+                    model,
+                } => {
+                    if model.as_ref().is_some_and(|m| !m.fits(c.step, reserved)) {
+                        return Err(Error::Invalid("model usage"));
+                    }
+                    RunEvent::ResultRecorded {
+                        correlation: correlation(*c),
+                        result: if *completed {
+                            servitor::ResultKind::Completed
+                        } else {
+                            servitor::ResultKind::Progress
+                        },
+                        // Tokens were charged in full at intent; the actual
+                        // count is kept in the entry, never charged twice.
+                        usage: servitor::Usage {
+                            elapsed_ms: since(*at)?,
+                            ..Default::default()
+                        },
+                        at_ms: *at,
+                    }
                 },
-                Entry::Interrupted(at) => RunEvent::Interrupted { at_ms: at },
-                Entry::Paused(at) => RunEvent::Paused { at_ms: at },
-                Entry::Resumed(at) => RunEvent::Resumed { at_ms: at },
-                Entry::Cancelled(at) => RunEvent::CancellationRequested { at_ms: at },
-                Entry::Budget(at) => RunEvent::BudgetExhausted { at_ms: at },
+                Entry::Failed {
+                    correlation: c,
+                    at,
+                    reason,
+                } => turn::failed_event(&reducer, &self.limits, *c, *at, reason)?,
+                &Entry::Interrupted(at) => RunEvent::Interrupted { at_ms: at },
+                &Entry::Paused(at) => RunEvent::Paused { at_ms: at },
+                &Entry::Resumed(at) => RunEvent::Resumed { at_ms: at },
+                &Entry::Cancelled(at) => RunEvent::CancellationRequested { at_ms: at },
+                &Entry::Budget(at) => RunEvent::BudgetExhausted { at_ms: at },
             };
             reducer.apply(event)?;
         }
@@ -607,7 +652,9 @@ impl<B: WorkshopBackend> Workshop<B> {
             .ok_or(Error::Missing)?;
         let reducer = run.replay(&self.owner)?;
         let issued = run.entries.iter().rev().find_map(|entry| match entry {
-            Entry::Intent { correlation, at } if *correlation == dispatch.correlation => Some(*at),
+            Entry::Intent {
+                correlation, at, ..
+            } if *correlation == dispatch.correlation => Some(*at),
             _ => None,
         });
         Ok(
@@ -685,7 +732,7 @@ impl<B: WorkshopBackend> Workshop<B> {
         };
         let record: Record =
             serde_json::from_slice(&clear).map_err(|_| Error::Invalid("record schema"))?;
-        if record.schema != SCHEMA
+        if record.schema != RECORD_SCHEMA
             || record.owner != self.owner
             || record.binding.id != self.id
             || record.binding.revision != definition()
@@ -831,7 +878,7 @@ impl<B: WorkshopBackend> Workshop<B> {
         self.save(
             None,
             Record {
-                schema: SCHEMA,
+                schema: RECORD_SCHEMA,
                 owner: self.owner.clone(),
                 binding: Binding {
                     id: self.id,
@@ -902,6 +949,24 @@ impl<B: WorkshopBackend> Workshop<B> {
         authority: &impl AuthorityProvider,
         now: u64,
     ) -> Result<Dispatch, Error> {
+        self.dispatch_reserving(id, authority, now, 0).await
+    }
+
+    /// As [`Self::dispatch`], reserving `tokens` against the run's token limit
+    /// when the next step is the proposing one (decision-driver D12): the cap
+    /// a decision driver is given there. Servitor refuses an intent the run
+    /// cannot afford, and the run then ends with its budget exhausted.
+    ///
+    /// # Errors
+    /// `Budget` when the run's deadline or limits refuse the step (and the run
+    /// is then budget-exhausted); otherwise as [`Self::dispatch`].
+    pub async fn dispatch_reserving(
+        &self,
+        id: u64,
+        authority: &impl AuthorityProvider,
+        now: u64,
+        tokens: u64,
+    ) -> Result<Dispatch, Error> {
         let (before, mut record) = self.load().await?;
         let binding = record.binding.servitor();
         if record.dissolved {
@@ -918,24 +983,34 @@ impl<B: WorkshopBackend> Workshop<B> {
         let RunPhase::Ready { correlation: c } = reducer.phase() else {
             return Err(Error::Stale);
         };
-        if now.checked_sub(run.started).ok_or(Error::Stale)? >= DEADLINE
-            || reducer.usage().decisions >= 3
-            || reducer.usage().tool_calls + tool_calls(c.step) > 2
-        {
+        if c.step > 2 {
+            return Err(Error::Invalid("workflow step"));
+        }
+        // The reducer checks every other limit at intent; the deadline is
+        // checked here so that a step never starts at the deadline itself.
+        let intent = Entry::Intent {
+            correlation: wire(c),
+            at: now,
+            reserved: if c.step == 1 { tokens } else { 0 },
+        };
+        let expired = now.checked_sub(run.started).ok_or(Error::Stale)? >= run.limits.elapsed_ms;
+        let refused = if expired {
+            true
+        } else {
+            match run.push(&self.owner, intent) {
+                Ok(()) => false,
+                Err(Error::Run(servitor::RunError::BudgetExceeded)) => {
+                    run.entries.pop();
+                    true
+                },
+                Err(error) => return Err(error),
+            }
+        };
+        if refused {
             run.push(&self.owner, Entry::Budget(now))?;
             self.save(Some(before), record).await?;
             return Err(Error::Budget);
         }
-        if c.step > 2 {
-            return Err(Error::Invalid("workflow step"));
-        }
-        run.push(
-            &self.owner,
-            Entry::Intent {
-                correlation: wire(c),
-                at: now,
-            },
-        )?;
         let dispatch = Dispatch {
             correlation: wire(c),
             installation: self.id,
@@ -1002,13 +1077,14 @@ impl<B: WorkshopBackend> Workshop<B> {
         if correlation(c) != expected {
             return Err(Error::Stale);
         }
-        if now.checked_sub(run.started).ok_or(Error::Stale)? >= DEADLINE {
+        if now.checked_sub(run.started).ok_or(Error::Stale)? >= run.limits.elapsed_ms {
             run.push(
                 &self.owner,
                 Entry::Result {
                     correlation: c,
                     at: now,
                     completed: false,
+                    model: None,
                 },
             )?;
             if !matches!(run.replay(&self.owner)?.phase(), RunPhase::Terminal(_)) {
@@ -1017,6 +1093,25 @@ impl<B: WorkshopBackend> Workshop<B> {
             self.save(Some(before), record).await?;
             return Err(Error::Budget);
         }
+        let model = match observation.turn {
+            Some(turn::Outcome::Failed(reason)) => {
+                // A failed or refused turn is journalled, never a brief (D13).
+                if c.step != 1 || observation.proposal.is_some() {
+                    return Err(Error::Invalid("worker proposal"));
+                }
+                run.push(
+                    &self.owner,
+                    Entry::Failed {
+                        correlation: c,
+                        at: now,
+                        reason,
+                    },
+                )?;
+                return self.save(Some(before), record).await;
+            },
+            Some(turn::Outcome::Decided(model)) => Some(model),
+            None => None,
+        };
         let drawn = |p: &Proposal| drawn_from(p, self.id, run.id, &run.inputs);
         let accepted = match (c.step, observation.proposal.as_ref()) {
             (0, None) => true,
@@ -1041,6 +1136,7 @@ impl<B: WorkshopBackend> Workshop<B> {
                 correlation: c,
                 at: now,
                 completed: c.step == 2,
+                model,
             },
         )?;
         self.save(Some(before), record).await
@@ -1315,6 +1411,7 @@ impl<B: WorkshopBackend> Workshop<B> {
             proposal: run.and_then(|r| r.proposal.clone()),
             usage: Usage::default(),
             limits: run.map(|r| r.limits),
+            turns: run.map(turn::turns).unwrap_or_default(),
             controls,
         };
         let active = record.binding.lifecycle == Lifecycle::Active && !record.dissolved;
@@ -1386,6 +1483,9 @@ impl Dispatch {
 pub struct Observation {
     pub correlation: Correlation,
     pub proposal: Option<Proposal>,
+    /// The decision driver's part in this result, if one ran. Only this
+    /// crate's proposing path sets it.
+    turn: Option<turn::Outcome>,
 }
 
 /// The same deterministic worker body for every host. It sees captured public
@@ -1419,6 +1519,7 @@ pub fn evaluate(dispatch: Dispatch) -> Result<Observation, Error> {
     Ok(Observation {
         correlation: c,
         proposal: proposed,
+        turn: None,
     })
 }
 
@@ -1436,6 +1537,13 @@ pub mod worker {
     }
     impl Worker {
         pub fn spawn(wake: armillary::Wake) -> Self {
+            Self::spawn_with(wake, None)
+        }
+
+        /// With a decider, the proposing step is its turn (decision-driver
+        /// D11); every other step, and every step without one, is `evaluate`.
+        /// Cancellation reaches an in-flight turn at its next token boundary.
+        pub fn spawn_with(wake: armillary::Wake, decider: Option<Decider>) -> Self {
             let cancelled = Arc::new(AtomicBool::new(false));
             let stop = cancelled.clone();
             let (actor, observations) =
@@ -1444,7 +1552,8 @@ pub mod worker {
                         if stop.load(Ordering::Acquire) {
                             break;
                         }
-                        let result = evaluate(dispatch);
+                        let result =
+                            turn::work(dispatch, decider.as_ref(), &|| stop.load(Ordering::Acquire));
                         if stop.load(Ordering::Acquire) {
                             break;
                         }
@@ -1470,7 +1579,11 @@ pub mod worker {
 }
 
 mod propose;
-pub use propose::{ProposeError, Proposed, context, operations, propose_with};
+pub use propose::{ProposeError, Proposed, context, operations, propose_until, propose_with};
+mod turn;
+pub use turn::Decider;
 
 #[cfg(test)]
 mod tests;
+#[cfg(all(test, feature = "workshop-worker", not(target_arch = "wasm32")))]
+mod driver_tests;

@@ -18,12 +18,27 @@ use std::sync::Mutex;
 
 /// What a driver is asked. `operations` is a JSON Schema; every decision the
 /// driver returns must satisfy it.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Turn<'a> {
     pub context: &'a str,
     pub operations: &'a Value,
     /// Hard cap on what the driver may generate.
     pub max_tokens: usize,
+    /// True once the caller has cancelled the turn. A driver that generates
+    /// checks it at each token boundary and then fails; it never returns a
+    /// fragment as a decision.
+    pub cancelled: &'a dyn Fn() -> bool,
+}
+
+impl std::fmt::Debug for Turn<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Turn")
+            .field("context", &self.context)
+            .field("operations", &self.operations)
+            .field("max_tokens", &self.max_tokens)
+            .field("cancelled", &(self.cancelled)())
+            .finish()
+    }
 }
 
 /// One decision, with what the caller retains about how it was made.

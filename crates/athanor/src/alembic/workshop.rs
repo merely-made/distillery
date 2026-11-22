@@ -177,6 +177,20 @@ pub enum Control {
     Reconcile,
 }
 
+/// One decision-driver turn at the proposing step, as journalled
+/// (decision-driver D12, D13). `reserved` was charged against the run's token
+/// limit at intent; `tokens` is what the driver reported. A failed or refused
+/// turn names no provider and carries its reason.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ModelTurn {
+    pub correlation: Correlation,
+    pub reserved: u64,
+    pub provider: Option<String>,
+    pub tokens: u64,
+    pub failure: Option<String>,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct WorkshopView {
@@ -189,5 +203,7 @@ pub struct WorkshopView {
     pub proposal: Option<Proposal>,
     pub usage: Usage,
     pub limits: Option<Limits>,
+    /// The run's decision-driver turns, oldest first; empty without a driver.
+    pub turns: Vec<ModelTurn>,
     pub controls: Vec<Control>,
 }

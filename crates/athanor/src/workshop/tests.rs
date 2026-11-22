@@ -349,6 +349,9 @@ fn interrupted_replay_never_reexecutes_and_keeps_original_budget() {
             )
             .await
             .unwrap();
+        // The retried step 0 spent the second tool call that step 2 needs;
+        // Servitor refuses that intent and the run's budget is exhausted.
+        assert_eq!(reopened.dispatch(1, &auth, 7).await.unwrap_err(), Error::Budget);
         assert_eq!(
             reopened.view(Some(1)).await.unwrap().phase,
             RunStatus::BudgetExhausted
@@ -460,7 +463,8 @@ fn rejected_proposal_cannot_be_accepted_or_replaced_by_a_delayed_result() {
                         attempt: 0,
                         generation: 1
                     },
-                    proposal: view.proposal
+                    proposal: view.proposal,
+                    turn: None,
                 },
                 &auth,
                 9
@@ -985,7 +989,8 @@ fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
         shop.observe(evaluate(first).unwrap(), &auth, 12)
             .await
             .unwrap();
-        let second = shop.dispatch(1, &auth, 13).await.unwrap();
+        // The proposing step reserves the cap the model is given (D12).
+        let second = shop.dispatch_reserving(1, &auth, 13, 32).await.unwrap();
         match propose_with(&model, second, 32) {
             Ok(proposed) => {
                 println!(
@@ -1006,6 +1011,9 @@ fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
                     .await
                     .unwrap();
                 assert_eq!(view.review, Some(Review::AwaitingReview));
+                let turn = &view.turns[0];
+                assert!(turn.provider.as_deref().is_some_and(|p| p.starts_with("Qwen/Qwen3-0.6B")));
+                assert!(turn.tokens > 0 && turn.tokens <= turn.reserved);
                 let brief = view.proposal.unwrap();
                 assert_eq!(brief.sources, chosen);
                 validate_proposal(&brief).unwrap();
