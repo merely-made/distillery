@@ -961,16 +961,19 @@ fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
         ),
         "Qwen/Qwen3-0.6B",
         Some("<|im_end|>"),
-        // Qwen's ChatML turn with thinking closed.
-        Box::new(|context, _operations| {
-            format!(
-                "<|im_start|>system\nYou choose which passages an evidence brief cites. \
-                 Reply with one JSON object.<|im_end|>\n<|im_start|>user\n{context}\n\
-                 Which passages are about retained copies and storage? Give their numbers, \
-                 most relevant first, as {{\"op\":\"brief\",\"order\":[...]}}.<|im_end|>\n\
-                 <|im_start|>assistant\n<think>\n\n</think>\n\n"
-            )
-        }),
+        // The model's own chat template (D8), from its pinned tokenizer config.
+        distillery::decision::chat_prompt(
+            &pinned(
+                "tokenizer_config.json",
+                "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+            ),
+            "You choose which passages an evidence brief cites. Reply with one JSON object.".into(),
+            "Which passages are about retained copies and storage? Give their numbers, most \
+             relevant first, as {\"op\":\"brief\",\"order\":[...]}."
+                .into(),
+            serde_json::json!({"enable_thinking": false}),
+        )
+        .unwrap(),
     )
     .unwrap();
 

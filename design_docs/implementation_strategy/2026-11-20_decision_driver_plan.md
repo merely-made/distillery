@@ -100,6 +100,29 @@ your recommendations".
 
   Links: summary At the proposing step a driver picks at least two of the owner's selected passages and their order; the brief text stays deterministic; the workshop accepts a duplicate-free subset of the run's passages and confirms the recorded candidate.
 
+D12–D14 answer three questions put on 2026-11-22 after the workshop and
+Servitor's reducer were read for P2.
+
+- **D12. Reserve at start, record actual (Mark, 2026-11-22):** shown that
+  Servitor checks a token limit only when a step starts and that the
+  workshop's limit is 0: "Reserve at start, record actual", over recording
+  without a cap and over charging actual tokens with a workshop-side check.
+
+  Links: summary The proposing step reserves its max_tokens against a real limit at intent; the actual count and the model's identity are stored in the journal and shown in the view. Stored runs under the old limits are not carried over.
+
+- **D13. Record a failed turn, retry once, then fail (Mark, 2026-11-22):**
+  shown that a failed or refused model turn writes nothing and the run
+  pauses: "Record it, retry once, then fail", over failing at once and over
+  pausing as today.
+
+  Links: summary A failed or refused model turn is journalled as a retryable failure; one retry is allowed and a second failure ends the run as failed; each attempt counts against the decision budget.
+
+- **D14. The claim condition restated (Mark, 2026-11-22):** shown that a
+  worker cannot claim success in the workshop, since the owner decides
+  completion and rebuilds every brief from its own passages: "Restate it as
+  what is checked", over adding a claim to check and over deferring.
+
+  Links: summary P2's "a claimed success that the observations contradict is caught" becomes: a brief must be rebuildable from the owner's own passages, and the confirmed brief must equal the recorded candidate.
 No `doctrine.md` exists in this repository yet, so these are recorded as
 cases without a statement to file them under (DOC_POLICY §11).
 
@@ -133,10 +156,16 @@ schema, with provider and session identity and observed usage retained.
 Steps 3–4 repeated: dispatch, record the observed result, apply recorded
 events through Servitor, advance or stop. Interruption and cancellation use
 the existing actor controls.
-- Done when: a multi-step run reaches a stop state through the same reducer
-  the deterministic body uses, an interrupted run reopens cold without
-  redispatching a consequential operation, and a claimed success that the
-  observations contradict is caught.
+- Done when: with a decision driver at the proposing step, run through the
+  host driver and its worker: a run reaches a stop state through the same
+  reducer the deterministic body uses; an interrupted or reopened run does
+  not ask the driver again for a step already recorded; the step reserves
+  its token cap at intent and the journal keeps the actual count and the
+  model's identity (D12); a failed or refused turn is journalled, retried
+  once and then ends the run as failed (D13); an in-flight turn stops at a
+  token boundary when the run is cancelled; and a brief that is not
+  rebuildable from the owner's passages, or a confirmed brief that differs
+  from the recorded candidate, is refused (D14).
 - Needs: P1.
 
 ### P3. The workshop task with a model body
@@ -238,3 +267,19 @@ to the driver.
   model kept all three passages here, so this run did not exercise a real
   subset; the scripted test does. P1's done-condition is met except that
   the prompt is still rendered by hand (D8).
+- **2026-11-22:** P1, fifth slice (D8): `esp::infer::chat` behind
+  `chat-template` renders a model's own Jinja chat template with minijinja
+  3.1 (Apache-2.0): no loader, filesystem, network or clock, and a fuel limit.
+  Its source bytes are what `BoundModelSession::prepare` already binds by
+  hash, so the session needed no change. Qwen3's real template renders the
+  prompt the earlier tests wrote by hand. `distillery::decision::chat_prompt`
+  builds the renderer from a `tokenizer_config.json`; both real-model tests
+  use it and pass on the RTX 4060 with the same decisions as before
+  (`[0,2]` in Distillery, `[0,1,2]` in the workshop run; Athanor 36 of 36).
+  The decision path does not yet run inside a bound session, so a decision
+  does not carry the template's hash; that moves to P2. P1 is done.
+- **2026-11-22:** D12–D14 recorded and P2's done-condition restated after
+  reading the workshop and Servitor's reducer: a token limit is checked only
+  at intent (`servitor` `run/reducer.rs`, `would_exceed`), the worker actor
+  calls `evaluate` directly, and no journal entry carries tokens, a model
+  identity or a failure.

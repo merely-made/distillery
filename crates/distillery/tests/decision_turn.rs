@@ -16,7 +16,7 @@
 //! asserts the turn's contract, not the quality of the model's choice.
 #![cfg(all(feature = "decision", feature = "inference-gpu"))]
 
-use distillery::decision::{decide, replay};
+use distillery::decision::{chat_prompt, decide, replay};
 use esp::infer::decoder::{DecoderDevice, DecoderProvider};
 use serde_json::json;
 use sha2::{Digest, Sha256};
@@ -38,14 +38,6 @@ fn artifact(dir: &std::path::Path, name: &str, expected: &str) -> Vec<u8> {
         .collect();
     assert_eq!(actual, expected, "{name} is not the pinned artifact");
     bytes
-}
-
-/// Qwen's ChatML turn with thinking closed, rendered above the seam.
-fn chatml(system: &str, user: &str) -> String {
-    format!(
-        "<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\n{user}<|im_end|>\n\
-         <|im_start|>assistant\n<think>\n\n</think>\n\n"
-    )
 }
 
 #[test]
@@ -76,15 +68,28 @@ fn qwen3_makes_one_schema_bound_decision_that_replays() {
             "op": {"const": "brief"},
             "order": {"type": "array", "minItems": 2, "maxItems": 3,
                       "items": {"type": "integer", "minimum": 0, "maximum": 2}}}});
-    let prompt = chatml(
-        "You choose which passages an evidence brief cites. Reply with one JSON object.",
+    // The model's own chat template (D8), from its pinned tokenizer config.
+    let render = chat_prompt(
+        &artifact(
+            &dir,
+            "tokenizer_config.json",
+            "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+        ),
+        "You choose which passages an evidence brief cites. Reply with one JSON object.".into(),
+        "Which passages are about keeping and storing documents? Give their numbers, most \
+         relevant first, as {\"op\":\"brief\",\"order\":[...]}."
+            .into(),
+        json!({"enable_thinking": false}),
+    )
+    .unwrap();
+    let prompt = render(
         "Passage 0: Field notes\nA retained copy remains readable when its origin is offline.\n\n\
          Passage 1: Recipe card\nWhisk two eggs with a pinch of salt.\n\n\
-         Passage 2: Local research note\nAcceptance finishes after the destination confirms storage.\n\n\
-         Which passages are about keeping and storing documents? Give their numbers, most \
-         relevant first, as {\"op\":\"brief\",\"order\":[...]}.",
-    );
-
+         Passage 2: Local research note\nAcceptance finishes after the destination confirms storage.\n",
+        &operations,
+    )
+    .unwrap();
+    assert!(prompt.ends_with("<|im_start|>assistant\n<think>\n\n</think>\n\n"));
     let asked = Instant::now();
     let decision = decide(&provider, &prompt, &operations, 32).unwrap();
     println!(

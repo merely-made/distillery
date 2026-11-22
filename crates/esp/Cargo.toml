@@ -56,6 +56,23 @@ optional = true
 version = "0.1"
 optional = true
 
+[dependencies.minijinja]
+version = "3.1"
+optional = true
+features = [
+    "json",
+    "loop_controls",
+    "fuel",
+    "serde",
+]
+
+[dependencies.minijinja-contrib]
+version = "3.1"
+optional = true
+features = [
+    "pycompat",
+]
+
 [dependencies.serde_json]
 version = "1.0"
 optional = true
@@ -161,6 +178,13 @@ persistence = [
 # JSON Schema compiled into `OutputGrammar` (decision-driver D7). No model
 # runtime: the compiler and its validator only.
 output-schema = [
+    "dep:serde_json",
+]
+# A model's own Jinja chat template, rendered by minijinja (decision-driver D8).
+# Opt-in per model; no model runtime.
+chat-template = [
+    "dep:minijinja",
+    "dep:minijinja-contrib",
     "dep:serde_json",
 ]
 # The `GoalEmbedder` adapter over an ESP provider (D2 of Mere's cycle breaks plan):

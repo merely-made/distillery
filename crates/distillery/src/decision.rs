@@ -109,7 +109,35 @@ impl From<InferError> for DecideError {
 }
 
 /// Renders a turn's context and offered operations into the model's prompt.
-pub type RenderPrompt = dyn Fn(&str, &Value) -> String + Send + Sync;
+///
+/// [chat_prompt] builds one from the model's own chat template.
+pub type RenderPrompt = dyn Fn(&str, &Value) -> Result<String, DecideError> + Send + Sync;
+
+/// A [`RenderPrompt`] over the chat template in a model's own
+/// `tokenizer_config.json` (decision-driver D8):
+/// `system` is the system turn, and the turn's context followed by `ask` is
+/// the user turn. `variables` are the template's switches, such as
+/// `{"enable_thinking": false}`. The operations are enforced by the grammar,
+/// not described to the model here; `ask` says what shape to answer in.
+///
+/// # Errors
+/// When `tokenizer_config` carries no chat template that parses.
+pub fn chat_prompt(
+    tokenizer_config: &[u8],
+    system: String,
+    ask: String,
+    variables: Value,
+) -> Result<Box<RenderPrompt>, DecideError> {
+    use esp::infer::chat::{ChatMessage, ChatTemplate};
+    let template = ChatTemplate::from_tokenizer_config(tokenizer_config)?;
+    Ok(Box::new(move |context, _operations| {
+        let messages = [
+            ChatMessage::new("system", system.as_str()),
+            ChatMessage::new("user", format!("{context}\n{ask}")),
+        ];
+        Ok(template.render(&messages, &variables)?)
+    }))
+}
 
 /// A loaded provider and its prompt rendering, behind a surface that names no
 /// esp type: what a decision-driver adapter outside this crate holds.
@@ -134,7 +162,7 @@ impl ModelDecider {
         operations: &Value,
         max_tokens: usize,
     ) -> Result<ModelDecision, DecideError> {
-        let prompt = (self.render)(context, operations);
+        let prompt = (self.render)(context, operations)?;
         Ok(decide(self.provider.as_ref(), &prompt, operations, max_tokens)?)
     }
 }

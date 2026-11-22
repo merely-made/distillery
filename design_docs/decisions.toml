@@ -62,6 +62,21 @@ title = "A driver chooses and orders passages (Mark, 2026-11-21)"
 source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
 summary = "At the proposing step a driver picks at least two of the owner's selected passages and their order; the brief text stays deterministic; the workshop accepts a duplicate-free subset of the run's passages and confirms the recorded candidate."
 
+[decisions."decision-driver D12"]
+title = "Reserve at start, record actual (Mark, 2026-11-22)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "The proposing step reserves its max_tokens against a real limit at intent; the actual count and the model's identity are stored in the journal and shown in the view. Stored runs under the old limits are not carried over."
+
+[decisions."decision-driver D13"]
+title = "Record a failed turn, retry once, then fail (Mark, 2026-11-22)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "A failed or refused model turn is journalled as a retryable failure; one retry is allowed and a second failure ends the run as failed; each attempt counts against the decision budget."
+
+[decisions."decision-driver D14"]
+title = "The claim condition restated (Mark, 2026-11-22)"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "P2's \"a claimed success that the observations contradict is caught\" becomes: a brief must be rebuildable from the owner's own passages, and the confirmed brief must equal the recorded candidate."
+
 [decisions."distillery-extraction D1"]
 title = "The move (Mark, 2026-10-31)"
 source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md"

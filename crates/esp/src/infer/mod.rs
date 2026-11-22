@@ -26,6 +26,8 @@
 
 #[cfg(feature = "actor")]
 pub mod actor;
+#[cfg(feature = "chat-template")]
+pub mod chat;
 #[cfg(feature = "decoder")]
 pub mod decoder;
 #[cfg(all(feature = "decoder", feature = "model-session"))]
