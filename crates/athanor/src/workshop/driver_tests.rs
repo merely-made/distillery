@@ -20,6 +20,8 @@ use std::sync::atomic::{AtomicU64, AtomicUsize};
 use std::sync::mpsc::{self, Receiver};
 use std::time::{Duration, Instant};
 
+mod profile;
+
 const ID: [u8; 16] = [5; 16];
 const SUBJECT: [u8; 32] = [7; 32];
 const WAIT: Duration = Duration::from_secs(5);
@@ -171,11 +173,15 @@ fn proposing(attempt: u64) -> Correlation {
 }
 
 /// Rewrite the stored run, as a corrupted or forged journal would.
-async fn tamper(host: &Driver<MemoryBackend>, store: &MemoryBackend, edit: impl FnOnce(&mut Run)) {
-    let (_, mut record) = host.workshop.load().await.unwrap();
+async fn tamper(
+    shop: &Workshop<MemoryBackend>,
+    store: &MemoryBackend,
+    edit: impl FnOnce(&mut Run),
+) {
+    let (_, mut record) = shop.load().await.unwrap();
     edit(&mut record.runs[0]);
     store
-        .put(&host.workshop.key, &encoded(&record).unwrap())
+        .put(&shop.key, &encoded(&record).unwrap())
         .await
         .unwrap();
 }
@@ -194,6 +200,8 @@ fn a_scripted_driver_runs_to_review_through_the_host_driver_and_the_same_reducer
         let view = settle(&mut host, &wake, &clock).await.unwrap();
         assert_eq!(view.phase, RunStatus::Completed);
         assert_eq!(view.review, Some(Review::AwaitingReview));
+        // A host with a decider begins a model run: limit twice the cap.
+        assert_eq!(view.limits, model_limits(64));
         let all = inputs();
         assert_eq!(
             view.proposal.unwrap().sources,
@@ -325,46 +333,6 @@ fn a_recorded_proposing_step_is_never_asked_again_after_reopen_or_interruption()
             RunStatus::BudgetExhausted
         );
         assert_eq!(counted.calls(), 1, "the recorded step was asked again");
-    });
-}
-
-#[test]
-fn the_proposing_step_reserves_its_cap_at_intent_and_servitor_refuses_an_unaffordable_one() {
-    pollster::block_on(async {
-        // A cap above the run's token limit: the reducer refuses the intent.
-        let store = MemoryBackend::new();
-        let time = AtomicU64::new(1);
-        let clock = ticking(&time);
-        let counted = Counted::new([Ok(brief(&[0, 1]))]);
-        let over = usize::try_from(LIMITS.tokens).unwrap() + 1;
-        let (mut host, wake) = rig(&store, counted.clone(), over);
-        host.open(SUBJECT).await.unwrap();
-        host.begin(inputs(), &Granted, &clock, &|_| true)
-            .await
-            .unwrap();
-        assert_eq!(settle(&mut host, &wake, &clock).await, Err(Error::Budget));
-        let view = host.refresh().await.unwrap();
-        assert_eq!(view.phase, RunStatus::BudgetExhausted);
-        assert_eq!((view.usage.decisions, view.usage.tokens), (1, 0));
-        assert_eq!(counted.calls(), 0);
-        assert!(!host.busy());
-
-        // Each attempt reserves again: a retry the limit cannot cover is
-        // refused the same way, after the failed turn is journalled.
-        let store = MemoryBackend::new();
-        let counted = Counted::new([Err(DecisionError::Failed("no answer".into()))]);
-        let (mut host, wake) = rig(&store, counted.clone(), 200);
-        host.open(SUBJECT).await.unwrap();
-        host.begin(inputs(), &Granted, &clock, &|_| true)
-            .await
-            .unwrap();
-        assert_eq!(settle(&mut host, &wake, &clock).await, Err(Error::Budget));
-        let view = host.refresh().await.unwrap();
-        assert_eq!(view.phase, RunStatus::BudgetExhausted);
-        assert_eq!(view.usage.tokens, 200);
-        assert_eq!(counted.calls(), 1);
-        assert_eq!(view.turns.len(), 1);
-        assert_eq!(view.turns[0].reserved, 200);
     });
 }
 
@@ -514,7 +482,7 @@ fn a_brief_not_rebuildable_from_the_owners_passages_is_refused() {
         next(&mut host, &wake, &clock).await.unwrap();
         // While step 1 is in flight the stored selection no longer holds the
         // passage the brief will cite.
-        tamper(&host, &store, |run| {
+        tamper(&host.workshop, &store, |run| {
             run.inputs[1] = passage("D", "1", "Elsewhere", "A passage the brief never saw.");
         })
         .await;
@@ -543,7 +511,7 @@ fn a_confirmed_brief_that_differs_from_the_recorded_candidate_is_refused() {
         next(&mut host, &wake, &clock).await.unwrap();
         next(&mut host, &wake, &clock).await.unwrap();
         // Step 2 is confirming the recorded [2, 0]; the record now says [0, 1].
-        tamper(&host, &store, |run| {
+        tamper(&host.workshop, &store, |run| {
             run.candidate = Some(proposal(ID, 1, &run.inputs[..2]).unwrap());
         })
         .await;

@@ -122,6 +122,29 @@ pub(super) fn work(
     }
 }
 
+/// The per-turn token cap a run's limits were made from: `None` for the
+/// model-free [`LIMITS`], the cap for [`model_limits`] (D15).
+///
+/// # Errors
+/// When the limits are neither profile.
+pub(super) fn cap(limits: &Limits) -> Result<Option<u64>, Error> {
+    if *limits == LIMITS {
+        return Ok(None);
+    }
+    let cap = limits.tokens / 2;
+    if model_limits(cap).as_ref() == Some(limits) {
+        Ok(Some(cap))
+    } else {
+        Err(Error::Invalid("run limits"))
+    }
+}
+
+/// What an intent at `step` reserves: the cap at a model run's proposing
+/// step, nothing anywhere else.
+pub(super) fn reservation(cap: Option<u64>, step: u64) -> u64 {
+    if step == 1 { cap.unwrap_or(0) } else { 0 }
+}
+
 /// A journalled failed turn as the reducer reads it (D13). One fewer retry
 /// than the failure limit: with the limit at two, the first failure retries
 /// and the second fails the run.

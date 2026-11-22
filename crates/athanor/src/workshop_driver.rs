@@ -7,7 +7,9 @@
 //! Native worker pump shared by application owners. The owner serializes its
 //! live source, authority and custody policy with dispatch and observation.
 
-use crate::workshop::{Decider, Error, Workshop, WorkshopBackend, worker::Worker};
+use crate::workshop::{
+    Decider, Error, LIMITS, Workshop, WorkshopBackend, model_limits, worker::Worker,
+};
 use crate::alembic::workshop::{Control, Owner, Passage, RunStatus, WorkshopView};
 use servitor::AuthorityProvider;
 use std::sync::mpsc::TryRecvError;
@@ -158,11 +160,19 @@ impl<B: WorkshopBackend> Driver<B> {
             .unwrap_or(0)
             .checked_add(1)
             .ok_or(Error::Invalid("run ID overflow"))?;
-        if let Err(error) = self
-            .workshop
-            .begin(id, inputs.clone(), authority, clock())
-            .await
-        {
+        let begun = match &self.decider {
+            Some(decider) => {
+                self.workshop
+                    .begin_model(id, inputs.clone(), authority, clock(), decider.reservation())
+                    .await
+            },
+            None => {
+                self.workshop
+                    .begin(id, inputs.clone(), authority, clock())
+                    .await
+            },
+        };
+        if let Err(error) = begun {
             // A storage error may have followed a durable admission. Reopen the
             // exact ID before deciding whether there is anything to pause.
             if matches!(error, Error::Store(_)) {
@@ -199,10 +209,9 @@ impl<B: WorkshopBackend> Driver<B> {
         if !self.inputs.iter().all(source_gate) {
             return Err(Error::Unauthorized);
         }
-        let reserve = self.decider.as_ref().map_or(0, Decider::reservation);
         let dispatch = self
             .workshop
-            .dispatch_reserving(self.active.ok_or(Error::Missing)?, authority, clock(), reserve)
+            .dispatch(self.active.ok_or(Error::Missing)?, authority, clock())
             .await?;
         if !self.inputs.iter().all(source_gate) {
             return Err(Error::Unauthorized);
@@ -282,6 +291,18 @@ impl<B: WorkshopBackend> Driver<B> {
             Control::Pause | Control::Resume | Control::Revoke | Control::Dissolve
         ) {
             return Err(Error::Invalid("driver lifecycle control"));
+        }
+        if control == Control::Resume {
+            // A decider drives only a model run with its own cap, and a model
+            // run is never resumed without one (D15). Nothing is resumed.
+            let view = self.refresh().await?;
+            let expected = match &self.decider {
+                Some(decider) => model_limits(decider.reservation()),
+                None => Some(LIMITS),
+            };
+            if matches!(view.phase, RunStatus::Paused(_)) && view.limits != expected {
+                return Err(Error::Invalid("decision driver profile"));
+            }
         }
         if let Err(error) = self.workshop.lifecycle(control, authority, clock()).await {
             // The transition may already have committed despite a lost ack.

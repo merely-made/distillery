@@ -31,16 +31,28 @@ const RECORD_SCHEMA: u32 = 2;
 const MAX_RECORD: usize = 1024 * 1024;
 const MAX_RUNS: usize = 32;
 const DEADLINE: u64 = 30_000;
-/// Servitor holds every run to these. Three steps plus one retry of the
-/// proposing step (decision-driver D13): a turn that fails twice ends the run
-/// as failed. `tokens` bounds what proposing steps reserve at intent (D12).
+/// A run without a decision driver: three steps, no tokens, no failures.
+/// A run with one gets [`model_limits`] instead (decision-driver D15).
 pub const LIMITS: Limits = Limits {
-    decisions: 4,
+    decisions: 3,
     tool_calls: 2,
-    tokens: 256,
+    tokens: 0,
     elapsed_ms: DEADLINE,
-    consecutive_failures: 2,
+    consecutive_failures: 0,
 };
+
+/// A run whose proposing step is a decision driver's turn, capped at
+/// `max_tokens` (decision-driver D12, D13, D15): one retry of that step, each
+/// attempt counting as a decision and reserving the cap, so the token limit
+/// is twice the cap. `None` when the cap is zero or the limit overflows.
+pub fn model_limits(max_tokens: u64) -> Option<Limits> {
+    Some(Limits {
+        decisions: 4,
+        consecutive_failures: 2,
+        tokens: max_tokens.checked_mul(2).filter(|_| max_tokens > 0)?,
+        ..LIMITS
+    })
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Error {
@@ -472,6 +484,8 @@ impl Run {
                 required: requirements(owner, self.admitted.id, &self.inputs),
             },
         })?;
+        // A model run's per-turn cap, or none for a model-free run (D15).
+        let cap = turn::cap(&self.limits)?;
         // The reservation of the intent a result answers (D12).
         let mut reserved = 0;
         for entry in &self.entries {
@@ -482,7 +496,7 @@ impl Run {
                     at,
                     reserved: r,
                 } => {
-                    if r != 0 && c.step != 1 {
+                    if r != turn::reservation(cap, c.step) {
                         return Err(Error::Invalid("token reservation"));
                     }
                     reserved = r;
@@ -508,7 +522,10 @@ impl Run {
                     completed,
                     model,
                 } => {
-                    if model.as_ref().is_some_and(|m| !m.fits(c.step, reserved)) {
+                    if model
+                        .as_ref()
+                        .is_some_and(|m| cap.is_none() || !m.fits(c.step, reserved))
+                    {
                         return Err(Error::Invalid("model usage"));
                     }
                     RunEvent::ResultRecorded {
@@ -531,7 +548,10 @@ impl Run {
                     correlation: c,
                     at,
                     reason,
-                } => turn::failed_event(&reducer, &self.limits, *c, *at, reason)?,
+                } if cap.is_some() => {
+                    turn::failed_event(&reducer, &self.limits, *c, *at, reason)?
+                },
+                Entry::Failed { .. } => return Err(Error::Invalid("failed turn")),
                 &Entry::Interrupted(at) => RunEvent::Interrupted { at_ms: at },
                 &Entry::Paused(at) => RunEvent::Paused { at_ms: at },
                 &Entry::Resumed(at) => RunEvent::Resumed { at_ms: at },
@@ -745,9 +765,8 @@ impl<B: WorkshopBackend> Workshop<B> {
                 return Err(Error::Invalid("selected definition"));
             }
             self.validate_inputs(&run.inputs)?;
-            if run.limits != LIMITS {
-                return Err(Error::Invalid("run limits"));
-            }
+            // Exactly the model-free or a model-run profile (D15).
+            turn::cap(&run.limits)?;
             let reducer = run.replay(&self.owner)?;
             if run
                 .candidate
@@ -894,12 +913,42 @@ impl<B: WorkshopBackend> Workshop<B> {
         .await
     }
 
+    /// Begin a model-free run under [`LIMITS`].
     pub async fn begin(
         &self,
         id: u64,
         inputs: Vec<Passage>,
         authority: &impl AuthorityProvider,
         now: u64,
+    ) -> Result<(), Error> {
+        self.begin_under(id, inputs, authority, now, LIMITS).await
+    }
+
+    /// Begin a run whose proposing step is a decision driver's turn capped at
+    /// `max_tokens`, under [`model_limits`] (decision-driver D15). Each of its
+    /// proposing intents reserves exactly that cap.
+    ///
+    /// # Errors
+    /// As [`Self::begin`], and `Invalid` for a zero or overflowing cap.
+    pub async fn begin_model(
+        &self,
+        id: u64,
+        inputs: Vec<Passage>,
+        authority: &impl AuthorityProvider,
+        now: u64,
+        max_tokens: u64,
+    ) -> Result<(), Error> {
+        let limits = model_limits(max_tokens).ok_or(Error::Invalid("token cap"))?;
+        self.begin_under(id, inputs, authority, now, limits).await
+    }
+
+    async fn begin_under(
+        &self,
+        id: u64,
+        inputs: Vec<Passage>,
+        authority: &impl AuthorityProvider,
+        now: u64,
+        limits: Limits,
     ) -> Result<(), Error> {
         self.validate_inputs(&inputs)?;
         // Check the prospective artifact before installing an actionable run;
@@ -931,7 +980,7 @@ impl<B: WorkshopBackend> Workshop<B> {
             id,
             admitted: record.binding.clone(),
             started: now,
-            limits: LIMITS,
+            limits,
             inputs,
             entries: vec![],
             candidate: None,
@@ -943,29 +992,15 @@ impl<B: WorkshopBackend> Workshop<B> {
 
     /// Persist one accepted intent before the owner can dispatch its bytes.
     /// Source availability/custody still belongs to the owner's action gate.
+    ///
+    /// A model run's proposing intent reserves its cap against the run's token
+    /// limit (decision-driver D12). Servitor refuses an intent the run cannot
+    /// afford, and the run then ends with its budget exhausted.
     pub async fn dispatch(
         &self,
         id: u64,
         authority: &impl AuthorityProvider,
         now: u64,
-    ) -> Result<Dispatch, Error> {
-        self.dispatch_reserving(id, authority, now, 0).await
-    }
-
-    /// As [`Self::dispatch`], reserving `tokens` against the run's token limit
-    /// when the next step is the proposing one (decision-driver D12): the cap
-    /// a decision driver is given there. Servitor refuses an intent the run
-    /// cannot afford, and the run then ends with its budget exhausted.
-    ///
-    /// # Errors
-    /// `Budget` when the run's deadline or limits refuse the step (and the run
-    /// is then budget-exhausted); otherwise as [`Self::dispatch`].
-    pub async fn dispatch_reserving(
-        &self,
-        id: u64,
-        authority: &impl AuthorityProvider,
-        now: u64,
-        tokens: u64,
     ) -> Result<Dispatch, Error> {
         let (before, mut record) = self.load().await?;
         let binding = record.binding.servitor();
@@ -991,7 +1026,7 @@ impl<B: WorkshopBackend> Workshop<B> {
         let intent = Entry::Intent {
             correlation: wire(c),
             at: now,
-            reserved: if c.step == 1 { tokens } else { 0 },
+            reserved: turn::reservation(turn::cap(&run.limits)?, c.step),
         };
         let expired = now.checked_sub(run.started).ok_or(Error::Stale)? >= run.limits.elapsed_ms;
         let refused = if expired {

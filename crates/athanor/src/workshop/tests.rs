@@ -349,9 +349,6 @@ fn interrupted_replay_never_reexecutes_and_keeps_original_budget() {
             )
             .await
             .unwrap();
-        // The retried step 0 spent the second tool call that step 2 needs;
-        // Servitor refuses that intent and the run's budget is exhausted.
-        assert_eq!(reopened.dispatch(1, &auth, 7).await.unwrap_err(), Error::Budget);
         assert_eq!(
             reopened.view(Some(1)).await.unwrap().phase,
             RunStatus::BudgetExhausted
@@ -821,7 +818,9 @@ fn a_driver_chooses_and_orders_passages_and_the_owner_accepts_only_that_choice()
     pollster::block_on(async {
         let (shop, backend, auth, inputs) = fixture();
         shop.install(SUBJECT).await.unwrap();
-        shop.begin(1, inputs.clone(), &auth, 10).await.unwrap();
+        shop.begin_model(1, inputs.clone(), &auth, 10, 64)
+            .await
+            .unwrap();
         let first = shop.dispatch(1, &auth, 11).await.unwrap();
         shop.observe(evaluate(first).unwrap(), &auth, 12)
             .await
@@ -984,13 +983,15 @@ fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
     pollster::block_on(async {
         let (shop, backend, auth, inputs) = fixture();
         shop.install(SUBJECT).await.unwrap();
-        shop.begin(1, inputs.clone(), &auth, 10).await.unwrap();
+        // A model run with the cap the model is given: limit 64 (D12, D15).
+        shop.begin_model(1, inputs.clone(), &auth, 10, 32)
+            .await
+            .unwrap();
         let first = shop.dispatch(1, &auth, 11).await.unwrap();
         shop.observe(evaluate(first).unwrap(), &auth, 12)
             .await
             .unwrap();
-        // The proposing step reserves the cap the model is given (D12).
-        let second = shop.dispatch_reserving(1, &auth, 13, 32).await.unwrap();
+        let second = shop.dispatch(1, &auth, 13).await.unwrap();
         match propose_with(&model, second, 32) {
             Ok(proposed) => {
                 println!(
