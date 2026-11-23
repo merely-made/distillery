@@ -53,6 +53,9 @@ pub mod gpu;
 /// One model decision over an esp provider, bound by a JSON Schema.
 #[cfg(feature = "decision")]
 pub mod decision;
+/// Single-file and indexed local checkpoints for decision comparisons.
+#[cfg(all(feature = "decision", feature = "inference-gpu", not(target_family = "wasm")))]
+pub mod decision_checkpoint;
 #[cfg(feature = "flora")]
 pub mod flora;
 /// The resident inference lane and its `inference.ask` route.

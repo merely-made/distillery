@@ -30,6 +30,10 @@ workshop-model-gpu = ["workshop-model", "workshop-worker", "distillery/inference
 workshop-sealed = ["workshop", "dep:eidetic"]
 workshop-destination = ["workshop", "dep:pandect", "dep:kernel", "dep:portolan", "dep:euclid", "dep:uuid"]
 
+[[example]]
+name = "workshop_compare"
+required-features = ["workshop-model-gpu"]
+
 [dependencies]
 cambium = { workspace = true, optional = true }
 eidetic = { workspace = true, optional = true }

@@ -100,6 +100,31 @@ more work. It refuses at that bound without dropping history or unresolved
 operations. This is a bounded first workflow, without a retention service,
 scheduler, model calls, standing grants or automatic replay of effects.
 
+### Comparing public briefs
+
+`workshop_compare` runs the same public cases through the native workshop
+driver under the real 30-second run clock. Generate the inputs and separate
+scoring key from the Athanor workspace. Run the built example once per arm
+with a fresh JSONL output path each time:
+
+```sh
+python tests/fixtures/brief_comparison/corpus.py .
+cargo build --release --features workshop-model-gpu --example workshop_compare
+workshop_compare corpus.json deterministic.jsonl deterministic
+workshop_compare corpus.json small.jsonl Qwen/Qwen3-0.6B /models/Qwen3-0.6B resident-f32
+workshop_compare corpus.json large.jsonl Qwen/Qwen3-4B /models/Qwen3-4B streamed-f32
+```
+
+Each case supplies an `id`, an `ask`, and two to four public passages with
+stable `id`, `title` and `text`. The model sees the question and numbered
+passages. A ready-for-review row includes the owner's confirmed brief and the
+chosen IDs. Raw attempts include decisions that the owner refused, elapsed
+time and observed generation usage. The `turns` array comes from reopening
+the workshop record. The model header records checkpoint identity, device
+placement and load time. Use an external sampler for peak process or GPU
+memory. The optional `resident-q8` placement converts both checkpoints with
+ESP's block-32 Q8 format for a separate matched comparison.
+
 ## License
 
 MPL-2.0
