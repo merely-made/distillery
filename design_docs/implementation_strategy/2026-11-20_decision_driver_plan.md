@@ -375,5 +375,6 @@ to the driver.
   evidence are in
   `mere/design_docs/archive_docs/receipts/2026-10-28_alembic_implementation_plan_receipts.md`.
   On O-PC, the standalone decision test passed on real Qwen3 0.6B weights:
-  checkpoint replay reproduced the decision, and a different template
-  refused the recorded checkpoint.
+  checkpoint replay reproduced the decision. Both a cut-short record and a
+  changed operation schema were refused. The one-byte template-change
+  refusal was exercised with the checkpoint-capable test provider on M4.
