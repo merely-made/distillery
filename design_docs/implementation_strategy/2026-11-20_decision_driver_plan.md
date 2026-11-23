@@ -176,10 +176,9 @@ to main and pushed.
 
 ## Qualification still to do
 
-Mere adopted P3 on 2026-11-23. D18 needs the two native consumer receipts.
-D19 needs the paired comparison. D20's session binding has passed fixture
-replay and workshop reopen. The real-weight replay and journal receipts are
-pending. Deterministic assembly remains the default. P4 awaits the Inkling body.
+Mere adopted P3 on 2026-11-23. D18 passed on both native consumers.
+D19 needs the paired comparison. D20 has passed fixture replay, workshop reopen
+and real-weight decision replay. The real-weight workshop journal check is pending. Deterministic assembly remains the default. P4 awaits the Inkling body.
 
 The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
@@ -368,3 +367,13 @@ to the driver.
   model/worker tests passed, including reopen and resume with the proposing
   driver's call count still one. The pre-change control accepted a checkpoint
   presented through a different session.
+
+- **2026-11-23 (D18, D20):** Turnstone and Graphshell exercised the model-free
+  workshop and recovered the accepted result through their native consumers on
+  the M4, first with the schema-2 workshop, then with D20. Both refused a
+  schema-1 record with its stored bytes intact. The resolution and host
+  evidence are in
+  `mere/design_docs/archive_docs/receipts/2026-10-28_alembic_implementation_plan_receipts.md`.
+  On O-PC, the standalone decision test passed on real Qwen3 0.6B weights:
+  checkpoint replay reproduced the decision, and a different template
+  refused the recorded checkpoint.
