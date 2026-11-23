@@ -177,8 +177,10 @@ to main and pushed.
 ## Qualification still to do
 
 Mere adopted P3 on 2026-11-23. D18 passed on both native consumers.
-D19 needs the paired comparison. D20 has passed fixture replay, workshop reopen
-and real-weight decision replay. The real-weight workshop journal check is pending. Deterministic assembly remains the default. P4 awaits the Inkling body.
+The D19 paired comparison and D20 real-weight replay and workshop journal
+checks ran on O-PC. The primary 4B Q8 arm returned ten briefs with exact
+selections and ordering, then missed two deadlines. The placement follow-up
+tests the effect of CubeCL stream policy. Deterministic assembly remains the default. P4 awaits the Inkling body.
 
 The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
@@ -378,3 +380,9 @@ to the driver.
   checkpoint replay reproduced the decision. Both a cut-short record and a
   changed operation schema were refused. The one-byte template-change
   refusal was exercised with the checkpoint-capable test provider on M4.
+
+- **2026-11-23 (P3):** the full public comparison ran on O-PC. Resident 0.6B
+  F32 reached review in every case but omitted required evidence. Streamed
+  4B F32 produced no reviewable brief. Resident 4B Q8 reached review on ten
+  cases and met the complete rubric on all ten. Its final two decisions
+  missed the deadline. See the [paired trial receipt](../archive_docs/receipts/2026-11-20_decision_driver_plan_receipts.md).
