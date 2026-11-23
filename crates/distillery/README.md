@@ -35,10 +35,13 @@ grammar, generates greedily through the checkpointed path, then parses the
 text and checks it against the schema again. `replay` re-derives a decision
 from its recorded checkpoint without a model choice, and `decide_until` takes
 a stop that ends a turn at a token boundary with a failure, never a fragment.
-`ModelDecider` binds a provider to its prompt rendering behind a surface that
-names no esp type; `chat_prompt` builds that rendering from a model's
-`tokenizer_config.json`, and `discrete_gpu_decider` (with `inference-gpu`)
-loads a decoder onto the first discrete GPU. The module knows nothing of who
+`chat_prompt` reads the template from the model's `tokenizer_config.json`
+and retains its source bytes alongside the render settings. `ModelDecider`
+binds that renderer and the provider's content identities to an ESP model
+session. Each checkpoint carries the session identity and template hash.
+`ModelDecider::replay` checks both before replaying the recorded tokens.
+`discrete_gpu_decider` (with `inference-gpu`) binds the decoder loaded on
+the first discrete GPU. The module knows nothing of who
 asks or of what a decision authorizes. `tests/decision_turn.rs` runs a real
 turn and is ignored without `ESP_QWEN3_DIR`.
 

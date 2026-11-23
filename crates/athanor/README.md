@@ -71,9 +71,11 @@ dispatches are never shown to a driver.
 `Driver::with_decider` runs a driver through the host driver and its worker.
 Such a run is begun with `begin_model` and carries its own limits
 (`model_limits`): four decisions, one retry, and a token limit of twice the
-driver's per-turn cap. The proposing step reserves its cap when it starts, the
-journal keeps the provider and the actual token count (`WorkshopView::turns`),
-a failed or refused turn is journalled and retried once before the run ends
+driver's per-turn cap. The proposing step reserves its cap when it starts.
+The journal keeps the provider and actual token count. A successful model
+turn also carries the bound session ID and template hash in
+`WorkshopView::turns`. Earlier schema-2 journals open with that field absent.
+A failed or refused turn is journalled and retried once before the run ends
 as failed, and cancelling the run stops an in-flight turn. Load accepts only
 the two limit shapes.
 

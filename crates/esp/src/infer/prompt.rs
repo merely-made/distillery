@@ -8,7 +8,7 @@
 
 use super::{BoundModelSession, GenerationRequest, InferError, InferenceProvider, ModelCapability};
 use eidetic::typed::TypedPayload;
-use eidetic::{Hash, ManifestId, SchemaRef};
+use eidetic::{ManifestId, SchemaRef};
 use serde::{Deserialize, Serialize};
 use std::ops::ControlFlow;
 
@@ -174,30 +174,15 @@ impl<P: InferenceProvider> InferenceProvider for SessionProvider<P> {
         commit: &mut dyn FnMut(&super::provider::GenerationCheckpoint) -> Result<(), InferError>,
         stop: &mut dyn FnMut() -> bool,
     ) -> Result<super::provider::GenerationCheckpoint, InferError> {
-        let identity = self.session_identity();
-        if resume.is_some_and(|checkpoint| checkpoint.session != identity) {
-            return Err(InferError::InvalidRequest(
-                "checkpoint belongs to a different exact session".into(),
-            ));
-        }
-        // Render only at creation. A resume uses the exact persisted bytes,
-        // including the originally chosen seed and stop strings.
+        // Resume with the exact saved request, including seed and stops.
         let prepared = match resume {
-            Some(checkpoint) => checkpoint.request.clone(),
-            None => self.prepare(request, &request.context)?.request,
+            Some(checkpoint) => self
+                .bound
+                .prepare(checkpoint.request.clone(), &self.template_bytes)?,
+            None => self.prepare(request, &request.context)?,
         };
-        let mut checkpoint = self.bound.provider().generate_checkpointed(
-            &prepared,
-            resume,
-            &mut |checkpoint| {
-                let mut checkpoint = checkpoint.clone();
-                checkpoint.session = identity.clone();
-                commit(&checkpoint)
-            },
-            stop,
-        )?;
-        checkpoint.session = identity;
-        Ok(checkpoint)
+        self.bound
+            .generate_prepared_checkpointed(&prepared, resume, commit, stop)
     }
 
     fn capability(&self) -> &ModelCapability {
@@ -205,10 +190,7 @@ impl<P: InferenceProvider> InferenceProvider for SessionProvider<P> {
     }
 
     fn session_identity(&self) -> Option<super::provider::SessionIdentity> {
-        Some(super::provider::SessionIdentity {
-            session_id: self.bound.session_id().to_string(),
-            prompt_template_hash: Hash::of(&self.template_bytes).to_string(),
-        })
+        Some(self.bound.identity())
     }
 
     fn generate_streaming(

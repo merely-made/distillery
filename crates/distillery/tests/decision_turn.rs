@@ -16,7 +16,8 @@
 //! asserts the turn's contract, not the quality of the model's choice.
 #![cfg(all(feature = "decision", feature = "inference-gpu"))]
 
-use distillery::decision::{chat_prompt, decide, replay};
+use distillery::decision::{ModelDecider, chat_prompt};
+use eidetic::ManifestId;
 use esp::infer::decoder::{DecoderDevice, DecoderProvider};
 use serde_json::json;
 use sha2::{Digest, Sha256};
@@ -25,9 +26,18 @@ use std::time::Instant;
 
 const MODEL_ID: &str = "Qwen/Qwen3-0.6B";
 const ARTIFACTS: &[(&str, &str)] = &[
-    ("config.json", "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd"),
-    ("tokenizer.json", "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"),
-    ("model.safetensors", "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b"),
+    (
+        "config.json",
+        "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+    ),
+    (
+        "tokenizer.json",
+        "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    ),
+    (
+        "model.safetensors",
+        "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+    ),
 ];
 
 fn artifact(dir: &std::path::Path, name: &str, expected: &str) -> Vec<u8> {
@@ -82,16 +92,22 @@ fn qwen3_makes_one_schema_bound_decision_that_replays() {
         json!({"enable_thinking": false}),
     )
     .unwrap();
-    let prompt = render(
-        "Passage 0: Field notes\nA retained copy remains readable when its origin is offline.\n\n\
+    let context = "Passage 0: Field notes\nA retained copy remains readable when its origin is offline.\n\n\
          Passage 1: Recipe card\nWhisk two eggs with a pinch of salt.\n\n\
-         Passage 2: Local research note\nAcceptance finishes after the destination confirms storage.\n",
-        &operations,
+         Passage 2: Local research note\nAcceptance finishes after the destination confirms storage.\n";
+    let prompt = render.render(context).unwrap();
+    assert!(prompt.ends_with("<|im_start|>assistant\n<think>\n\n</think>\n\n"));
+    let manifest =
+        serde_json::to_vec(&[ManifestId::of_blob(&config), ManifestId::of_blob(&weights)]).unwrap();
+    let decider = ModelDecider::bind(
+        provider,
+        ManifestId::of_blob(&manifest),
+        ManifestId::of_blob(&tokenizer),
+        render,
     )
     .unwrap();
-    assert!(prompt.ends_with("<|im_start|>assistant\n<think>\n\n</think>\n\n"));
     let asked = Instant::now();
-    let decision = decide(&provider, &prompt, &operations, 32).unwrap();
+    let decision = decider.decide(context, &operations, 32).unwrap();
     println!(
         "decision {} from {} in {:.1?}, {} tokens",
         decision.checkpoint.text,
@@ -102,23 +118,31 @@ fn qwen3_makes_one_schema_bound_decision_that_replays() {
     assert_eq!(decision.value["op"], "brief");
     let order = decision.value["order"].as_array().unwrap();
     assert!((2..=3).contains(&order.len()));
-    assert!(order.iter().all(|index| index.as_u64().is_some_and(|n| n <= 2)));
+    assert!(
+        order
+            .iter()
+            .all(|index| index.as_u64().is_some_and(|n| n <= 2))
+    );
     assert_eq!(decision.tokens, decision.checkpoint.token_ids.len() as u64);
     assert!(decision.provider.starts_with(MODEL_ID));
+    assert!(decision.checkpoint.session.is_some());
 
     // The recorded tokens reproduce the decision without a model choice.
-    assert_eq!(replay(&provider, &operations, &decision.checkpoint).unwrap(), decision);
+    assert_eq!(
+        decider.replay(&operations, &decision.checkpoint).unwrap(),
+        decision
+    );
     // Greedy generation is repeatable.
-    let again = decide(&provider, &prompt, &operations, 32).unwrap();
+    let again = decider.decide(context, &operations, 32).unwrap();
     assert_eq!(again.checkpoint.token_ids, decision.checkpoint.token_ids);
 
     // A record that is cut short, or offered under other operations, is refused.
     let mut cut = decision.checkpoint.clone();
     cut.token_ids.pop();
-    assert!(replay(&provider, &operations, &cut).is_err());
+    assert!(decider.replay(&operations, &cut).is_err());
     let narrower = json!({"type": "object", "additionalProperties": false, "required": ["op"],
                           "properties": {"op": {"const": "stop"}}});
-    assert!(replay(&provider, &narrower, &decision.checkpoint).is_err());
+    assert!(decider.replay(&narrower, &decision.checkpoint).is_err());
     // A turn too short for any decision fails rather than returning a fragment.
-    assert!(decide(&provider, &prompt, &operations, 3).is_err());
+    assert!(decider.decide(context, &operations, 3).is_err());
 }

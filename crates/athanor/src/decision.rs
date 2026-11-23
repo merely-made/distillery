@@ -41,12 +41,24 @@ impl std::fmt::Debug for Turn<'_> {
     }
 }
 
+/// Immutable model-session and chat-template content identities. The optional
+/// workshop feature journals these fields without depending on ESP.
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "workshop", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "workshop", serde(deny_unknown_fields))]
+pub struct DecisionSession {
+    pub session_id: String,
+    pub prompt_template_hash: String,
+}
+
 /// One decision, with what the caller retains about how it was made.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Decision {
     pub value: Value,
-    /// Provider and session identity, as the driver names itself.
+    /// Provider and loader, as the driver names itself.
     pub provider: String,
+    /// Exact binding for a model-backed decision. Scripted drivers omit it.
+    pub session: Option<DecisionSession>,
     /// Observed generation usage; zero for a driver that generates nothing.
     pub tokens: u64,
 }
@@ -95,6 +107,7 @@ impl DecisionDriver for Scripted {
         next.map(|value| Decision {
             value,
             provider: "athanor.scripted".into(),
+            session: None,
             tokens: 0,
         })
         .ok_or_else(|| DecisionError::Failed("script exhausted".into()))

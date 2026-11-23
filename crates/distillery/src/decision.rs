@@ -33,7 +33,11 @@ pub struct ModelDecision {
     pub checkpoint: GenerationCheckpoint,
 }
 
-fn request(prompt: &str, operations: &Value, max_tokens: usize) -> Result<GenerationRequest, InferError> {
+fn request(
+    prompt: &str,
+    operations: &Value,
+    max_tokens: usize,
+) -> Result<GenerationRequest, InferError> {
     Ok(GenerationRequest {
         prompt: prompt.into(),
         context: String::new(),
@@ -98,10 +102,11 @@ pub fn decide_until(
 ) -> Result<ModelDecision, InferError> {
     let request = request(prompt, operations, max_tokens)?;
     let mut stopped = false;
-    let checkpoint = provider.generate_checkpointed(&request, None, &mut |_| Ok(()), &mut || {
-        stopped = stopped || stop();
-        stopped
-    })?;
+    let checkpoint =
+        provider.generate_checkpointed(&request, None, &mut |_| Ok(()), &mut || {
+            stopped = stopped || stop();
+            stopped
+        })?;
     if stopped && !checkpoint.complete {
         return Err(InferError::Interrupted);
     }
@@ -130,85 +135,8 @@ impl From<InferError> for DecideError {
     }
 }
 
-/// Renders a turn's context and offered operations into the model's prompt.
-///
-/// [chat_prompt] builds one from the model's own chat template.
-pub type RenderPrompt = dyn Fn(&str, &Value) -> Result<String, DecideError> + Send + Sync;
-
-/// A [`RenderPrompt`] over the chat template in a model's own
-/// `tokenizer_config.json` (decision-driver D8):
-/// `system` is the system turn, and the turn's context followed by `ask` is
-/// the user turn. `variables` are the template's switches, such as
-/// `{"enable_thinking": false}`. The operations are enforced by the grammar,
-/// not described to the model here; `ask` says what shape to answer in.
-///
-/// # Errors
-/// When `tokenizer_config` carries no chat template that parses.
-pub fn chat_prompt(
-    tokenizer_config: &[u8],
-    system: String,
-    ask: String,
-    variables: Value,
-) -> Result<Box<RenderPrompt>, DecideError> {
-    use esp::infer::chat::{ChatMessage, ChatTemplate};
-    let template = ChatTemplate::from_tokenizer_config(tokenizer_config)?;
-    Ok(Box::new(move |context, _operations| {
-        let messages = [
-            ChatMessage::new("system", system.as_str()),
-            ChatMessage::new("user", format!("{context}\n{ask}")),
-        ];
-        Ok(template.render(&messages, &variables)?)
-    }))
-}
-
-/// A loaded provider and its prompt rendering, behind a surface that names no
-/// esp type: what a decision-driver adapter outside this crate holds.
-pub struct ModelDecider {
-    provider: Box<dyn InferenceProvider>,
-    render: Box<RenderPrompt>,
-}
-
-impl ModelDecider {
-    /// Bind a provider to the rendering its model expects.
-    pub fn new(provider: Box<dyn InferenceProvider>, render: Box<RenderPrompt>) -> Self {
-        Self { provider, render }
-    }
-
-    /// Render the turn and ask the provider for one decision.
-    ///
-    /// # Errors
-    /// As [`decide`], mapped to [`DecideError`].
-    pub fn decide(
-        &self,
-        context: &str,
-        operations: &Value,
-        max_tokens: usize,
-    ) -> Result<ModelDecision, DecideError> {
-        self.decide_until(context, operations, max_tokens, &|| false)
-    }
-
-    /// [`Self::decide`], stopping at a token boundary once `stop` returns
-    /// true; a stopped turn is a [`DecideError::Failed`].
-    ///
-    /// # Errors
-    /// As [`decide_until`], mapped to [`DecideError`].
-    pub fn decide_until(
-        &self,
-        context: &str,
-        operations: &Value,
-        max_tokens: usize,
-        stop: &dyn Fn() -> bool,
-    ) -> Result<ModelDecision, DecideError> {
-        let prompt = (self.render)(context, operations)?;
-        Ok(decide_until(
-            self.provider.as_ref(),
-            &prompt,
-            operations,
-            max_tokens,
-            stop,
-        )?)
-    }
-}
+mod binding;
+pub use binding::{ChatPrompt, ModelDecider, chat_prompt};
 
 /// Load a decoder from its config, tokenizer and safetensors bytes onto the
 /// first discrete GPU and bind it to `render`. The rendered prompt is taken
@@ -224,7 +152,7 @@ pub fn discrete_gpu_decider(
     weights: &[u8],
     model_id: &str,
     template_eos: Option<&str>,
-    render: Box<RenderPrompt>,
+    render: ChatPrompt,
 ) -> Result<ModelDecider, DecideError> {
     use esp::infer::decoder::DecoderProvider;
     let (device, facts) =
@@ -237,7 +165,17 @@ pub fn discrete_gpu_decider(
         Some(eos) => provider.with_template_eos(eos),
         None => provider,
     };
-    Ok(ModelDecider::new(Box::new(provider), render))
+    let manifest = serde_json::to_vec(&[
+        eidetic::ManifestId::of_blob(config),
+        eidetic::ManifestId::of_blob(weights),
+    ])
+    .map_err(|error| DecideError::Failed(error.to_string()))?;
+    ModelDecider::bind(
+        provider,
+        eidetic::ManifestId::of_blob(&manifest),
+        eidetic::ManifestId::of_blob(tokenizer),
+        render,
+    )
 }
 
 /// Re-derive a decision from its recorded checkpoint. The provider prefills
@@ -252,7 +190,21 @@ pub fn replay(
     operations: &Value,
     recorded: &GenerationCheckpoint,
 ) -> Result<ModelDecision, InferError> {
-    let request = request(&recorded.request.prompt, operations, recorded.request.max_tokens)?;
+    if recorded.session != provider.session_identity() {
+        return Err(InferError::InvalidRequest(
+            "checkpoint belongs to a different exact session".into(),
+        ));
+    }
+    if !recorded.complete {
+        return Err(InferError::InvalidRequest(
+            "incomplete decision checkpoint".into(),
+        ));
+    }
+    let request = request(
+        &recorded.request.prompt,
+        operations,
+        recorded.request.max_tokens,
+    )?;
     let checkpoint =
         provider.generate_checkpointed(&request, Some(recorded), &mut |_| Ok(()), &mut || false)?;
     finish(provider, operations, checkpoint)
@@ -303,10 +255,14 @@ mod tests {
         fn generate_checkpointed(
             &self,
             request: &GenerationRequest,
-            _: Option<&GenerationCheckpoint>,
-            _: &mut dyn FnMut(&GenerationCheckpoint) -> Result<(), InferError>,
+            resume: Option<&GenerationCheckpoint>,
+            commit: &mut dyn FnMut(&GenerationCheckpoint) -> Result<(), InferError>,
             stop: &mut dyn FnMut() -> bool,
         ) -> Result<GenerationCheckpoint, InferError> {
+            if let Some(checkpoint) = resume {
+                assert_eq!(checkpoint.request, *request);
+                return Ok(checkpoint.clone());
+            }
             let mut checkpoint = GenerationCheckpoint {
                 placements: Vec::new(),
                 session: None,
@@ -326,6 +282,7 @@ mod tests {
             }
             *self.emitted.lock().unwrap() = checkpoint.token_ids.len();
             checkpoint.complete = checkpoint.text == Self::TEXT;
+            commit(&checkpoint)?;
             Ok(checkpoint)
         }
     }
@@ -337,6 +294,63 @@ mod tests {
             "required": ["op"],
             "properties": {"op": {"const": "brief"}},
         })
+    }
+
+    #[test]
+    fn replay_binds_source_bytes_even_when_a_template_edit_renders_identically() {
+        use eidetic::{Hash, ManifestId};
+        let source = "{#A#}{{ messages[1].content }}";
+        let edited = "{#B#}{{ messages[1].content }}";
+        let make = |source: &str| {
+            let config = serde_json::to_vec(&json!({"chat_template":source})).unwrap();
+            let prompt = chat_prompt(&config, "system".into(), "ask".into(), json!({})).unwrap();
+            assert_eq!(prompt.render("context").unwrap(), "context\nask");
+            ModelDecider::bind(
+                Typist::new(),
+                ManifestId::of_blob(b"base"),
+                ManifestId::of_blob(b"tokenizer"),
+                prompt,
+            )
+            .unwrap()
+        };
+        let original = make(source);
+        let decision = original.decide("context", &operations(), 32).unwrap();
+        let session = decision.checkpoint.session.as_ref().unwrap();
+        assert_eq!(
+            session.prompt_template_hash,
+            Hash::of(source.as_bytes()).to_string()
+        );
+        assert_eq!(
+            make(source)
+                .replay(&operations(), &decision.checkpoint)
+                .unwrap(),
+            decision
+        );
+        let changed = make(edited);
+        assert!(
+            matches!(changed.replay(&operations(), &decision.checkpoint),
+            Err(DecideError::Invalid(message)) if message.contains("session"))
+        );
+        let mut altered = decision.checkpoint.clone();
+        altered.session.as_mut().unwrap().prompt_template_hash =
+            Hash::of(edited.as_bytes()).to_string();
+        assert!(original.replay(&operations(), &altered).is_err());
+        altered.session = None;
+        assert!(original.replay(&operations(), &altered).is_err());
+    }
+
+    #[test]
+    fn raw_replay_refuses_a_checkpoint_from_a_bound_session() {
+        let provider = Typist::new();
+        let mut recorded = decide(&provider, "p", &operations(), 32)
+            .unwrap()
+            .checkpoint;
+        recorded.session = Some(esp::infer::provider::SessionIdentity {
+            session_id: "other session".into(),
+            prompt_template_hash: "other template".into(),
+        });
+        assert!(matches!(replay(&provider, &operations(), &recorded),
+            Err(InferError::InvalidRequest(message)) if message.contains("session")));
     }
 
     #[test]

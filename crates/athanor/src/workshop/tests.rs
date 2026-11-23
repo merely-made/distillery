@@ -1000,6 +1000,7 @@ fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
                 );
                 assert!(proposed.decision.provider.starts_with("Qwen/Qwen3-0.6B"));
                 assert!(proposed.decision.tokens > 0);
+                let session = proposed.decision.session.expect("the model session");
                 let chosen = proposed.observation.proposal.as_ref().unwrap().sources.clone();
                 assert!(chosen.len() >= 2 && chosen.iter().all(|p| inputs.contains(p)));
                 shop.observe(proposed.observation, &auth, 14).await.unwrap();
@@ -1015,6 +1016,7 @@ fn a_model_proposes_and_the_workshop_holds_it_to_the_owners_selection() {
                 let turn = &view.turns[0];
                 assert!(turn.provider.as_deref().is_some_and(|p| p.starts_with("Qwen/Qwen3-0.6B")));
                 assert!(turn.tokens > 0 && turn.tokens <= turn.reserved);
+                assert_eq!(turn.session.as_ref(), Some(&session));
                 let brief = view.proposal.unwrap();
                 assert_eq!(brief.sources, chosen);
                 validate_proposal(&brief).unwrap();

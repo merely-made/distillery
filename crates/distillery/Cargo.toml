@@ -73,7 +73,7 @@ flora = ["dep:eidetic", "dep:esp", "esp/decoder-lora", "dep:safetensors"]
 # model runtime: the host supplies the provider.
 # One model decision over an esp provider, constrained by a JSON Schema
 # (decision-driver D10). No lane, no decoder: the host supplies the provider.
-decision = ["dep:esp", "esp/output-schema", "esp/chat-template"]
+decision = ["dep:esp", "esp/output-schema", "esp/chat-template", "esp/model-session", "dep:eidetic"]
 inference = ["dep:esp", "esp/actor", "dep:apparatus-core"]
 inference-embedding = ["inference-model", "esp/persistence", "esp/bert"]
 inference-gpu = ["inference-model", "esp/decoder-wgpu", "dep:tracing"]

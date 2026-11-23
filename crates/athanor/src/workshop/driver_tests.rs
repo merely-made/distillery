@@ -72,6 +72,12 @@ struct Counted {
 }
 impl Counted {
     const TOKENS: u64 = 9;
+    fn session() -> crate::decision::DecisionSession {
+        crate::decision::DecisionSession {
+            session_id: "counted-session".into(),
+            prompt_template_hash: "counted-template".into(),
+        }
+    }
     fn new(script: impl IntoIterator<Item = Result<Value, DecisionError>>) -> Arc<Self> {
         Arc::new(Self {
             script: Mutex::new(script.into_iter().collect()),
@@ -90,6 +96,7 @@ impl DecisionDriver for Counted {
             .map(|value| Decision {
                 value,
                 provider: "test.counted".into(),
+                session: Some(Self::session()),
                 tokens: Self::TOKENS,
             })
     }
@@ -221,6 +228,7 @@ fn a_scripted_driver_runs_to_review_through_the_host_driver_and_the_same_reducer
                 correlation: proposing(0),
                 reserved: 64,
                 provider: Some("athanor.scripted".into()),
+                session: None,
                 tokens: 0,
                 failure: None,
             }]
@@ -275,10 +283,8 @@ fn a_recorded_proposing_step_is_never_asked_again_after_reopen_or_interruption()
         assert_eq!(counted.calls(), 1, "the recorded step was asked again");
 
         // A cold reopen shows the model's identity and actual usage (D12).
-        let cold = Workshop::new(store, owner(), ID)
-            .view(Some(1))
-            .await
-            .unwrap();
+        let cold_shop = Workshop::new(store.clone(), owner(), ID);
+        let cold = cold_shop.view(Some(1)).await.unwrap();
         assert_eq!(cold.usage.tokens, 32);
         assert_eq!(
             cold.turns,
@@ -286,10 +292,32 @@ fn a_recorded_proposing_step_is_never_asked_again_after_reopen_or_interruption()
                 correlation: proposing(0),
                 reserved: 32,
                 provider: Some("test.counted".into()),
+                session: Some(Counted::session()),
                 tokens: Counted::TOKENS,
                 failure: None,
             }]
         );
+
+        // A schema-2 model result recorded before binding has no session field.
+        tamper(&cold_shop, &store, |run| {
+            for entry in &mut run.entries {
+                if let Entry::Result {
+                    model: Some(model), ..
+                } = entry
+                {
+                    model.session = None;
+                }
+            }
+        })
+        .await;
+        let legacy = Workshop::new(store, owner(), ID)
+            .view(Some(1))
+            .await
+            .unwrap();
+        assert_eq!(legacy.turns[0].session, None);
+        assert_eq!(legacy.turns[0].tokens, Counted::TOKENS);
+        assert_eq!(legacy.proposal, cold.proposal);
+        assert_eq!(counted.calls(), 1);
 
         // Interrupted: step 2 is in flight when the host goes away.
         let store = MemoryBackend::new();
@@ -370,6 +398,7 @@ fn a_failed_turn_is_journalled_and_retried_once() {
                     correlation: proposing(0),
                     reserved: 64,
                     provider: None,
+                    session: None,
                     tokens: 0,
                     failure: Some(r#"Failed("no answer")"#.into()),
                 },
@@ -377,6 +406,7 @@ fn a_failed_turn_is_journalled_and_retried_once() {
                     correlation: proposing(1),
                     reserved: 64,
                     provider: Some("test.counted".into()),
+                    session: Some(Counted::session()),
                     tokens: Counted::TOKENS,
                     failure: None,
                 },

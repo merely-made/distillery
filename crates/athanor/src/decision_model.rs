@@ -7,7 +7,7 @@
 //! A model as the decision driver (decision-driver D10). Distillery owns the
 //! model turn and knows nothing of this crate; this is the whole of the glue.
 
-use crate::decision::{Decision, DecisionDriver, DecisionError, Turn};
+use crate::decision::{Decision, DecisionDriver, DecisionError, DecisionSession, Turn};
 use distillery::decision::{DecideError, ModelDecider};
 
 impl DecisionDriver for ModelDecider {
@@ -20,11 +20,20 @@ impl DecisionDriver for ModelDecider {
             turn.max_tokens,
             turn.cancelled,
         ) {
-            Ok(decision) => Ok(Decision {
-                value: decision.value,
-                provider: decision.provider,
-                tokens: decision.tokens,
-            }),
+            Ok(decision) => {
+                let session = decision.checkpoint.session.as_ref().ok_or_else(|| {
+                    DecisionError::Failed("model decision lacks its session".into())
+                })?;
+                Ok(Decision {
+                    value: decision.value,
+                    provider: decision.provider,
+                    session: Some(DecisionSession {
+                        session_id: session.session_id.clone(),
+                        prompt_template_hash: session.prompt_template_hash.clone(),
+                    }),
+                    tokens: decision.tokens,
+                })
+            },
             Err(DecideError::Unsupported(detail)) => Err(DecisionError::Unsupported(detail)),
             Err(DecideError::Invalid(detail)) => Err(DecisionError::Invalid(detail)),
             Err(DecideError::Failed(detail)) => Err(DecisionError::Failed(detail)),

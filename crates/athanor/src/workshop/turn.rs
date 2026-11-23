@@ -11,7 +11,7 @@
 
 use super::*;
 use crate::alembic::workshop::ModelTurn;
-use crate::decision::{Decision, DecisionDriver};
+use crate::decision::{Decision, DecisionDriver, DecisionSession};
 
 /// Bounds on what a journal entry keeps of a driver's own words.
 pub(super) const MAX_PROVIDER: usize = 1024;
@@ -49,6 +49,8 @@ impl std::fmt::Debug for Decider {
 pub(super) struct ModelUse {
     pub(super) provider: String,
     pub(super) tokens: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) session: Option<DecisionSession>,
 }
 
 impl ModelUse {
@@ -56,12 +58,19 @@ impl ModelUse {
         Self {
             provider: bounded(&decision.provider, MAX_PROVIDER),
             tokens: decision.tokens,
+            session: decision.session.clone(),
         }
     }
     /// Only the proposing step has a driver, and it may not use more than
     /// its intent reserved.
     pub(super) fn fits(&self, step: u64, reserved: u64) -> bool {
-        step == 1 && self.tokens <= reserved && self.provider.len() <= MAX_PROVIDER
+        let valid_identity = |value: &str| !value.is_empty() && value.len() <= MAX_PROVIDER;
+        step == 1
+            && self.tokens <= reserved
+            && self.provider.len() <= MAX_PROVIDER
+            && self.session.as_ref().is_none_or(|s| {
+                valid_identity(&s.session_id) && valid_identity(&s.prompt_template_hash)
+            })
     }
 }
 
@@ -194,6 +203,7 @@ pub(super) fn turns(run: &Run) -> Vec<ModelTurn> {
                 correlation: *correlation,
                 reserved,
                 provider: Some(model.provider.clone()),
+                session: model.session.clone(),
                 tokens: model.tokens,
                 failure: None,
             }),
@@ -205,6 +215,7 @@ pub(super) fn turns(run: &Run) -> Vec<ModelTurn> {
                 correlation: *correlation,
                 reserved,
                 provider: None,
+                session: None,
                 tokens: 0,
                 failure: Some(reason.clone()),
             }),

@@ -17,6 +17,7 @@ use std::ops::ControlFlow;
 use eidetic::{Hash, ManifestId, ModelAdapterManifest};
 use serde::{Deserialize, Serialize};
 
+use super::provider::{GenerationCheckpoint, SessionIdentity};
 use super::{GenerationRequest, InferError, InferenceProvider};
 
 /// One adapter selected for a session, in application order.
@@ -279,14 +280,60 @@ impl<P: InferenceProvider> BoundModelSession<P> {
         prepared: &PreparedGenerationRequest,
         on_token: &mut dyn FnMut(&str) -> ControlFlow<()>,
     ) -> Result<String, InferError> {
+        self.check_prepared(prepared)?;
+        self.provider
+            .generate_streaming(&prepared.request, on_token)
+    }
+
+    fn check_prepared(&self, prepared: &PreparedGenerationRequest) -> Result<(), InferError> {
         if prepared.session_id != self.session_id {
             return Err(InferError::InvalidRequest(format!(
                 "prepared request belongs to session {}, active session is {}",
                 prepared.session_id, self.session_id
             )));
         }
-        self.provider
-            .generate_streaming(&prepared.request, on_token)
+        Ok(())
+    }
+
+    /// Exact identity used on every committed checkpoint.
+    pub fn identity(&self) -> SessionIdentity {
+        SessionIdentity {
+            session_id: self.session_id.to_string(),
+            prompt_template_hash: self.session.prompt_template_hash.to_string(),
+        }
+    }
+
+    /// Generate or replay checkpointed tokens in this session. Check the
+    /// session before the provider prefills or commits any token.
+    ///
+    /// # Errors
+    /// Returns an error on a session mismatch or a provider or commit failure.
+    pub fn generate_prepared_checkpointed(
+        &self,
+        prepared: &PreparedGenerationRequest,
+        resume: Option<&GenerationCheckpoint>,
+        commit: &mut dyn FnMut(&GenerationCheckpoint) -> Result<(), InferError>,
+        stop: &mut dyn FnMut() -> bool,
+    ) -> Result<GenerationCheckpoint, InferError> {
+        self.check_prepared(prepared)?;
+        let identity = self.identity();
+        if resume.is_some_and(|checkpoint| checkpoint.session.as_ref() != Some(&identity)) {
+            return Err(InferError::InvalidRequest(
+                "checkpoint belongs to a different exact session".into(),
+            ));
+        }
+        let mut result = self.provider.generate_checkpointed(
+            &prepared.request,
+            resume,
+            &mut |checkpoint| {
+                let mut bound = checkpoint.clone();
+                bound.session = Some(identity.clone());
+                commit(&bound)
+            },
+            stop,
+        )?;
+        result.session = Some(identity);
+        Ok(result)
     }
 }
 

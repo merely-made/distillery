@@ -1,6 +1,6 @@
 # Decision driver: a model-guided turn for the workshop, on Burn
 
-**Status (2026-11-23):** in progress. P1 and P2 have landed: a real model (Qwen3-0.6B on Burn wgpu) decides at the workshop's proposing step through the host driver and Servitor. P3 is an opt-in public trial under mere:alembic-implementation D10; P4 waits on the Inkling body. Rulings D1–D20.
+**Status (2026-11-23):** in progress. P1 and P2 have landed: a real model (Qwen3-0.6B on Burn wgpu) decides at the workshop's proposing step through the host driver and Servitor. P3 is an opt-in public trial under mere:alembic-implementation D10. Model decisions carry a verified session and template identity under D20. P4 waits on the Inkling body. Rulings D1–D20.
 
 **For:** the "stack agent". The agent harness brief
 ([research/2026-07-03_agent_harness_brief.md](../research/2026-07-03_agent_harness_brief.md))
@@ -176,9 +176,10 @@ to main and pushed.
 
 ## Qualification still to do
 
-Mere adopted P3 on 2026-11-23. D18 needs native consumer receipts, D19 needs
-a paired comparison and D20 needs verification through a model decision and
-replay. Deterministic assembly remains the default. P4 awaits the Inkling body.
+Mere adopted P3 on 2026-11-23. D18 needs the two native consumer receipts.
+D19 needs the paired comparison. D20's session binding has passed fixture
+replay and workshop reopen. The real-weight replay and journal receipts are
+pending. Deterministic assembly remains the default. P4 awaits the Inkling body.
 
 The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
@@ -355,3 +356,15 @@ to the driver.
   inside a bound session, so a decision carries no template hash.
 
 - **2026-11-23:** Mere adopted the public P3 trial in D10. D18–D20 record the remaining recommendations. The paired corpus and its independent scoring key were specified before running the models.
+
+- **2026-11-23 (D20):** Distillery binds its chat renderer and loaded provider
+  with ESP's model session. The same template object renders the prompt and
+  supplies its source bytes to `BoundModelSession::prepare`. Prepared
+  checkpoint generation and replay retain and check both the session ID and
+  template hash. Athanor carries them in successful model results and exposes
+  them on `WorkshopView::turns`. Earlier schema-2 results reopen with the
+  session absent. On the M4, three decision tests passed, including a one-byte
+  template edit that renders the same prompt and fails replay. All 46 Athanor
+  model/worker tests passed, including reopen and resume with the proposing
+  driver's call count still one. The pre-change control accepted a checkpoint
+  presented through a different session.
