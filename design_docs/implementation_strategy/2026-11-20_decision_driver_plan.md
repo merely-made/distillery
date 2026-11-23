@@ -174,13 +174,13 @@ Standing for this plan (Mark, 2026-11-21): "Commit and push each green
 slice": when a slice's tests and the repository's hooks pass, it is committed
 to main and pushed.
 
-## Qualification still to do
+## Qualification
 
-Mere adopted P3 on 2026-11-23. D18 passed on both native consumers.
-The D19 paired comparison and D20 real-weight replay and workshop journal
-checks ran on O-PC. The primary 4B Q8 arm returned ten briefs with exact
-selections and ordering, then missed two deadlines. The placement follow-up
-tests the effect of CubeCL stream policy. Deterministic assembly remains the default. P4 awaits the Inkling body.
+D18 passed on both native consumers. D20 passed bound replay and the workshop
+journal test with real Qwen3 0.6B weights on O-PC. In P3, resident Qwen3 4B Q8
+with one CubeCL stream met D19's value and run-budget criteria in two
+independent processes on the same public corpus. Deterministic assembly remains
+the default. P4 awaits the Inkling body.
 
 The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
@@ -386,3 +386,11 @@ to the driver.
   4B F32 produced no reviewable brief. Resident 4B Q8 reached review on ten
   cases and met the complete rubric on all ten. Its final two decisions
   missed the deadline. See the [paired trial receipt](../archive_docs/receipts/2026-11-20_decision_driver_plan_receipts.md).
+
+- **2026-11-23 (P3 qualification):** Resident Qwen3 4B Q8 with one CubeCL
+  stream reached review with the exact required sources and order in every
+  presentation, twice. Both runs improved five of the six distinct briefs
+  against deterministic assembly, with no regressions, missing evidence or
+  missed deadlines. The explicit per-thread control missed a deadline.
+  Qualification covers the opt-in public fixture on O-PC; ordinary use
+  remains deterministic.

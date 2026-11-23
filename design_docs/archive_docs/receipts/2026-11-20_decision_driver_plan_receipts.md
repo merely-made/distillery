@@ -109,3 +109,55 @@ receipts are retained in `Code/output/alembic-p3/20261123/`,
 `Code/output/distillery-decision-comparison/` and
 `Code/output/distillery-decision-binding/`. The model revisions and receipt
 digests above identify the inputs and returned rows independently of file paths.
+
+### Matched Q8 stream-policy controls
+
+Each arm used the same frozen executable, corpus, 32-token cap, quantized
+weights and prompt. These follow-ups were chosen after observing the original
+failures. Each started a fresh process in an isolated working directory.
+An explicit CubeCL `[streaming]` policy and a basic file logger were set in
+that directory's `cubecl.toml`. Each run created its own previously absent
+logger file, verifying configuration discovery. `control` means explicit
+`per-thread`. `single` means explicit `single`. The repeat used another
+fresh process and the same source and configuration. Other builds were
+active during part of the repeat. No other model verification was scheduled
+during these controls.
+
+| Arm | Load (s) | Reached review | Exact briefs | Omitted | Irrelevant | Order violations | Median / max run (s) | Peak board (MiB) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| single-qwen06-q8 | 9.113 | 12/12 | 3/12 | 2 | 6 | 6 | 1.139 / 1.988 | 2717 |
+| single-qwen4-q8 | 43.059 | 12/12 | 12/12 | 0 | 0 | 0 | 1.734 / 2.921 | 6248 |
+| control-qwen06-q8 | 9.086 | 10/12 | 2/12 | 2 | 6 | 5 | 1.121 / 4.343 | 7657 |
+| control-qwen4-q8 | 41.199 | 11/12 | 11/12 | 0 | 0 | 0 | 1.806 / 91.082 | 7595 |
+| repeat-single-qwen4-q8 | 49.136 | 12/12 | 12/12 | 0 | 0 | 0 | 8.893 / 12.162 | 6367 |
+
+| Arm | Raw attempts returned | Generated tokens observed | Journal retries | SHA-256 of raw JSONL |
+|---|---:|---:|---:|---|
+| single-qwen06-q8 | 12 | 152 | 0 | `107dc8905118ace7aae713cc11ee428e989731def7d1366d6acc8f9e5ce1dfcd` |
+| single-qwen4-q8 | 12 | 144 | 0 | `00f4e12f187cce99ff6d7ea1a74b343ce7dd6462ff188d9851cdac135e3d0ac3` |
+| control-qwen06-q8 | 10 | 126 | 0 | `9243ea9f896b4d6f38083c52751de8c1bf28ff5b9fee5c47610dd72b8d410b2e` |
+| control-qwen4-q8 | 12 | 144 | 0 | `938e125083b5697c375e141f13804ade36b3a173e49a88b3a282fadf4fe12f92` |
+| repeat-single-qwen4-q8 | 12 | 144 | 0 | `d34331803686dd1908470203c57afbdb6a0c8998a5d174ff39cd0f781ae7cd58` |
+
+Each single-stream 4B run lowered rubric errors in five distinct briefs,
+tied the archive control, and preserved every required source in both input
+orders, with no missed review, deadline or retry. The median varied between
+1.734 and 8.893 s on the shared host. Cold model loading took 43.059 and
+49.136 s before the workshop clock began. The explicit per-thread 4B control
+finished one of the two water presentations on time and exceeded the budget
+on the other. Peak sampled board use was 7595 MiB in that control and
+6248 or 6367 MiB with one stream. At 0.6B, both the original Q8 arm and
+the explicit per-thread control lost the two water rows. The single-stream
+0.6B arm completed all 12 but still omitted required evidence twice.
+
+Athanor starts a worker for each fresh workshop. CubeCL's per-thread policy
+can give these workers distinct streams, each with its own WGPU memory
+manager. The 0.6B error trace shows `Device::create_buffer` failing in the
+allocator, followed by a worker join error. The trials establish a difference
+between configurations on this fixture. The allocator's retained bytes and
+the size of the failed allocation were not measured.
+
+These results qualify resident block-32 Q8 4B with one stream for the opt-in
+public P3 fixture. The corpus contains six distinct authored questions; the
+reversal and repeated run check order sensitivity and repeatability on that
+same material. Ordinary use remains deterministic.

@@ -125,6 +125,20 @@ placement and load time. Use an external sampler for peak process or GPU
 memory. The optional `resident-q8` placement converts both checkpoints with
 ESP's block-32 Q8 format for a separate matched comparison.
 
+On O-PC's 8 GB RTX 4060 Laptop GPU, the public trial's successful 4B
+configuration used `resident-q8` with this `cubecl.toml` in the trial's
+working directory:
+
+```toml
+[streaming]
+policy = "single"
+```
+
+Launch the compiled executable from that directory with the corpus, output
+and model paths supplied explicitly. Model loading precedes the workshop's
+30-second clock. See the [paired comparison and stream-policy receipts](../../design_docs/archive_docs/receipts/2026-11-20_decision_driver_plan_receipts.md)
+for cold loading, run latencies, confirmed briefs and failed runs.
+
 ## License
 
 MPL-2.0
