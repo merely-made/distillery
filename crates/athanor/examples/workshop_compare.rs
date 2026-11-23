@@ -235,10 +235,17 @@ fn main() -> Result<()> {
         .create_new(true)
         .open(&args[1])?;
     let model_id = &args[2];
-    line(
-        &mut out,
-        &json!({"event":"start","model":model_id,"corpus_blake3":blake3::hash(&bytes).to_hex().as_str(),"cases":ids.len(),"system":SYSTEM,"format":FORMAT,"variables":{"enable_thinking":false},"max_tokens":CAP}),
-    )?;
+    let mut header = json!({
+        "event": "start", "model": model_id,
+        "corpus_blake3": blake3::hash(&bytes).to_hex().as_str(), "cases": ids.len(),
+    });
+    if model_id != "deterministic" {
+        header["system"] = SYSTEM.into();
+        header["format"] = FORMAT.into();
+        header["variables"] = json!({"enable_thinking": false});
+        header["max_tokens"] = CAP.into();
+    }
+    line(&mut out, &header)?;
     let model = match args.get(3) {
         None if model_id == "deterministic" => None,
         Some(dir) if model_id != "deterministic" => {
