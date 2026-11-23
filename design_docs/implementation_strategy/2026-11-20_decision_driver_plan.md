@@ -1,6 +1,6 @@
 # Decision driver: a model-guided turn for the workshop, on Burn
 
-**Status (2026-11-22):** in progress. P1 and P2 have landed: a real model (Qwen3-0.6B on Burn wgpu) decides at the workshop's proposing step through the host driver and Servitor. P3 waits on the Alembic plan taking up D11 and D15; P4 waits on the Inkling body. Rulings D1–D17.
+**Status (2026-11-23):** in progress. P1 and P2 have landed: a real model (Qwen3-0.6B on Burn wgpu) decides at the workshop's proposing step through the host driver and Servitor. P3 is an opt-in public trial under mere:alembic-implementation D10; P4 waits on the Inkling body. Rulings D1–D20.
 
 **For:** the "stack agent". The agent harness brief
 ([research/2026-07-03_agent_harness_brief.md](../research/2026-07-03_agent_harness_brief.md))
@@ -146,6 +146,27 @@ D15–D17 answer three forks the P2 lane returned on 2026-11-22.
 
   Links: summary The tool-call limit stays 2; a run whose confirming step was interrupted ends as budget-exhausted.
 
+Mark, 2026-11-23: "I accept all four recommendations." Mere records the
+evidence-brief ruling under mere:alembic-implementation D10.
+
+- **D18. Qualify the two native consumers.** Exercise each model-free host
+  through proposal, review, acceptance and cold reopen, and check that
+  opening an old record refuses without changing the stored bytes.
+
+  Links: draws on mere:alembic-implementation D10 · summary Qualify the changed workshop through both native consumers on a recorded dependency resolution.
+
+- **D19. Compare on the same public briefs.** Use deterministic assembly
+  and the two Qwen3 sizes under the acceptance criteria Alembic owns.
+
+  Links: draws on decision-driver D3, mere:alembic-implementation D10 · summary Compare deterministic assembly, Qwen3 0.6B and Qwen3 4B on public briefs scored against a predeclared rubric.
+
+- **D20. Bind the model decision to its chat template.** Use ESP's session
+  preparation with the template source bytes, through checkpointed generation
+  and replay. Retain the session identity and template hash on a successful
+  model turn and the render switches in the evaluation receipt.
+
+  Links: draws on decision-driver D8, decision-driver D12 · summary Bind the template in the model runtime and carry its verified identity to the workshop journal.
+
 No `doctrine.md` exists in this repository yet, so these are recorded as
 cases without a statement to file them under (DOC_POLICY §11).
 
@@ -153,23 +174,11 @@ Standing for this plan (Mark, 2026-11-21): "Commit and push each green
 slice": when a slice's tests and the repository's hooks pass, it is committed
 to main and pushed.
 
-## Open forks
+## Qualification still to do
 
-1. **Whether the Alembic plan adopts the driver.** That plan is the single
-   acceptance specification for the evidence brief and lives in Mere. Its
-   Findings carry an entry of 2026-11-22 describing D11, D15 and D16 and what
-   they change against its constraints; it has not ruled, and its W3 keeps
-   model decisions behind a separate gate. P3 waits on it.
-2. **Consumers have not been rebuilt.** Turnstone and Graphshell's host take
-   `mere-athanor` from this repository's `main`. P2 changed the stored run
-   record (schema 2; older records are refused), added `WorkshopView::turns`
-   and made `Observation` unconstructible outside Athanor. Neither consumer
-   has been built or run against it.
-3. **No evidence of value yet.** Two real-model runs are not a measurement.
-   Qwen3 4B, the working driver D3 names, has not been tried.
-4. **A decision carries no template hash.** The model turn does not run
-   inside a bound model session, so the chat template's bytes are not bound
-   to the decision the way `BoundModelSession::prepare` would bind them.
+Mere adopted P3 on 2026-11-23. D18 needs native consumer receipts, D19 needs
+a paired comparison and D20 needs verification through a model decision and
+replay. Deterministic assembly remains the default. P4 awaits the Inkling body.
 
 The shape these decisions sit in is the
 [Burn shape brief](../research/2026-11-20_burn_shape_brief.md).
@@ -201,8 +210,16 @@ the existing actor controls.
 - Needs: P1.
 
 ### P3. The workshop task with a model body
-The model driver takes the place of the deterministic body in the chosen
-first task.
+A model may choose and order public passages at the proposing step of an opt-in
+evidence brief. The comparison uses the same public cases and their reversals.
+The fixture generator in `crates/athanor/tests/fixtures/brief_comparison/corpus.py`
+writes model inputs and a separate scoring key. A blind review scores each
+required omission, irrelevant inclusion and violated order constraint.
+Count both presentations under their original brief. A candidate must preserve
+every required passage, with no lost reviews or workshop budget overruns.
+To count as a consistent gain on this fixture, it must lower errors in at least
+two distinct briefs without raising errors in any. Retain the actual decisions,
+per-attempt failures, cost and placement alongside the result.
 - Done when: the task completes under the model driver with the same
   authority checks as the deterministic body, and its failures are recorded
   as findings with the decisions that caused them.
@@ -336,3 +353,5 @@ to the driver.
   written. Not covered: no real model was cancelled mid-turn (the stop path
   is tested with a fake provider), and the decision path still does not run
   inside a bound session, so a decision carries no template hash.
+
+- **2026-11-23:** Mere adopted the public P3 trial in D10. D18–D20 record the remaining recommendations. The paired corpus and its independent scoring key were specified before running the models.

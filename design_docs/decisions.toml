@@ -92,6 +92,24 @@ title = "An interrupted confirming step stays unfinishable (Mark, 2026-11-22)"
 source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
 summary = "The tool-call limit stays 2; a run whose confirming step was interrupted ends as budget-exhausted."
 
+[decisions."decision-driver D18"]
+title = "Qualify the two native consumers"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "Qualify the changed workshop through both native consumers on a recorded dependency resolution."
+draws_on = ["mere:alembic-implementation D10"]
+
+[decisions."decision-driver D19"]
+title = "Compare on the same public briefs"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "Compare deterministic assembly, Qwen3 0.6B and Qwen3 4B on public briefs scored against a predeclared rubric."
+draws_on = ["decision-driver D3", "mere:alembic-implementation D10"]
+
+[decisions."decision-driver D20"]
+title = "Bind the model decision to its chat template"
+source = "design_docs/implementation_strategy/2026-11-20_decision_driver_plan.md"
+summary = "Bind the template in the model runtime and carry its verified identity to the workshop journal."
+draws_on = ["decision-driver D8", "decision-driver D12"]
+
 [decisions."distillery-extraction D1"]
 title = "The move (Mark, 2026-10-31)"
 source = "design_docs/implementation_strategy/2026-10-31_distillery_extraction_plan.md"
