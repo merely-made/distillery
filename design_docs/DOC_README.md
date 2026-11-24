@@ -24,7 +24,9 @@ consumer qualification; model, GPU, native and product acceptance remain their
 existing gates. Coordinated ESP → Knot → Mere/product receipt:
 `mere/support/family-promotion/pool-lifetime-20261021.json`.
 
-No plan is active. Archived under `archive_docs/2026-10-31/`:
+Active: [ESP audio plan](implementation_strategy/2026-11-23_esp_audio_plan.md) — **A1 landed 2026-11-23 on CPU fixtures**: BS-RoFormer separation in `esp::audio` on the plain-Burn path; then Parakeet timed words and HTDemucs.
+
+Archived under `archive_docs/2026-10-31/`:
 
 - [Embedding compatibility](archive_docs/2026-10-31/2026-10-20_embedding_compatibility_plan.md) — landed and resident-qualified; provider identities and guarded dense/sparse persistence, with Eidetic P4 and resident I10 as the acceptance owners.
 - [Burn 0.22.1 qualification](archive_docs/2026-10-31/2026-10-24_burn_0221_plan.md) — landed 2026-10-25: released dependency cohort, numerical/native/durable-generation checks and receiving composition. Mere owns vendor patches and browser/remote acceptance; deferred items are carried by the [models plan](implementation_strategy/2026-10-28_distillery_models_plan.md), CU1.

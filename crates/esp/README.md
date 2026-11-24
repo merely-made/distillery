@@ -4,10 +4,12 @@ ESP is Mere's portable model-execution boundary — the inference engine's
 execution lane in the ruled consolidation map (mere
 `design_docs/mere_docs/implementation_strategy/2026-08-22_conatus_engine_plan.md`);
 the semantic *realm* is the corpora esp executes models against, not esp
-itself. It contains two deliberately separate namespaces:
+itself. It contains deliberately separate namespaces:
 
 - `esp::infer`: generation providers, capability matching, streaming, the
   Armillary actor, and the Burn llama-family decoder.
+- `esp::audio`: audio models. `separation` is BS-RoFormer music source
+  separation, ported from Watershed; the caller fetches the checkpoint.
 - `esp::embed`: embedding providers, exact vector retrieval, lexical and stub
   providers, affinity helpers, the Burn cosine kernel, and the Burn BERT model.
 
@@ -33,6 +35,7 @@ tiny decoder fixtures and templates without repinning the ESP runtime package.
 | --- | --- | --- | --- |
 | `infer` | `decoder`, `decoder-flex` | `decoder-wgpu` | `actor`, `model-session`, `output-schema`, `chat-template` |
 | `embed` | `index-burn`, `bert` | `index-burn-wgpu`, `bert-wgpu` | `bert-validation` |
+| `audio` | `audio-separation` | `audio-separation-wgpu` | |
 | `embed` goal model | `goal-model` | `recall-example` (with `bert-wgpu`) | |
 
 `goal-model` adds `embed::goal_model`: `EspGoalEmbedder`, the adapter that makes an

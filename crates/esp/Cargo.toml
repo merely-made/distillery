@@ -85,6 +85,22 @@ optional = true
 version = "2"
 optional = true
 
+[dependencies.pytorch-reader]
+version = "0.23.0-pre.2"
+optional = true
+
+[dependencies.serde_yaml_ng]
+version = "0.10"
+optional = true
+
+[dependencies.realfft]
+version = "3.5"
+optional = true
+
+[dependencies.thiserror]
+version = "2"
+optional = true
+
 [dependencies.wgpu]
 workspace = true
 optional = true
@@ -117,6 +133,7 @@ features = [
 optional = true
 
 [dev-dependencies]
+anyhow = "1"
 esp-testkit = { path = "../esp-test-support" }
 serde_json = "1"
 pollster = "0.4"
@@ -225,12 +242,33 @@ bert-wgpu = [
 bert-validation = [
     "bert",
 ]
+audio-separation = [
+    "dep:burn",
+    "dep:safetensors",
+    "dep:half",
+    "dep:pytorch-reader",
+    "dep:serde_yaml_ng",
+    "dep:realfft",
+    "dep:thiserror",
+    "dep:serde_json",
+    "dep:getrandom",
+]
+audio-separation-wgpu = [
+    "audio-separation",
+    "burn/wgpu",
+]
 
 [[example]]
 name = "eidetic-recall"
 test = true
 required-features = [
     "recall-example",
+]
+
+[[test]]
+name = "separation_parity"
+required-features = [
+    "audio-separation",
 ]
 
 [[test]]
