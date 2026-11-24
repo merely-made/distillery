@@ -780,12 +780,12 @@ fn scene_diff_between(
             generation: next.scene.generation,
         });
     }
-    Some(SceneDiff {
-        epoch: version.epoch,
-        base: current.version.revision,
-        revision: version.revision,
+    Some(SceneDiff::new(
+        version.epoch,
+        current.version.revision,
+        version.revision,
         operations,
-    })
+    ))
 }
 
 fn presentation_changes(
@@ -1043,11 +1043,7 @@ mod tests {
         assert!(endpoint.poll_notice().unwrap().is_none());
         assert!(matches!(
             endpoint
-                .resume(ResumeRequest {
-                    session: session.clone(),
-                    epoch: SceneEpoch(7),
-                    revision: Revision(11),
-                })
+                .resume(ResumeRequest::new(session.clone(), SceneEpoch(7), Revision(11)))
                 .unwrap(),
             ResumeReply::Diffs(diffs) if diffs.len() == 1 && diffs[0].scene.base == Revision(11)
         ));
@@ -1119,11 +1115,11 @@ mod tests {
             "one retained observation rings once per endpoint"
         );
         let resumed = reconnected
-            .resume(ResumeRequest {
-                session: session.clone(),
-                epoch: SceneEpoch(7),
-                revision: Revision(11),
-            })
+            .resume(ResumeRequest::new(
+                session.clone(),
+                SceneEpoch(7),
+                Revision(11),
+            ))
             .expect("shared contiguous diff");
         assert!(matches!(
             resumed,
@@ -1141,11 +1137,7 @@ mod tests {
 
         let mut other = observer.endpoint(ProjectionSession("admitted:other".into()));
         assert_eq!(
-            other.resume(ResumeRequest {
-                session,
-                epoch: SceneEpoch(7),
-                revision: Revision(11),
-            }),
+            other.resume(ResumeRequest::new(session, SceneEpoch(7), Revision(11))),
             Err(ChronicleEndpointError::WrongSession)
         );
     }
