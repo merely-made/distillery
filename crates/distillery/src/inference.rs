@@ -1926,14 +1926,14 @@ impl IntentSink for InferenceAskEndpoint {
                 if intent.payload.len() > recall::MAX_PUBLISHED_CORPUS_BYTES {
                     return rejected("retained publication exceeds the inline transport bound; choose a smaller corpus".into());
                 }
-                match serde_json::from_slice::<recall::PublishCorpusRequestV1>(&intent.payload) {
+                match chirograph::wire::decode::<recall::PublishCorpusRequestV1>(&intent.payload) {
                     Ok(request) => self.publish(request),
                     Err(error) => return rejected(error.to_string()),
                 }
             },
             #[cfg(feature = "inference-model")]
             recall::ASK_PUBLISHED_INTENT => {
-                match serde_json::from_slice::<recall::PublishedAskRequestV1>(&intent.payload) {
+                match chirograph::wire::decode::<recall::PublishedAskRequestV1>(&intent.payload) {
                     Ok(request) => {
                         let generation = GenerationRequest {
                             max_tokens: self.lane.shared.max_tokens,
@@ -1955,17 +1955,17 @@ impl IntentSink for InferenceAskEndpoint {
             },
             #[cfg(feature = "inference-model")]
             recall::RECALL_ASK_INTENT => {
-                match serde_json::from_slice::<recall::RecallAskRequestV1>(&intent.payload) {
+                match chirograph::wire::decode::<recall::RecallAskRequestV1>(&intent.payload) {
                     Ok(ask) => self.lane.ask_recalled(ask),
                     Err(error) => return rejected(error.to_string()),
                 }
             },
-            ASK_INTENT => match serde_json::from_slice::<AskRequestV1>(&intent.payload) {
+            ASK_INTENT => match chirograph::wire::decode::<AskRequestV1>(&intent.payload) {
                 Ok(ask) => self.lane.ask(ask),
                 Err(error) => return rejected(format!("{ASK_INTENT} payload: {error}")),
             },
             ASK_SAMPLED_INTENT => {
-                match serde_json::from_slice::<SampledAskRequestV1>(&intent.payload) {
+                match chirograph::wire::decode::<SampledAskRequestV1>(&intent.payload) {
                     Ok(sampled) => self.lane.ask_with_generation(
                         sampled.ask,
                         GenerationRequest {
@@ -1979,15 +1979,15 @@ impl IntentSink for InferenceAskEndpoint {
                     Err(error) => return rejected(error.to_string()),
                 }
             },
-            PAUSE_INTENT => match serde_json::from_slice::<CancelRequestV1>(&intent.payload) {
+            PAUSE_INTENT => match chirograph::wire::decode::<CancelRequestV1>(&intent.payload) {
                 Ok(run) => self.lane.pause(&run.run, "user"),
                 Err(error) => return rejected(error.to_string()),
             },
-            RESUME_INTENT => match serde_json::from_slice::<CancelRequestV1>(&intent.payload) {
+            RESUME_INTENT => match chirograph::wire::decode::<CancelRequestV1>(&intent.payload) {
                 Ok(run) => self.lane.resume(&run.run, "user"),
                 Err(error) => return rejected(error.to_string()),
             },
-            CANCEL_INTENT => match serde_json::from_slice::<CancelRequestV1>(&intent.payload) {
+            CANCEL_INTENT => match chirograph::wire::decode::<CancelRequestV1>(&intent.payload) {
                 Ok(cancel) => self.lane.cancel(&cancel),
                 Err(error) => return rejected(format!("{CANCEL_INTENT} payload: {error}")),
             },
@@ -2588,7 +2588,7 @@ mod tests {
                 observed_epoch: SceneEpoch(1),
                 observed_revision: Revision(0),
                 intent: intent.into(),
-                payload: serde_json::to_vec(payload).unwrap(),
+                payload: chirograph::wire::encode(payload).unwrap(),
             })
             .unwrap()
     }
