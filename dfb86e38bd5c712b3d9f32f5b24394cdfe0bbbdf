@@ -552,7 +552,6 @@ dependencies = [
 [[package]]
 name = "backstep"
 version = "0.2.1"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 
 [[package]]
 name = "backtrace"
@@ -1397,7 +1396,6 @@ checksum = "6236364b88b9b6d0bc181ba374cf1ab55ba3ef97a1cb6f8cddad48a273767fb5"
 [[package]]
 name = "cambium"
 version = "0.7.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "backstep",
  "genet-events",
@@ -1432,7 +1430,6 @@ dependencies = [
 [[package]]
 name = "catchment"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
 dependencies = [
  "serde",
  "uuid",
@@ -1449,9 +1446,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.11.3"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02f0e023adb368345ce0ca6cdfc0f24a06554468d0e8503e14a0841de79bfa69"
+checksum = "95e45cf2980b2d467be49a9ed942c9179b701063a7ca3d037de7ee9bd67f8d66"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -1521,7 +1518,6 @@ dependencies = [
 [[package]]
 name = "chirograph"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "base64 0.23.1",
  "blake3",
@@ -3648,9 +3644,9 @@ dependencies = [
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.15"
+version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c66915cc5391097de7a2b0b972e8505aa33c0df401fd3a6811dbdb32881ba48"
+checksum = "3e44f110d1777dc6559a51e7d45083945ded4f1bf3305494350f693b6d20b9c8"
 
 [[package]]
 name = "fixedbitset"
@@ -4247,7 +4243,6 @@ dependencies = [
 [[package]]
 name = "graphshell-client"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "chirograph",
  "hest",
@@ -4260,7 +4255,6 @@ dependencies = [
 [[package]]
 name = "graphshell-endpoint"
 version = "0.0.4"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "chirograph",
 ]
@@ -4488,7 +4482,6 @@ checksum = "e17592d60ebacc7d5e169f4663c5f84f9161cc90328abcfe8456f41e4dfcb284"
 [[package]]
 name = "hest"
 version = "0.3.1"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "serde",
 ]
@@ -5024,7 +5017,6 @@ checksum = "6e44b0a4eaa4c82f441d50a963f2d5f05a787240aeee097597033e72accfd22f"
 [[package]]
 name = "incipit"
 version = "0.3.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "catchment",
  "serde",
@@ -5858,9 +5850,9 @@ checksum = "02b614978e47ce529faee66579f2b2fe19c94aa96d910a6a9a8043b2b02d8175"
 
 [[package]]
 name = "llvm-sys"
-version = "231.0.2"
+version = "231.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77d743201f766af6ecdd95a2e6dbb295af7f72848098e3828fee8853da034c15"
+checksum = "051fee12a4388020fba8c64970b0939eb3a2e7fce87aa161f6c6ec4c8f204105"
 dependencies = [
  "anyhow",
  "cc",
@@ -6136,7 +6128,6 @@ dependencies = [
 [[package]]
 name = "mere-surface-api"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "workbench",
 ]
@@ -6168,7 +6159,6 @@ dependencies = [
 [[package]]
 name = "meristem"
 version = "0.3.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "anymore",
  "tracing",
@@ -9029,7 +9019,6 @@ dependencies = [
 [[package]]
 name = "sceno"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "serde",
  "serde_json",
@@ -9038,7 +9027,6 @@ dependencies = [
 [[package]]
 name = "sceno-backdrops"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "sceno",
  "serde",
@@ -9048,7 +9036,6 @@ dependencies = [
 [[package]]
 name = "scenograph"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "incipit",
  "sceno",
@@ -9059,7 +9046,6 @@ dependencies = [
 [[package]]
 name = "scenomise"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "backstep",
  "libm",
@@ -9074,7 +9060,6 @@ dependencies = [
 [[package]]
 name = "scenotime"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "sceno",
  "serde",
@@ -9549,7 +9534,6 @@ dependencies = [
 [[package]]
 name = "sprigging"
 version = "0.4.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "accesskit",
  "netrender-vello",
@@ -11687,7 +11671,6 @@ dependencies = [
 [[package]]
 name = "workbench"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 
 [[package]]
 name = "wrapcenum-derive"
@@ -12000,6 +11983,241 @@ checksum = "27bc9d5b815bc103f142aa054f561d9187d191692ec7c2d1e2b4737f8dbd7296"
 dependencies = [
  "zune-core",
 ]
+
+[[patch.unused]]
+name = "mere"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-facts"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-ontology"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-rdfc"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-shacl"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "pandect"
+version = "0.2.0"
+
+[[patch.unused]]
+name = "app-host"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "authority-host"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "block-adapter"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "block-host"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "cambium-a11y"
+version = "0.3.0"
+
+[[patch.unused]]
+name = "cambium-desktop"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "cambium-embed"
+version = "0.0.0"
+
+[[patch.unused]]
+name = "cambium-rootstock"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "cambium-web"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "cambium-winit"
+version = "0.4.0"
+
+[[patch.unused]]
+name = "command-packs"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "djinn-testkit"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "document-host"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "graphshell-client-tests"
+version = "0.0.0"
+
+[[patch.unused]]
+name = "graphshell-door"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "graphshell-host"
+version = "0.0.2"
+
+[[patch.unused]]
+name = "graphshell-rdf-trail"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "incipit-graph"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "incipit-session"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mandrake"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-cartography"
+version = "0.0.2"
+
+[[patch.unused]]
+name = "mere-cli"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-fetch"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "mere-ipfs-reader"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-moot"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "mere-overmap"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mere-registry"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "mere-resident"
+version = "0.0.2"
+
+[[patch.unused]]
+name = "mere-view"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "mod-host"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "mod-targets"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "pelt-core"
+version = "0.2.0"
+
+[[patch.unused]]
+name = "pelt-desktop"
+version = "0.2.0"
+
+[[patch.unused]]
+name = "platen"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "script-wire"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "script-witgen"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "settings-wit"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "sheet-leaf"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "tabard"
+version = "0.0.2"
+
+[[patch.unused]]
+name = "tabard-workshop"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "tinct"
+version = "0.3.0"
+
+[[patch.unused]]
+name = "ux-events"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "uxtree"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "vector-sheet"
+version = "0.0.1"
+
+[[patch.unused]]
+name = "cambium"
+version = "0.7.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+
+[[patch.unused]]
+name = "hest"
+version = "0.3.1"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+
+[[patch.unused]]
+name = "mere-surface-api"
+version = "0.2.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+
+[[patch.unused]]
+name = "sceno"
+version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+
+[[patch.unused]]
+name = "scenograph"
+version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+
+[[patch.unused]]
+name = "scenomise"
+version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+
+[[patch.unused]]
+name = "scenotime"
+version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 # ---- crates/athanor/Cargo.lock
 # This file is automatically @generated by Cargo.
 # It is not intended for manual editing.
@@ -12837,7 +13055,7 @@ dependencies = [
 [[package]]
 name = "backstep"
 version = "0.2.1"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 
 [[package]]
 name = "backtrace"
@@ -13715,7 +13933,7 @@ dependencies = [
 [[package]]
 name = "cambium"
 version = "0.7.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "backstep",
  "genet-events",
@@ -13741,7 +13959,7 @@ dependencies = [
 [[package]]
 name = "cambium-a11y"
 version = "0.3.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "accesskit",
  "cambium-rootstock",
@@ -13758,7 +13976,7 @@ dependencies = [
 [[package]]
 name = "cambium-desktop"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "accesskit",
  "cambium",
@@ -13788,7 +14006,7 @@ dependencies = [
 [[package]]
 name = "cambium-dialog"
 version = "3.21.3"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "windows-sys 0.61.2",
 ]
@@ -13796,7 +14014,7 @@ dependencies = [
 [[package]]
 name = "cambium-rootstock"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "accesskit",
  "backstep",
@@ -13823,7 +14041,7 @@ dependencies = [
 [[package]]
 name = "cambium-winit"
 version = "0.4.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "cambium",
  "web-time",
@@ -13842,7 +14060,7 @@ dependencies = [
 [[package]]
 name = "catchment"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
+source = "git+https://github.com/merely-made/mere.git?branch=main#a5baf7f3f7c7e807c06048659eceec708f44733f"
 dependencies = [
  "async-trait",
  "dirs 7.0.0",
@@ -13866,9 +14084,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.11.3"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02f0e023adb368345ce0ca6cdfc0f24a06554468d0e8503e14a0841de79bfa69"
+checksum = "95e45cf2980b2d467be49a9ed942c9179b701063a7ca3d037de7ee9bd67f8d66"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -13973,7 +14191,7 @@ dependencies = [
 [[package]]
 name = "chirograph"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "base64 0.23.1",
  "blake3",
@@ -14083,7 +14301,7 @@ checksum = "af491d569909a7e4dee0ad7db7f5341fef5c614d5b8ec8cf765732aba3cff681"
 dependencies = [
  "serde",
  "termcolor",
- "unicode-width",
+ "unicode-width 0.2.3",
 ]
 
 [[package]]
@@ -14107,7 +14325,7 @@ version = "3.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "faf9468729b8cbcea668e36183cb69d317348c2e08e994829fb56ebfdfbaac34"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -15344,7 +15562,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c54e03a951783e8b327515db3f2a2fd0e3bed362a96b066f341ce66ed49b4ead"
 dependencies = [
  "data-encoding",
- "syn 1.0.109",
+ "syn 3.0.10",
 ]
 
 [[package]]
@@ -15504,7 +15722,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -15980,7 +16198,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e35d6e78f4cebb90e51d543db8fe41528851d6deeef6ef21ebd4bfdc1e784776"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -16166,9 +16384,9 @@ dependencies = [
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.15"
+version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c66915cc5391097de7a2b0b972e8505aa33c0df401fd3a6811dbdb32881ba48"
+checksum = "3e44f110d1777dc6559a51e7d45083945ded4f1bf3305494350f693b6d20b9c8"
 
 [[package]]
 name = "fixedbitset"
@@ -16916,7 +17134,7 @@ dependencies = [
 [[package]]
 name = "graphshell-client"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "chirograph",
  "hest",
@@ -16929,7 +17147,7 @@ dependencies = [
 [[package]]
 name = "graphshell-endpoint"
 version = "0.0.4"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "chirograph",
 ]
@@ -17164,7 +17382,7 @@ checksum = "e17592d60ebacc7d5e169f4663c5f84f9161cc90328abcfe8456f41e4dfcb284"
 [[package]]
 name = "hest"
 version = "0.3.1"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "serde",
 ]
@@ -17723,7 +17941,7 @@ checksum = "6e44b0a4eaa4c82f441d50a963f2d5f05a787240aeee097597033e72accfd22f"
 [[package]]
 name = "incipit"
 version = "0.3.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "catchment",
  "serde",
@@ -17733,7 +17951,7 @@ dependencies = [
 [[package]]
 name = "incipit-graph"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "euclid",
  "fieldbook",
@@ -17759,7 +17977,7 @@ dependencies = [
 [[package]]
 name = "incipit-session"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "async-trait",
  "blake3",
@@ -18666,9 +18884,9 @@ dependencies = [
 
 [[package]]
 name = "llvm-sys"
-version = "231.0.2"
+version = "231.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77d743201f766af6ecdd95a2e6dbb295af7f72848098e3828fee8853da034c15"
+checksum = "051fee12a4388020fba8c64970b0939eb3a2e7fce87aa161f6c6ec4c8f204105"
 dependencies = [
  "anyhow",
  "cc",
@@ -18865,7 +19083,7 @@ dependencies = [
 [[package]]
 name = "mere"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
+source = "git+https://github.com/merely-made/mere.git?branch=main#a5baf7f3f7c7e807c06048659eceec708f44733f"
 dependencies = [
  "eidetic",
  "getrandom 0.4.3",
@@ -18922,32 +19140,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mere-kernel"
-version = "0.0.3"
-source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
-dependencies = [
- "euclid",
- "fieldbook",
- "hodograph",
- "infer",
- "mere",
- "mime_guess",
- "muniment",
- "oxrdf",
- "petgraph",
- "portolan",
- "rkyv",
- "rpds",
- "serde",
- "serde_json",
- "strum 0.28.0",
- "time",
- "url",
- "uuid",
- "web-time",
-]
-
-[[package]]
 name = "mere-mesh"
 version = "0.0.1"
 dependencies = [
@@ -18982,7 +19174,7 @@ dependencies = [
 [[package]]
 name = "mere-rdfc"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
+source = "git+https://github.com/merely-made/mere.git?branch=main#a5baf7f3f7c7e807c06048659eceec708f44733f"
 dependencies = [
  "getrandom 0.4.3",
  "oxrdf",
@@ -18992,7 +19184,7 @@ dependencies = [
 [[package]]
 name = "mere-surface-api"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "workbench",
 ]
@@ -19024,7 +19216,7 @@ dependencies = [
 [[package]]
 name = "meristem"
 version = "0.3.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "anymore",
  "tracing",
@@ -19038,7 +19230,7 @@ checksum = "5f98efec8807c63c752b5bd61f862c165c115b0a35685bdcfd9238c7aeb592b7"
 dependencies = [
  "cfg-if",
  "miette-derive",
- "unicode-width",
+ "unicode-width 0.1.14",
 ]
 
 [[package]]
@@ -19755,7 +19947,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -20377,7 +20569,7 @@ checksum = "08037a3c3cf580d065caec6a864cf97f51be219862d95c691a48c7543406d675"
 dependencies = [
  "oxilangtag",
  "oxiri 0.2.11",
- "rand 0.8.8",
+ "rand 0.9.5",
  "thiserror 2.0.21",
 ]
 
@@ -20593,7 +20785,7 @@ dependencies = [
 [[package]]
 name = "pandect"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
+source = "git+https://github.com/merely-made/mere.git?branch=main#a5baf7f3f7c7e807c06048659eceec708f44733f"
 dependencies = [
  "async-trait",
  "blake3",
@@ -20603,7 +20795,6 @@ dependencies = [
  "hodograph",
  "insigne",
  "mere",
- "mere-kernel",
  "muniment",
  "oxrdf",
  "personae",
@@ -20949,9 +21140,9 @@ dependencies = [
 
 [[package]]
 name = "plist"
-version = "1.10.4"
+version = "1.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d86a77b7d9cdebd9643c180c158748db7d894b24a3935ed4b5843e698ae086eb"
+checksum = "cb7a42747bbcc4374e6922a15040dccacf720e4ce48a77e668f7116b9aa19a0a"
 dependencies = [
  "base64 0.23.1",
  "indexmap",
@@ -21876,7 +22067,7 @@ dependencies = [
  "cfg-if",
  "libc",
  "rustix 1.1.6",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -22133,7 +22324,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -22191,7 +22382,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -22282,7 +22473,7 @@ dependencies = [
 [[package]]
 name = "sceno"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "serde",
  "serde_json",
@@ -22291,7 +22482,7 @@ dependencies = [
 [[package]]
 name = "sceno-backdrops"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "sceno",
  "serde",
@@ -22301,7 +22492,7 @@ dependencies = [
 [[package]]
 name = "scenograph"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "incipit",
  "sceno",
@@ -22312,7 +22503,7 @@ dependencies = [
 [[package]]
 name = "scenomise"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "backstep",
  "libm",
@@ -22327,7 +22518,7 @@ dependencies = [
 [[package]]
 name = "scenotime"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "sceno",
  "serde",
@@ -22869,7 +23060,7 @@ dependencies = [
 [[package]]
 name = "sprigging"
 version = "0.4.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "accesskit",
  "netrender-vello",
@@ -23206,7 +23397,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.6",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -24029,6 +24220,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7dd6e30e90baa6f72411720665d41d89b9a3d039dc45b8faea1ddd07f617f6af"
 
 [[package]]
+name = "unicode-width"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca718471876992059f251e33aafc334346ada08042b7661dd1fe313a9bced557"
+
+[[package]]
 name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -24183,7 +24380,7 @@ dependencies = [
 [[package]]
 name = "uxtree"
 version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 dependencies = [
  "accesskit",
  "inker",
@@ -24762,7 +24959,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -25385,7 +25582,7 @@ dependencies = [
 [[package]]
 name = "workbench"
 version = "0.2.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f61ae5c94fc9b8ea2263c258c23f34a784608090"
 
 [[package]]
 name = "wrapcenum-derive"
