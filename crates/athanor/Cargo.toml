@@ -28,7 +28,7 @@ workshop-model = ["decision", "dep:distillery"]
 # The same, with Distillery's GPU decoder: for the ignored real-model workshop test.
 workshop-model-gpu = ["workshop-model", "workshop-worker", "distillery/inference-gpu"]
 workshop-sealed = ["workshop", "dep:eidetic"]
-workshop-destination = ["workshop", "dep:pandect", "dep:kernel", "dep:portolan", "dep:euclid", "dep:uuid"]
+workshop-destination = ["workshop", "dep:pandect", "dep:kernel", "dep:mere", "dep:portolan", "dep:euclid", "dep:uuid"]
 
 [[example]]
 name = "workshop_compare"
@@ -38,6 +38,8 @@ required-features = ["workshop-model-gpu"]
 cambium = { workspace = true, optional = true }
 eidetic = { workspace = true, optional = true }
 kernel = { workspace = true, optional = true }
+# The names the kernel re-exported from the engine, at their home (engine split D141).
+mere = { workspace = true, optional = true }
 pandect = { workspace = true, optional = true }
 servitor = { workspace = true, optional = true }
 muniment = { workspace = true, optional = true }
@@ -83,6 +85,7 @@ repository = "https://github.com/merely-made/distillery"
 cambium = { version = ">=0.6.1", git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 cambium-desktop = { version = ">=0.1.0", git = "https://github.com/merely-made/graphshell.git", branch = "main" }
 kernel = { package = "mere-kernel", version = ">=0.0.3", git = "https://github.com/merely-made/mere.git", branch = "main" }
+mere = { version = "0.1.0", git = "https://github.com/merely-made/mere.git", branch = "main", default-features = false }
 pandect = { version = "0.2.0", git = "https://github.com/merely-made/mere.git", branch = "main" }
 eidetic = { version = ">=0.0.3", default-features = false, features = ["product"], git = "https://github.com/merely-made/eidetic.git", branch = "main" }
 servitor = { version = ">=0.0.3", git = "https://github.com/merely-made/eidetic.git", branch = "main" }

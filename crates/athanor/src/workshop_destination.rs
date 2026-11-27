@@ -10,8 +10,9 @@
 
 use crate::workshop::{Error, revalidate_acceptance, validate_proposal};
 use crate::alembic::workshop::{Acceptance, Owner, Passage, Proposal, Receipt, Source};
-use kernel::graph::{Author, Graph, apply::GraphDelta};
-use kernel::persistence::{PersistedResourceFacet, PersistedResourceRecord};
+use kernel::graph::{Graph, apply::GraphDelta};
+use mere::model::author::Author;
+use mere::model::{PersistedResourceFacet, PersistedResourceRecord};
 use pandect::graph_session::{GraphSession, LegacyTransactionBackend, OperationReceipt};
 use servitor::AuthorityProvider;
 use std::time::SystemTime;
@@ -236,7 +237,7 @@ pub(crate) fn require_complete(graph: &Graph) -> Result<(), Error> {
         .known_coverage()
         .limits
         .iter()
-        .any(|limit| limit.layer == kernel::graph::CoverageLayer::Residency)
+        .any(|limit| limit.layer == mere::model::coverage::CoverageLayer::Residency)
     {
         return Err(Error::Invalid("partial destination graph"));
     }

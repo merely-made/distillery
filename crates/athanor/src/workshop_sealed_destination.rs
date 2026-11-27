@@ -15,7 +15,7 @@ use crate::workshop_destination::{
 };
 use crate::alembic::workshop::{Acceptance, Owner, Proposal, Receipt};
 use kernel::graph::{Graph, apply::GraphDelta};
-use kernel::persistence::{PersistedResourceFacet, PersistedResourceRecord};
+use mere::model::{PersistedResourceFacet, PersistedResourceRecord};
 use servitor::AuthorityProvider;
 
 pub(crate) const OPERATION_FACET: &str = "mere.alembic.evidence-brief.sealed-operation/v1";
