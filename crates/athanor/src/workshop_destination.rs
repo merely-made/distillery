@@ -534,8 +534,9 @@ pub fn capture_graph_public_source(
 
 #[cfg(test)]
 mod tests {
-    use crate::MereSessions;
     use super::*;
+    use crate::MereSessions;
+    use incipit_session::IncipitSessions;
     use crate::workshop::{Workshop, evaluate};
     use crate::alembic::workshop::Destination;
     use muniment::MemoryBackend;
