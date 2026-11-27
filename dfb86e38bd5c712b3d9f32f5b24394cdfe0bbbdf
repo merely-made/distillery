@@ -552,6 +552,7 @@ dependencies = [
 [[package]]
 name = "backstep"
 version = "0.2.1"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 
 [[package]]
 name = "backtrace"
@@ -1396,6 +1397,7 @@ checksum = "6236364b88b9b6d0bc181ba374cf1ab55ba3ef97a1cb6f8cddad48a273767fb5"
 [[package]]
 name = "cambium"
 version = "0.7.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "backstep",
  "genet-events",
@@ -1430,6 +1432,7 @@ dependencies = [
 [[package]]
 name = "catchment"
 version = "0.2.0"
+source = "git+https://github.com/merely-made/mere.git?branch=main#83357a9d889861b48457ec7fe72360c33499891c"
 dependencies = [
  "serde",
  "uuid",
@@ -1518,6 +1521,7 @@ dependencies = [
 [[package]]
 name = "chirograph"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "base64 0.23.1",
  "blake3",
@@ -4243,6 +4247,7 @@ dependencies = [
 [[package]]
 name = "graphshell-client"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "chirograph",
  "hest",
@@ -4255,6 +4260,7 @@ dependencies = [
 [[package]]
 name = "graphshell-endpoint"
 version = "0.0.4"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "chirograph",
 ]
@@ -4482,6 +4488,7 @@ checksum = "e17592d60ebacc7d5e169f4663c5f84f9161cc90328abcfe8456f41e4dfcb284"
 [[package]]
 name = "hest"
 version = "0.3.1"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "serde",
 ]
@@ -5017,6 +5024,7 @@ checksum = "6e44b0a4eaa4c82f441d50a963f2d5f05a787240aeee097597033e72accfd22f"
 [[package]]
 name = "incipit"
 version = "0.3.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "catchment",
  "serde",
@@ -6128,6 +6136,7 @@ dependencies = [
 [[package]]
 name = "mere-surface-api"
 version = "0.2.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "workbench",
 ]
@@ -6159,6 +6168,7 @@ dependencies = [
 [[package]]
 name = "meristem"
 version = "0.3.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "anymore",
  "tracing",
@@ -9019,6 +9029,7 @@ dependencies = [
 [[package]]
 name = "sceno"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "serde",
  "serde_json",
@@ -9027,6 +9038,7 @@ dependencies = [
 [[package]]
 name = "sceno-backdrops"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "sceno",
  "serde",
@@ -9036,6 +9048,7 @@ dependencies = [
 [[package]]
 name = "scenograph"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "incipit",
  "sceno",
@@ -9046,6 +9059,7 @@ dependencies = [
 [[package]]
 name = "scenomise"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "backstep",
  "libm",
@@ -9060,6 +9074,7 @@ dependencies = [
 [[package]]
 name = "scenotime"
 version = "0.1.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "sceno",
  "serde",
@@ -9534,6 +9549,7 @@ dependencies = [
 [[package]]
 name = "sprigging"
 version = "0.4.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 dependencies = [
  "accesskit",
  "netrender-vello",
@@ -11671,6 +11687,7 @@ dependencies = [
 [[package]]
 name = "workbench"
 version = "0.2.0"
+source = "git+https://github.com/merely-made/graphshell.git?branch=main#f9179e1edbd7b97613c19f98cd7b9688cec04f68"
 
 [[package]]
 name = "wrapcenum-derive"
@@ -11983,241 +12000,6 @@ checksum = "27bc9d5b815bc103f142aa054f561d9187d191692ec7c2d1e2b4737f8dbd7296"
 dependencies = [
  "zune-core",
 ]
-
-[[patch.unused]]
-name = "mere"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-facts"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-kernel"
-version = "0.0.3"
-
-[[patch.unused]]
-name = "mere-ontology"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-rdfc"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-shacl"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "pandect"
-version = "0.2.0"
-
-[[patch.unused]]
-name = "app-host"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "authority-host"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "block-adapter"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "block-host"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "cambium-a11y"
-version = "0.3.0"
-
-[[patch.unused]]
-name = "cambium-desktop"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "cambium-rootstock"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "cambium-web"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "cambium-winit"
-version = "0.4.0"
-
-[[patch.unused]]
-name = "command-packs"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "djinn-testkit"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "document-host"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "graphshell-door"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "graphshell-host"
-version = "0.0.2"
-
-[[patch.unused]]
-name = "graphshell-rdf-trail"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "incipit-graph"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "incipit-session"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mandrake"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-cartography"
-version = "0.0.2"
-
-[[patch.unused]]
-name = "mere-cli"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-fetch"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "mere-ipfs-reader"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-moot"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "mere-overmap"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mere-registry"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "mere-resident"
-version = "0.0.2"
-
-[[patch.unused]]
-name = "mere-view"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "mod-host"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "mod-targets"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "pelt-core"
-version = "0.2.0"
-
-[[patch.unused]]
-name = "pelt-desktop"
-version = "0.2.0"
-
-[[patch.unused]]
-name = "platen"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "script-wire"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "script-witgen"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "settings-wit"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "sheet-leaf"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "tabard"
-version = "0.0.2"
-
-[[patch.unused]]
-name = "tabard-workshop"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "tinct"
-version = "0.3.0"
-
-[[patch.unused]]
-name = "ux-events"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "uxtree"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "vector-sheet"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "mere-athanor"
-version = "0.0.1"
-
-[[patch.unused]]
-name = "cambium"
-version = "0.7.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
-
-[[patch.unused]]
-name = "hest"
-version = "0.3.1"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
-
-[[patch.unused]]
-name = "mere-surface-api"
-version = "0.2.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
-
-[[patch.unused]]
-name = "sceno"
-version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
-
-[[patch.unused]]
-name = "scenograph"
-version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
-
-[[patch.unused]]
-name = "scenomise"
-version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
-
-[[patch.unused]]
-name = "scenotime"
-version = "0.1.0"
-source = "git+https://github.com/merely-made/graphshell.git?branch=main#1fc133e04a12545e00f8d4f805594a8e84f9a164"
 # ---- crates/athanor/Cargo.lock
 # This file is automatically @generated by Cargo.
 # It is not intended for manual editing.
