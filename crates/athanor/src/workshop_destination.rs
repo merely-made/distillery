@@ -8,12 +8,13 @@
 //! The operation record, journal and addressable publication share one storage
 //! transaction. This adapter supplies no custody or human authority of its own.
 
+use crate::GraphSession;
 use crate::workshop::{Error, revalidate_acceptance, validate_proposal};
 use crate::alembic::workshop::{Acceptance, Owner, Passage, Proposal, Receipt, Source};
 use kernel::graph::{Graph, apply::GraphDelta};
 use mere::model::author::Author;
 use mere::model::{PersistedResourceFacet, PersistedResourceRecord};
-use pandect::graph_session::{GraphSession, LegacyTransactionBackend, OperationReceipt};
+use pandect::graph_session::{LegacyTransactionBackend, OperationReceipt};
 use servitor::AuthorityProvider;
 use std::time::SystemTime;
 use uuid::Uuid;
@@ -533,11 +534,11 @@ pub fn capture_graph_public_source(
 
 #[cfg(test)]
 mod tests {
+    use crate::MereSessions;
     use super::*;
     use crate::workshop::{Workshop, evaluate};
     use crate::alembic::workshop::Destination;
     use muniment::MemoryBackend;
-    use pandect::graph_session::MereSessions;
     use servitor::{Cap, Mode, Subject};
 
     struct Authority(bool);

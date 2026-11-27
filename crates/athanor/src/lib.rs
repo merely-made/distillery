@@ -9,6 +9,13 @@
 //! furnace's graph passes moved to `pandect::furnace` 2026-10-31
 //! (distillery-extraction D12).
 
+
+// pandect's graph-generic types over this crate's graph, one alias each (engine split D244).
+#[cfg(feature = "workshop-destination")]
+pub(crate) type GraphSession<B> = pandect::GraphSession<B, kernel::graph::Graph>;
+#[cfg(all(test, feature = "workshop-destination"))]
+pub(crate) type MereSessions<B> = pandect::MereSessions<B, kernel::graph::Graph>;
+
 #[cfg(feature = "workshop")]
 pub mod alembic;
 #[cfg(feature = "decision")]
