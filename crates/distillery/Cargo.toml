@@ -37,8 +37,8 @@ eidetic-search = { workspace = true, optional = true }
 esp = { workspace = true, optional = true }
 armillary.workspace = true
 apparatus-core = { workspace = true, features = ["serde"], optional = true }
-safetensors = { version = "0.4", optional = true }
-pollster = { version = "0.4", optional = true }
+safetensors = { version = "0.8", optional = true }
+pollster = { version = "1", optional = true }
 notochord = { workspace = true, features = ["tokio"], optional = true }
 mere-surface-api = { workspace = true }
 serde = { version = "1", features = ["derive"] }
@@ -85,7 +85,7 @@ inference-model = ["inference-wire","dep:eidetic-search", "inference", "esp/deco
 sha2 = { workspace = true }
 # Supplier-owned tiny models and templates; enabled only for test targets.
 esp-testkit = { workspace = true }
-safetensors = "0.4"
+safetensors = "0.8"
 notochord = { workspace = true, features = ["tokio"] }
 stickleback.workspace = true
 # Tests and examples bind throwaway identities (vault lock plan, ruling 96).

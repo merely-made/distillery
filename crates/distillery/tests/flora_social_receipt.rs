@@ -92,7 +92,7 @@ fn adapter_fixture(
             (format!("{prefix}.lora_A.weight"), a),
             (format!("{prefix}.lora_B.weight"), b),
         ],
-        &None,
+        None,
     )
     .unwrap();
     let manifest = ModelAdapterManifest {

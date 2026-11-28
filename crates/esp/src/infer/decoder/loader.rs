@@ -148,7 +148,7 @@ pub(crate) fn load_expert(
         .ok_or_else(|| InferError::InvalidConfig("expert read for a dense model".into()))?;
     if !config.layer_is_moe(layer)
         || expert >= moe.num_experts
-        || tensors.names().into_iter().cloned().collect::<HashSet<_>>()
+        || tensors.names().into_iter().map(String::from).collect::<HashSet<_>>()
             != expert_tensor_names(layer, expert)
                 .into_iter()
                 .collect::<HashSet<_>>()
@@ -288,10 +288,10 @@ fn refuse_unconsumed(config: &DecoderConfig, tensors: &SafeTensors<'_>) -> Resul
             consumed.insert(format!("model.layers.{i}.{suffix}"));
         }
     }
-    let mut unconsumed: Vec<&String> = tensors
+    let mut unconsumed: Vec<&str> = tensors
         .names()
         .into_iter()
-        .filter(|name| !consumed.contains(name.as_str()) && !ignorable(name))
+        .filter(|name| !consumed.contains(*name) && !ignorable(name))
         .collect();
     unconsumed.sort();
     match unconsumed.first() {
@@ -352,7 +352,7 @@ pub(crate) fn load_shared_shards(
 ) -> Result<super::model::LoadedSharedShards, InferError> {
     if tensors.names().iter().any(|name| {
         !matches!(
-            name.as_str(),
+            *name,
             "model.embed_tokens.weight" | "model.norm.weight" | "lm_head.weight"
         )
     }) {
@@ -651,7 +651,7 @@ pub(crate) mod tests {
                 )
             })
             .collect();
-        safetensors::serialize(views, &None).unwrap()
+        safetensors::serialize(views, None).unwrap()
     }
 
     fn serialize_bf16(table: &[(String, Vec<usize>, Vec<f32>)]) -> Vec<u8> {
@@ -676,7 +676,7 @@ pub(crate) mod tests {
                 )
             })
             .collect();
-        safetensors::serialize(views, &None).unwrap()
+        safetensors::serialize(views, None).unwrap()
     }
 
     fn ids() -> Tensor<2, Int> {
@@ -836,7 +836,7 @@ pub(crate) fn validate_layer_names(
         .iter()
         .map(|suffix| format!("model.layers.{index}.{suffix}"))
         .collect();
-    let actual: HashSet<String> = tensors.names().into_iter().cloned().collect();
+    let actual: HashSet<String> = tensors.names().into_iter().map(String::from).collect();
     if actual != expected {
         return Err(InferError::InvalidWeights(format!(
             "layer {index} tensor names do not match the declared Llama block"

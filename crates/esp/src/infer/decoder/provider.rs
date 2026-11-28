@@ -392,7 +392,7 @@ impl DecoderProvider {
             .map_err(|error| InferError::InvalidWeights(format!("shared tensors: {error}")))?;
         if tensors.names().iter().any(|name| {
             !matches!(
-                name.as_str(),
+                *name,
                 "model.embed_tokens.weight" | "model.norm.weight" | "lm_head.weight"
             )
         }) {

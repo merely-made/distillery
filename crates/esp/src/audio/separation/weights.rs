@@ -208,7 +208,7 @@ pub fn convert_to_half(checkpoint: &Path, out: &Path) -> Result<(), WeightsError
         })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| WeightsError::Format(e.to_string()))?;
-    safetensors::serialize_to_file(views, &None::<HashMap<String, String>>, out)
+    safetensors::serialize_to_file(views, None::<HashMap<String, String>>, out)
         .map_err(|e| WeightsError::Format(e.to_string()))
 }
 

@@ -206,7 +206,7 @@ fn independent_peft_merge(
     let base = SafeTensors::deserialize(base_bytes)?;
     let adapter = SafeTensors::deserialize(adapter_bytes)?;
     let targets = adapter_targets(&adapter)?;
-    let mut names: Vec<String> = base.names().into_iter().cloned().collect();
+    let mut names: Vec<String> = base.names().into_iter().map(String::from).collect();
     names.sort();
 
     let mut header = serde_json::Map::new();

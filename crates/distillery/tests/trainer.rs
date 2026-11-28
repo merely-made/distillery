@@ -150,7 +150,7 @@ fn base_weights() -> Vec<u8> {
             )
         })
         .collect();
-    safetensors::serialize(views, &None).unwrap()
+    safetensors::serialize(views, None).unwrap()
 }
 
 fn retention(authority: [u8; 32]) -> MeshRetentionPolicy {

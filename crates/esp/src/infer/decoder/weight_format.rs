@@ -219,7 +219,7 @@ pub fn convert_artifact(bytes: &[u8], format: WeightFormat) -> Result<Vec<u8>, I
             TensorView::new(*dtype, shape.clone(), data).map(|view| (name.clone(), view))
         })
         .collect();
-    safetensors::serialize(views.map_err(invalid)?, &None).map_err(invalid)
+    safetensors::serialize(views.map_err(invalid)?, None).map_err(invalid)
 }
 
 pub(crate) fn extract<const D: usize>(
@@ -323,7 +323,7 @@ mod tests {
             .flat_map(|i| (((i % 103) as f32 - 51.0) / 40.0).to_le_bytes())
             .collect();
         let view = TensorView::new(Dtype::F32, vec![rows, cols], &data).unwrap();
-        safetensors::serialize([("projection.weight", view)], &None).unwrap()
+        safetensors::serialize([("projection.weight", view)], None).unwrap()
     }
 
     fn check(device: Device, format: WeightFormat, width: usize, sequence: usize) {
@@ -534,11 +534,11 @@ mod tests {
         );
         let data = f32::NAN.to_le_bytes();
         let view = TensorView::new(Dtype::F32, vec![1], &data).unwrap();
-        let bytes = safetensors::serialize([("norm.weight", view)], &None).unwrap();
+        let bytes = safetensors::serialize([("norm.weight", view)], None).unwrap();
         assert!(convert_artifact(&bytes, WeightFormat::F16).is_err());
         let data = f32::MAX.to_le_bytes();
         let view = TensorView::new(Dtype::F32, vec![1], &data).unwrap();
-        let bytes = safetensors::serialize([("norm.weight", view)], &None).unwrap();
+        let bytes = safetensors::serialize([("norm.weight", view)], None).unwrap();
         assert!(convert_artifact(&bytes, WeightFormat::F16).is_err());
     }
 

@@ -349,7 +349,7 @@ mod tests {
                 )
             })
             .collect();
-        safetensors::serialize(views, &None).unwrap()
+        safetensors::serialize(views, None).unwrap()
     }
 
     #[test]

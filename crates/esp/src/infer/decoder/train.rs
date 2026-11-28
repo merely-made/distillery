@@ -429,7 +429,7 @@ pub(crate) fn serialize_adapter_modules(
             )
         })
         .collect();
-    safetensors::serialize(views, &None).expect("trained adapter serializes")
+    safetensors::serialize(views, None).expect("trained adapter serializes")
 }
 
 /// The one `adapter_config.json` writer both trainers publish through.
@@ -587,7 +587,7 @@ mod tests {
                 )
             })
             .collect();
-        safetensors::serialize(views, &None).unwrap()
+        safetensors::serialize(views, None).unwrap()
     }
 
     /// The v0 `adapter_config.json` writer as it stood before the shared

@@ -793,7 +793,7 @@ fn stack_tensors(sources: &[ParsedContribution], total_rank: u16) -> Result<Vec<
                 .map_err(|error| invalid(format!("serialize aggregate {name}: {error}")))
         })
         .collect::<Result<Vec<_>, _>>()?;
-    safetensors::serialize(views, &None)
+    safetensors::serialize(views, None)
         .map_err(|error| invalid(format!("serialize aggregate safetensors: {error}")))
 }
 
@@ -868,7 +868,7 @@ mod tests {
                 )
             })
             .collect::<Vec<_>>();
-        safetensors::serialize(views, &None).unwrap()
+        safetensors::serialize(views, None).unwrap()
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1078,7 +1078,7 @@ mod tests {
                 "base_model.model.model.layers.0.self_attn.q_proj.lora_A.weight",
                 view,
             )],
-            &None,
+            None,
         )
         .unwrap();
         broken.manifest.adapter_blob = ManifestId::of_blob(&broken.adapter_safetensors);
@@ -1144,7 +1144,7 @@ mod tests {
                 )
             })
             .collect::<Vec<_>>();
-        safetensors::serialize(views, &None).unwrap()
+        safetensors::serialize(views, None).unwrap()
     }
 
     #[test]

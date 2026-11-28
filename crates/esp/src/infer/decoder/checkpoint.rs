@@ -284,7 +284,7 @@ impl CheckpointReader {
                     .map_err(invalid)
             })
             .collect::<Result<Vec<_>, _>>()?;
-        let packed = safetensors::serialize(views, &None).map_err(invalid)?;
+        let packed = safetensors::serialize(views, None).map_err(invalid)?;
         if packed.len() > limit {
             return Err(invalid("encoded artifact exceeds configured byte limit"));
         }
